@@ -6,6 +6,35 @@
   <version>0.0.1-SNAPSHOT</version>
   <name>FFB Depot Client</name>
   <description>Client für Depotabfrage der FFB (FIL Fondsbank).</description>
+  <url>https://github.com/bmhm/ffb.depot.client</url>
+
+  <licenses>
+    <license>
+      <name>GNU General Public License, v2.0 or later</name>
+      <url>https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <scm>
+    <url>https://github.com/bmhm/ffb.depot.client</url>
+    <connection>scm:git:git://github.com/bmhm/ffb.depot.client.git</connection>
+    <developerConnection>scm:git:git@github.com:bmhm/ffb.depot.client.git</developerConnection>
+  </scm>
+
+  <issueManagement>
+    <url>https://github.com/bmhm/ffb.depot.client/issues</url>
+    <system>GitHub Issues</system>
+  </issueManagement>
+
+  <developers>
+    <developer>
+      <email>bmarwell@gmail.com</email>
+      <name>Benjamin Marwell</name>
+      <url>https://github.com/bmhm</url>
+      <id>bmhm</id>
+    </developer>
+  </developers>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -81,4 +110,5 @@
       </plugin>
     </plugins>
   </build>
+
 </project>
