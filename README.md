@@ -22,7 +22,7 @@ Das Protokoll basiert auf dem Mobile-Protokoll der FFB-App. Es verwendet Cookies
   </tr>
   <tr>
     <td>Header</td>
-    <td><code><pre>Accept: application/json; q=0.01
+    <td><pre><code>Accept: application/json; q=0.01
 Content-Type: application/x-www-form-urlencoded; charset=UTF-8
 Accept-Language: en-GB,en-US,en;q=0.8
 Accept-Encoding: gzip,deflate
@@ -31,11 +31,11 @@ X-Requested-With: ffb.depot.client
 User-Agent: ffb.depot.client
 Cache-Control: no-cache
 Pragma: no-cache
-Origin: file://</pre></code></td>
+Origin: file://</code></pre></td>
   </tr>
   <tr>
     <td>Response-Body</td>
-    <td><code><pre>{
+    <td><pre><code>{
   "loggedIn": "true",
   "username": "Firstname Lastname",
   "firstname": "Firstname",
@@ -43,7 +43,7 @@ Origin: file://</pre></code></td>
   "usertype": "Customer",
   "ZustimmungNutzungsbedingungenFFS": "".
   "errormessage": ""
-}</pre></code></td>
+}</code></pre></td>
   </tr>
 </tbody>
 </table>
