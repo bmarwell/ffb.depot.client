@@ -93,5 +93,52 @@ Origin: file://</code></pre></td>
   ]
 }</code></pre></td>
   </tr>
+  <tr>
+    <td>Anmerkdungen</td>
+    <td>Hier wird bislang nur ein Ausschnitt der Daten gezeigt.</td>
+</tbody>
+</table>
+
+
+### Depotperformance
+<table>
+<thead><th>Parameter</th><th>Content</th></thead>
+<tbody>
+  <tr>
+    <td>URL</td>
+    <td>https://www.fidelity.de/de/mobile/MyFFB/account/performance.page</td>
+  </tr>
+  <tr>
+    <td>Methode</td>
+    <td>GET</td>
+  </tr>
+  <tr>
+    <td>Header</td>
+    <td><pre><code>Accept: application/json; q=0.01
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+Accept-Language: en-GB,en-US,en;q=0.8
+Accept-Encoding: gzip,deflate
+Accept-Charset: utf-8;q=0.7,*;q=0.3
+X-Requested-With: ffb.depot.client
+User-Agent: ffb.depot.client
+Cache-Control: no-cache
+Pragma: no-cache
+Origin: file://</code></pre></td>
+  </tr>
+  <tr>
+    <td>Response-Body</td>
+    <td><pre><code>{
+  "login"                   : "true",
+  "performanceGesamt"       : "22,67",
+  
+  "performanceDurchschnitt" : "7,93",
+  
+  "ersterZufluss"           : "22.01.1991",
+  "errormessage"            : ""
+}</code></pre></td>
+  </tr>
+<tr>
+  <td>Anmerkungen</td>
+  <td>Die Ausgabe erfolgt "pretty printed" und mit eigentlich unnötigen, sogar doppelten Zeilenumbruechen. Das Datum ist irrsinnigerweise nicht per ISO 8601, sondern im Deutschen Datumsformat angegeben. Ach die Prozentbeträge verwenden das international unübliche Komma als Dezimaltrennzeichen. Die Begriffe Zufluss, Durchschnitt und Gesamt sind Deutsche Begriffe, während die restlichen Begriffe englisch sind (login, performance, error, message).</td>
 </tbody>
 </table>
