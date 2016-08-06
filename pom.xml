@@ -54,6 +54,11 @@
     <maven.compiler.target>1.7</maven.compiler.target>
 
     <dependency.slf4j.version>1.7.16</dependency.slf4j.version>
+
+    <!-- Sonar -->
+    <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+    <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+    <sonar.language>java</sonar.language>
   </properties>
 
   <dependencies>
@@ -90,6 +95,14 @@
       <version>1.1.7</version>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.sonarsource.java</groupId>
+      <artifactId>sonar-jacoco-listeners</artifactId>
+      <version>3.8</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
 
@@ -150,6 +163,23 @@
         </configuration>
       </plugin>
 
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.7.7.201606060606</version>
+        <configuration>
+          <destFile>${sonar.jacoco.reportPath}</destFile>
+          <append>true</append>
+        </configuration>
+        <executions>
+          <execution>
+            <id>agent</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 
