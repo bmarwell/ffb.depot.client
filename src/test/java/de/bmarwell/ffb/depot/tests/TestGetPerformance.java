@@ -35,4 +35,12 @@ public class TestGetPerformance {
     Assert.assertTrue(performance.getErrormessage().equals(""));
   }
 
+  @Test(expected = IllegalStateException.class)
+  public void testGetPerformance_noLogin() throws MalformedURLException, FfbClientError {
+    FfbMobileClient mobileAgent = new FfbMobileClient(TestMobileGetDepotwert.LOGIN, TestMobileGetDepotwert.PIN);
+
+    FfbPerformanceResponse performance = mobileAgent.getPerformance();
+    LOG.debug("Performance: [{}].", performance.toString());
+  }
+
 }
