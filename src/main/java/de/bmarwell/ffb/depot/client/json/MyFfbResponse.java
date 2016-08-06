@@ -8,7 +8,7 @@ public class MyFfbResponse {
   private String letztesUpdate;
   private String gesamtwert;
 
-  private FfbDepotliste depots;
+  private FfbDepotliste depots = new FfbDepotliste();
 
   public boolean isLogin() {
     return login;

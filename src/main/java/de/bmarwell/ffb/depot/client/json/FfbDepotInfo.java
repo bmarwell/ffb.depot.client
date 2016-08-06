@@ -1,5 +1,7 @@
 package de.bmarwell.ffb.depot.client.json;
 
+import de.bmarwell.ffb.depot.client.value.FfbDepotNummer;
+
 import com.google.common.base.MoreObjects;
 
 public class FfbDepotInfo {
@@ -21,6 +23,10 @@ public class FfbDepotInfo {
 
   public void setDepotnummer(String depotnummer) {
     this.depotnummer = depotnummer;
+  }
+
+  public void setDepotnummer(FfbDepotNummer depotnummer) {
+    this.depotnummer = depotnummer.getDepotNummer();
   }
 
   public double getBestand() {

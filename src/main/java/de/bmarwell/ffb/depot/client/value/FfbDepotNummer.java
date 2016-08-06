@@ -15,4 +15,8 @@ public class FfbDepotNummer {
   public String getDepotNummer() {
     return this.depotnummer;
   }
+
+  public static FfbDepotNummer empty() {
+    return of("");
+  }
 }
