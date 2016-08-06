@@ -1,4 +1,4 @@
-package de.bmarwell.ffb.depot.client;
+package de.bmarwell.ffb.depot.client.json;
 
 import java.util.ArrayList;
 

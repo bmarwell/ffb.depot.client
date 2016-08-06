@@ -1,5 +1,13 @@
 package de.bmarwell.ffb.depot.client;
 
+import de.bmarwell.ffb.depot.client.err.FfbClientError;
+import de.bmarwell.ffb.depot.client.json.FfbDepotInfo;
+import de.bmarwell.ffb.depot.client.json.LoginResponse;
+import de.bmarwell.ffb.depot.client.json.MyFfbResponse;
+import de.bmarwell.ffb.depot.client.value.FfbDepotNummer;
+import de.bmarwell.ffb.depot.client.value.FfbLoginKennung;
+import de.bmarwell.ffb.depot.client.value.FfbPin;
+
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.Page;
@@ -10,6 +18,9 @@ import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
@@ -17,25 +28,37 @@ import java.net.URL;
 
 public class FfbMobileDepotwertRetriever {
 
+  private static final Logger LOG = LoggerFactory.getLogger(FfbMobileDepotwertRetriever.class);
+
   private static final String DOMAIN = "https://www.fidelity.de/";
   private static final String PATH_LOGIN = "de/mobile/MyFFB/account/userLogin.page";
   private static final String PATH_DEPOT = "de/mobile/MyFFB/account/MyFFB.page";
 
   private final WebClient webClient;
 
-  private byte[] pin = new String("").getBytes();
+  private FfbPin pin = FfbPin.of("");
 
-  private String user = new String("");
-
-  private double depotwert = 0;
+  private FfbLoginKennung user = FfbLoginKennung.of("");
 
   private Optional<LoginResponse> login = Optional.<LoginResponse>absent();
-  private Optional<MyFfbResponse> myFfbInfo = Optional.<MyFfbResponse>absent();
-  private String depotnummer;
+  private final URL urlMyffb;
+  private final URL urlLogin;
 
-  public FfbMobileDepotwertRetriever() {
+  /**
+   * Konstruktor für Tests und interne Verwendung. Bitte stattdessen
+   * {@link #FfbMobileDepotwertRetriever(FfbLoginKennung, FfbPin)} verwenden.
+   *
+   * <p>Wird der Client wie hier ohne User und Pin erstellt, kann gar nichts klappen.</p>
+   *
+   * @throws MalformedURLException
+   *           Interner Fehler beim Erstellen der URLs.
+   */
+  public FfbMobileDepotwertRetriever() throws MalformedURLException {
     this.webClient = new WebClient();
     webClient.getCookieManager().setCookiesEnabled(true);
+
+    urlMyffb = new URL(DOMAIN + PATH_DEPOT);
+    urlLogin = new URL(DOMAIN + PATH_LOGIN);
   }
 
   /**
@@ -45,57 +68,66 @@ public class FfbMobileDepotwertRetriever {
    *          Der Login. Meistens die Depotnummer. Bei mehreren Depots mit selbem Login einfach ebenfalls das Login.
    * @param pin
    *          das Passwort fürs Login.
-   * @param depotnummer
-   *          Die Depotnummer, für die der Depotbestand abgefragt werden soll. Ein Login kann ggf. mehrere Depots sehen.
+   * @throws MalformedURLException
+   *           Fehler beim erstellen der URLs.
    */
-  public FfbMobileDepotwertRetriever(String user, String pin, String depotnummer) {
+  public FfbMobileDepotwertRetriever(FfbLoginKennung user, FfbPin pin) throws MalformedURLException {
     this();
     this.user = user;
-    this.pin = pin.getBytes();
-    this.depotnummer = depotnummer;
+    this.pin = pin;
   }
 
   /**
-   * Die Methode, die die ganze Arbeit verrichtet: Login, Sammeln der Daten und addieren der relevanten Depotbestände.
+   * Hier werden die eigentlichen Daten (Depotliste inkl. Bestände) geholt.
    *
-   * <p>Schmeißt RuntimeExceptions, wenn es Fehler gibt.</p>
+   * @return die Depotinfo.
+   * @throws FfbClientError
+   *           Error while getting account data.
    */
-  public void synchronize() {
-    try {
-      /* Login, das Cookie im webClient erledigt alles weitere. */
-      logon();
-
-      /* Die eigentlichen Daten werden hier abgeholt und im myFfbInfo gespeichert. */
-      fetchAccountData();
-
-      /* Bestände aller passenden Depots im Login werden addiert. */
-      setDepotwert();
-    } catch (MalformedURLException mue) {
-      throw new RuntimeException("Malformed URL in FFB-Project: [" + mue.getMessage() + "]. Please send this to developer.",
-          mue);
-    } catch (FailingHttpStatusCodeException httpStatusCodeEx) {
-      throw new RuntimeException(
-          "Could not connect to: [" + httpStatusCodeEx.getMessage() + "]. Please try again or send this to developer.",
-          httpStatusCodeEx);
-    } catch (IOException ioEx) {
-      throw new RuntimeException(
-          "Could not read from: [" + ioEx.getMessage() + "]. Please try again or send this to developer.", ioEx);
-    }
-  }
-
-  /**
-   * Bestände aller passenden Depots werden addiert und in Feld deportwert gespeichert.
-   */
-  private void setDepotwert() {
+  public Optional<MyFfbResponse> fetchAccountData() throws FfbClientError {
     Preconditions.checkState(login.isPresent(), "Not used login method before.");
     Preconditions.checkState(login.get().isLoggedIn(), "User could not log in. Check credentials.");
-    Preconditions.checkState(myFfbInfo.isPresent(), "Keine Daten abgeholt!");
+
+    MyFfbResponse bestandsResponse = null;
+
+    try {
+      Page myFfbPage = webClient.getPage(urlMyffb);
+
+      /* Read json response */
+      JsonReader reader = new JsonReader(new InputStreamReader(myFfbPage.getWebResponse().getContentAsStream()));
+      Gson gson = new Gson();
+      bestandsResponse = gson.fromJson(reader, MyFfbResponse.class);
+    } catch (FailingHttpStatusCodeException fsce) {
+      LOG.error("Error with reading account information (http statuscode). Are you logged in?", fsce);
+      throw new FfbClientError("Error with reading account information (http statuscode). Are you logged in?", fsce);
+    } catch (IOException ioe) {
+      LOG.error("Error with reading account information. Could not read stream.", ioe);
+      throw new FfbClientError("Error with reading account information. Could not read stream.", ioe);
+    }
+
+    return Optional.fromNullable(bestandsResponse);
+  }
+
+  /**
+   * Ermittelt den Gesamtbestand für ein Depot.
+   *
+   * @param myFfbResponse
+   *          Das Ergebnis der {@link #fetchAccountData()}-Methode.
+   *
+   * @param depotnummer
+   *          Die Depotnummer, für die der Depotbestand abgefragt werden soll. Ein Login kann ggf. mehrere Depots sehen.
+   *
+   * @return der Gesamtbestand in Depotwährung.
+   */
+  public double getGesamtBestand(MyFfbResponse myFfbResponse, FfbDepotNummer depotnummer) {
+    Preconditions.checkNotNull(depotnummer, "Depotnummer null.");
+    Preconditions.checkNotNull(myFfbResponse, "Keine Daten übergeben!");
 
     double tempDepotwert = 0.00d;
 
     /* Es kann mehrere Depots mit der gleichen Depotnummer geben (z.B. Haupt- und VL-Depot). */
-    for (FfbDepotInfo di : myFfbInfo.get().getDepots()) {
-      if (!di.getDepotnummer().equals(depotnummer)) {
+    for (FfbDepotInfo di : myFfbResponse.getDepots()) {
+      if (!di.getDepotnummer().equals(depotnummer.getDepotNummer())) {
         /* Dieses Depot im sichtbaren Login ist ein anderes, als das für Umsätze angefordete */
         continue;
       }
@@ -103,73 +135,47 @@ public class FfbMobileDepotwertRetriever {
       tempDepotwert += di.getBestand();
     }
 
-    this.depotwert = tempDepotwert;
-  }
-
-  /**
-   * Hier werden die eigentlichen Daten (Depotliste inkl. Bestände) geholt.
-   *
-   * @throws FailingHttpStatusCodeException
-   *           Statuscode unschön.
-   * @throws IOException
-   *           Fehler beim Lesen des Response.
-   */
-  public void fetchAccountData() throws FailingHttpStatusCodeException, IOException {
-    Preconditions.checkState(login.isPresent(), "Not used login method before.");
-    Preconditions.checkState(login.get().isLoggedIn(), "User could not log in. Check credentials.");
-
-    URL myFfbUrl = new URL(DOMAIN + PATH_DEPOT);
-    Page myFfbPage = webClient.getPage(myFfbUrl);
-
-    /* Read json response */
-    JsonReader reader = new JsonReader(new InputStreamReader(myFfbPage.getWebResponse().getContentAsStream()));
-    Gson gson = new Gson();
-    MyFfbResponse bestandsResponse = gson.fromJson(reader, MyFfbResponse.class);
-    myFfbInfo = Optional.of(bestandsResponse);
-  }
-
-  public double depotwert() {
-    return this.depotwert;
+    return tempDepotwert;
   }
 
   /**
    * Login über Cookies.
-   *
-   * @throws FailingHttpStatusCodeException
-   *           Statuscode unschön.
-   * @throws IOException
-   *           Fehler beim Lesen des HTTP-Response.
+   * 
+   * @throws FfbClientError
+   *           Error logging in. Wrong login data?
    */
-  public void logon() throws FailingHttpStatusCodeException, IOException {
-    URL login = new URL(DOMAIN + PATH_LOGIN);
-    WebRequest requestSettings = new WebRequest(login, HttpMethod.POST);
-    requestSettings.setAdditionalHeader("Accept", "application/json; q=0.01");
-    requestSettings.setAdditionalHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-    requestSettings.setAdditionalHeader("Accept-Language", "en-GB,en-US,en;q=0.8");
-    requestSettings.setAdditionalHeader("Accept-Encoding", "gzip,deflate");
-    requestSettings.setAdditionalHeader("Accept-Charset", "utf-8;q=0.7,*;q=0.3");
-    requestSettings.setAdditionalHeader("X-Requested-With", "hibiscus.ffb.scraper");
-    requestSettings.setAdditionalHeader("User-Agent", "hibiscus.ffb.scraper");
-    requestSettings.setAdditionalHeader("Cache-Control", "no-cache");
-    requestSettings.setAdditionalHeader("Pragma", "no-cache");
-    requestSettings.setAdditionalHeader("Origin", "file://");
+  public void logon() throws FfbClientError {
+    try {
+      WebRequest requestSettings = new WebRequest(urlLogin, HttpMethod.POST);
+      requestSettings.setAdditionalHeader("Accept", "application/json; q=0.01");
+      requestSettings.setAdditionalHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+      requestSettings.setAdditionalHeader("Accept-Language", "en-GB,en-US,en;q=0.8");
+      requestSettings.setAdditionalHeader("Accept-Encoding", "gzip,deflate");
+      requestSettings.setAdditionalHeader("Accept-Charset", "utf-8;q=0.7,*;q=0.3");
+      requestSettings.setAdditionalHeader("X-Requested-With", "hibiscus.ffb.scraper");
+      requestSettings.setAdditionalHeader("User-Agent", "hibiscus.ffb.scraper");
+      requestSettings.setAdditionalHeader("Cache-Control", "no-cache");
+      requestSettings.setAdditionalHeader("Pragma", "no-cache");
+      requestSettings.setAdditionalHeader("Origin", "file://");
 
-    requestSettings.setRequestBody("login=" + user + "&password=" + new String(pin));
-    Page redirectPage = webClient.getPage(requestSettings);
-    redirectPage.getWebResponse();
-    JsonReader reader = new JsonReader(new InputStreamReader(redirectPage.getWebResponse().getContentAsStream()));
-    Gson gson = new Gson();
-    LoginResponse response = gson.fromJson(reader, LoginResponse.class);
-    this.login = Optional.<LoginResponse>of(response);
-
+      requestSettings.setRequestBody("login=" + user.getLoginKennung() + "&password=" + pin.getPinAsString());
+      Page redirectPage = webClient.getPage(requestSettings);
+      redirectPage.getWebResponse();
+      JsonReader reader = new JsonReader(new InputStreamReader(redirectPage.getWebResponse().getContentAsStream()));
+      Gson gson = new Gson();
+      LoginResponse response = gson.fromJson(reader, LoginResponse.class);
+      this.login = Optional.<LoginResponse>of(response);
+    } catch (FailingHttpStatusCodeException fsce) {
+      LOG.error("Error with login (http statuscode). Please submit a bug.", fsce);
+      throw new FfbClientError("Error with login (http statuscode). Please submit a bug.", fsce);
+    } catch (IOException ioe) {
+      LOG.error("Error logging in while reading the response stream. Please submit a bug.", ioe);
+      throw new FfbClientError("Error logging in while reading the response stream. Please submit a bug.", ioe);
+    }
   }
 
   public Optional<LoginResponse> loginInformation() {
     return login;
-  }
-
-  public Optional<MyFfbResponse> depotInformation() {
-    return myFfbInfo;
   }
 
 }
