@@ -35,7 +35,7 @@ public class MyFfbResponse {
   }
 
   public double getGesamtwert() {
-    return Double.valueOf(gesamtwert.replace(".", "").replace(",", ".")).doubleValue();
+    return Double.parseDouble(gesamtwert.replace(".", "").replace(",", "."));
   }
 
   public void setGesamtwert(String gesamtwert) {

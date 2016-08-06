@@ -24,7 +24,7 @@ public class FfbDepotInfo {
   }
 
   public double getBestand() {
-    return Double.valueOf(bestand.replace(".", "").replace(",", ".")).doubleValue();
+    return Double.parseDouble(bestand.replace(".", "").replace(",", "."));
   }
 
   public void setBestand(String bestand) {
