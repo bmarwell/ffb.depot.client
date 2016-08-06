@@ -1,6 +1,7 @@
 package de.bmarwell.ffb.depot.client;
 
 import de.bmarwell.ffb.depot.client.err.FfbClientError;
+import de.bmarwell.ffb.depot.client.json.FfbPerformanceResponse;
 import de.bmarwell.ffb.depot.client.json.LoginResponse;
 import de.bmarwell.ffb.depot.client.json.MyFfbResponse;
 import de.bmarwell.ffb.depot.client.value.FfbLoginKennung;
@@ -31,6 +32,7 @@ public class FfbMobileClient {
   private static final String DOMAIN = "https://www.fidelity.de/";
   private static final String PATH_LOGIN = "de/mobile/MyFFB/account/userLogin.page";
   private static final String PATH_DEPOT = "de/mobile/MyFFB/account/MyFFB.page";
+  private static final String PATH_PERFORMANCE = "/de/mobile/account/performance.page";
 
   private final WebClient webClient;
 
@@ -41,6 +43,7 @@ public class FfbMobileClient {
   private Optional<LoginResponse> login = Optional.<LoginResponse>absent();
   private final URL urlMyffb;
   private final URL urlLogin;
+  private final URL urlPerformance;
 
   /**
    * Konstruktor für Tests und interne Verwendung. Bitte stattdessen {@link #FfbMobileClient(FfbLoginKennung, FfbPin)}
@@ -57,6 +60,7 @@ public class FfbMobileClient {
 
     urlMyffb = new URL(DOMAIN + PATH_DEPOT);
     urlLogin = new URL(DOMAIN + PATH_LOGIN);
+    urlPerformance = new URL(DOMAIN + PATH_PERFORMANCE);
   }
 
   /**
@@ -82,7 +86,7 @@ public class FfbMobileClient {
    * @throws FfbClientError
    *           Error while getting account data.
    */
-  public Optional<MyFfbResponse> fetchAccountData() throws FfbClientError {
+  public MyFfbResponse fetchAccountData() throws FfbClientError {
     Preconditions.checkState(login.isPresent(), "Not used login method before.");
     Preconditions.checkState(login.get().isLoggedIn(), "User could not log in. Check credentials.");
 
@@ -103,7 +107,7 @@ public class FfbMobileClient {
       throw new FfbClientError("Error with reading account information. Could not read stream.", ioe);
     }
 
-    return Optional.fromNullable(bestandsResponse);
+    return bestandsResponse;
   }
 
   /**
@@ -140,6 +144,31 @@ public class FfbMobileClient {
       LOG.error("Error logging in while reading the response stream. Please submit a bug.", ioe);
       throw new FfbClientError("Error logging in while reading the response stream. Please submit a bug.", ioe);
     }
+  }
+
+  public FfbPerformanceResponse getPerformance() throws FfbClientError {
+    Preconditions.checkState(login.isPresent(), "Not used login method before.");
+    Preconditions.checkState(login.get().isLoggedIn(), "User could not log in. Check credentials.");
+
+    FfbPerformanceResponse performanceResponse = null;
+
+    try {
+      Page performancePage = webClient.getPage(urlPerformance);
+
+      /* Read json response */
+      JsonReader reader = new JsonReader(new InputStreamReader(performancePage.getWebResponse().getContentAsStream()));
+      Gson gson = new Gson();
+
+      performanceResponse = gson.fromJson(reader, FfbPerformanceResponse.class);
+    } catch (FailingHttpStatusCodeException fsce) {
+      LOG.error("Error with login (http statuscode). Please submit a bug.", fsce);
+      throw new FfbClientError("Error with login (http statuscode). Please submit a bug.", fsce);
+    } catch (IOException ioe) {
+      LOG.error("Error logging in while reading the response stream. Please submit a bug.", ioe);
+      throw new FfbClientError("Error logging in while reading the response stream. Please submit a bug.", ioe);
+    }
+
+    return performanceResponse;
   }
 
   public Optional<LoginResponse> loginInformation() {

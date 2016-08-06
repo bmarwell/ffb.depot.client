@@ -9,8 +9,6 @@ import de.bmarwell.ffb.depot.client.value.FfbDepotNummer;
 import de.bmarwell.ffb.depot.client.value.FfbLoginKennung;
 import de.bmarwell.ffb.depot.client.value.FfbPin;
 
-import com.google.common.base.Optional;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,9 +19,9 @@ import java.net.MalformedURLException;
 
 public class TestMobileGetDepotwert {
 
-  private static final FfbLoginKennung LOGIN = FfbLoginKennung.of("22222301");
-  private static final FfbPin PIN = FfbPin.of("91901");
-  private static final FfbDepotNummer DEPOTNUMMER = FfbDepotNummer.of("222223");
+  public static final FfbLoginKennung LOGIN = FfbLoginKennung.of("22222301");
+  public static final FfbPin PIN = FfbPin.of("91901");
+  public static final FfbDepotNummer DEPOTNUMMER = FfbDepotNummer.of("222223");
   private static final Logger LOG = LoggerFactory.getLogger(TestMobileGetDepotwert.class);
 
   @Before
@@ -67,17 +65,17 @@ public class TestMobileGetDepotwert {
     Assert.assertEquals("Customer", loginResponse.getUsertype());
     Assert.assertEquals("E1000590054", loginResponse.getLastname());
 
-    Optional<MyFfbResponse> accountData = mobileAgent.fetchAccountData();
-    Assert.assertTrue(accountData.isPresent());
-    LOG.debug("Account data: [{}].", accountData.get());
-    double depotBestand = FfbDepotUtils.getGesamtBestand(accountData.get(), DEPOTNUMMER);
+    MyFfbResponse accountData = mobileAgent.fetchAccountData();
+    Assert.assertTrue(accountData != null);
+    LOG.debug("Account data: [{}].", accountData);
+    double depotBestand = FfbDepotUtils.getGesamtBestand(accountData, DEPOTNUMMER);
     LOG.debug("Depotbestand: [{}].", depotBestand);
 
     Assert.assertTrue(depotBestand > 0.0);
-    Assert.assertTrue(accountData.get().isLogin());
-    Assert.assertFalse(accountData.get().isModelportfolio());
-    Assert.assertTrue(accountData.get().getGesamtwert() != 0.00d);
-    LOG.debug("MyFfb: [{}].", accountData.get());
+    Assert.assertTrue(accountData.isLogin());
+    Assert.assertFalse(accountData.isModelportfolio());
+    Assert.assertTrue(accountData.getGesamtwert() != 0.00d);
+    LOG.debug("MyFfb: [{}].", accountData);
 
     // Assert.assertTrue(mobileAgent.getDepotwert().contains(","));
     // Assert.assertTrue(mobileAgent.getDepotwert().matches("[0-9]+,[0-9]{2}"));
