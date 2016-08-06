@@ -15,7 +15,7 @@ public class FfbDepotUtils {
    * Ermittelt den Gesamtbestand für ein bestimmtes Depot.
    *
    * @param myFfbResponse
-   *          Das Ergebnis der {@link FfbMobileDepotwertRetriever#fetchAccountData()}-Methode.
+   *          Das Ergebnis der {@link FfbMobileClient#fetchAccountData()}-Methode.
    *
    * @param depotnummer
    *          Die Depotnummer, für die der Depotbestand abgefragt werden soll. Ein Login kann ggf. mehrere Depots sehen.

@@ -24,9 +24,9 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class FfbMobileDepotwertRetriever {
+public class FfbMobileClient {
 
-  private static final Logger LOG = LoggerFactory.getLogger(FfbMobileDepotwertRetriever.class);
+  private static final Logger LOG = LoggerFactory.getLogger(FfbMobileClient.class);
 
   private static final String DOMAIN = "https://www.fidelity.de/";
   private static final String PATH_LOGIN = "de/mobile/MyFFB/account/userLogin.page";
@@ -43,15 +43,15 @@ public class FfbMobileDepotwertRetriever {
   private final URL urlLogin;
 
   /**
-   * Konstruktor für Tests und interne Verwendung. Bitte stattdessen
-   * {@link #FfbMobileDepotwertRetriever(FfbLoginKennung, FfbPin)} verwenden.
+   * Konstruktor für Tests und interne Verwendung. Bitte stattdessen {@link #FfbMobileClient(FfbLoginKennung, FfbPin)}
+   * verwenden.
    *
    * <p>Wird der Client wie hier ohne User und Pin erstellt, kann gar nichts klappen.</p>
    *
    * @throws MalformedURLException
    *           Interner Fehler beim Erstellen der URLs.
    */
-  public FfbMobileDepotwertRetriever() throws MalformedURLException {
+  public FfbMobileClient() throws MalformedURLException {
     this.webClient = new WebClient();
     webClient.getCookieManager().setCookiesEnabled(true);
 
@@ -69,7 +69,7 @@ public class FfbMobileDepotwertRetriever {
    * @throws MalformedURLException
    *           Fehler beim erstellen der URLs.
    */
-  public FfbMobileDepotwertRetriever(FfbLoginKennung user, FfbPin pin) throws MalformedURLException {
+  public FfbMobileClient(FfbLoginKennung user, FfbPin pin) throws MalformedURLException {
     this();
     this.user = user;
     this.pin = pin;

@@ -1,7 +1,7 @@
 package de.bmarwell.ffb.depot.tests;
 
 import de.bmarwell.ffb.depot.client.FfbDepotUtils;
-import de.bmarwell.ffb.depot.client.FfbMobileDepotwertRetriever;
+import de.bmarwell.ffb.depot.client.FfbMobileClient;
 import de.bmarwell.ffb.depot.client.err.FfbClientError;
 import de.bmarwell.ffb.depot.client.json.LoginResponse;
 import de.bmarwell.ffb.depot.client.json.MyFfbResponse;
@@ -32,7 +32,7 @@ public class TestMobileGetDepotwert {
 
   @Test
   public void testGetDepotwertWithoutCredentials() throws FfbClientError, MalformedURLException {
-    FfbMobileDepotwertRetriever mobileAgent = new FfbMobileDepotwertRetriever();
+    FfbMobileClient mobileAgent = new FfbMobileClient();
     mobileAgent.logon();
 
     Assert.assertTrue(mobileAgent.loginInformation().isPresent());
@@ -56,7 +56,7 @@ public class TestMobileGetDepotwert {
    */
   @Test
   public void testGetDepotwertWithCredentials() throws MalformedURLException, FfbClientError {
-    FfbMobileDepotwertRetriever mobileAgent = new FfbMobileDepotwertRetriever(LOGIN, PIN);
+    FfbMobileClient mobileAgent = new FfbMobileClient(LOGIN, PIN);
     mobileAgent.logon();
     Assert.assertTrue(mobileAgent.loginInformation().isPresent());
 
