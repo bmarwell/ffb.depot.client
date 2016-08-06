@@ -1,5 +1,6 @@
 package de.bmarwell.ffb.depot.tests;
 
+import de.bmarwell.ffb.depot.client.FfbDepotUtils;
 import de.bmarwell.ffb.depot.client.FfbMobileDepotwertRetriever;
 import de.bmarwell.ffb.depot.client.err.FfbClientError;
 import de.bmarwell.ffb.depot.client.json.LoginResponse;
@@ -69,7 +70,7 @@ public class TestMobileGetDepotwert {
     Optional<MyFfbResponse> accountData = mobileAgent.fetchAccountData();
     Assert.assertTrue(accountData.isPresent());
     LOG.debug("Account data: [{}].", accountData.get());
-    double depotBestand = mobileAgent.getGesamtBestand(accountData.get(), DEPOTNUMMER);
+    double depotBestand = FfbDepotUtils.getGesamtBestand(accountData.get(), DEPOTNUMMER);
     LOG.debug("Depotbestand: [{}].", depotBestand);
 
     Assert.assertTrue(depotBestand > 0.0);
