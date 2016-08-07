@@ -14,6 +14,9 @@ public class FfbDepotUtils {
   /**
    * Ermittelt den Gesamtbestand für ein bestimmtes Depot.
    *
+   * <p>Hintergrund dieser Funktion ist, dass ein Depotlogin durchaus auf mehrere FFB-Depots Zugriff hat. Diese Funktion
+   * iteriert über alle Depots, die in diesem Login verfügbar sind, und ermittelt dessen Gesamtdepotwert.</p>
+   *
    * @param myFfbResponse
    *          Das Ergebnis der {@link FfbMobileClient#fetchAccountData()}-Methode.
    *

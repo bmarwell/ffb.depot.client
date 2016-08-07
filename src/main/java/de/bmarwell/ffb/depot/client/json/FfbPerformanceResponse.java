@@ -5,6 +5,9 @@ import com.google.common.base.MoreObjects;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.format.DateTimeFormatter;
 
+/**
+ * Das JSON-Response-Objekt von fidelity.de (FFB), welches Performanceinformationen zu allen Depots dieses Logins enthält.
+ */
 public class FfbPerformanceResponse {
 
   private boolean login;

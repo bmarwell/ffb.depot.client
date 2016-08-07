@@ -2,6 +2,12 @@ package de.bmarwell.ffb.depot.client.json;
 
 import com.google.common.base.MoreObjects;
 
+/**
+ * Der FFB-Response zur internen Seite &quot;MyFFB.page&quot;.
+ *
+ * <p>Leider ist die Benennung seitens der FFB nicht sonderlich glücklich, denn dieses Objekt enthält wirklich alle wichtigen
+ * Daten des FFB-Kontos.</p>
+ */
 public class MyFfbResponse {
   private boolean login;
   private boolean modelportfolio;

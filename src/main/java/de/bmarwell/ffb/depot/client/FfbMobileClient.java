@@ -80,7 +80,10 @@ public class FfbMobileClient {
   }
 
   /**
-   * Hier werden die eigentlichen Daten (Depotliste inkl. Bestände) geholt.
+   * Diese Methode ermittelt die aktuellen Depotbestände und weitere Informationen aus der Gesamtheit aller Depots.
+   *
+   * <p><b>Hinweis:</b> Zuvor muss ein {@link #logon()} aufgerufen worden sein, sonst gibt es eine
+   * {@link IllegalStateException}.
    *
    * @return die Depotinfo.
    * @throws FfbClientError
@@ -146,6 +149,13 @@ public class FfbMobileClient {
     }
   }
 
+  /**
+   * Gibt die Performance für alle Depots dieses Logins aus.
+   *
+   * @return ein {@link FfbPerformanceResponse} mit einigen Performance-Infos.
+   * @throws FfbClientError
+   *           Falls es zuvor keinen (derzeit noch) gültigen Login gab.
+   */
   public FfbPerformanceResponse getPerformance() throws FfbClientError {
     Preconditions.checkState(login.isPresent(), "Not used login method before.");
     Preconditions.checkState(login.get().isLoggedIn(), "User could not log in. Check credentials.");
@@ -171,6 +181,12 @@ public class FfbMobileClient {
     return performanceResponse;
   }
 
+  /**
+   * Die bei der {@link #logon}-Methode erhaltenen Informationen. Entspricht {@link Optional#absent()}, falls das Login nicht
+   * erfolgreich war, oder es nicht durchgeführt wurde.
+   *
+   * @return Ein LoginResponse im Optional, falls zuvor {@link #logon()} erfolgreich durchgeführt wurde.
+   */
   public Optional<LoginResponse> loginInformation() {
     return login;
   }

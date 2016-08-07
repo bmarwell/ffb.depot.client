@@ -1,5 +1,8 @@
 package de.bmarwell.ffb.depot.client.value;
 
+/**
+ * Eine von der Depotnummer abweichende Login-Kennung. Immutable.
+ */
 public class FfbLoginKennung {
   private String login;
 
