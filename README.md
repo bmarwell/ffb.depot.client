@@ -3,6 +3,28 @@ Ein Java-Client für FFB-Depots. Features: Stammdaten und Depotbestände abholen
 
 (English) This used to be a FFB scraping library written in Java. Since there is now a mobile HTTP-JSON-Interface, the project switched to this kind of implementation. It is used in the Hibiscus FFB Depot-Project (see link above).
 
+## Nutzung
+Zunächst sollte eine PIN und eine Loginkennung erstellt werden:
+```java
+/* testlogin der FFB */
+FfbLoginKennung LOGIN = FfbLoginKennung.of("22222301");
+FfbPin PIN = FfbPin.of("91901");
+```
+Mit diesen Logindaten lässt sich ein Client erstellen. Dann führt man ein Login aus und holt sich die gewünschten Daten.
+```java
+FfbMobileClient mobileAgent = new FfbMobileClient(LOGIN, PIN);
+mobileAgent.logon();
+// Value-Objekte.
+MyFfbResponse accountData = mobileAgent.fetchAccountData();
+FfbPerformanceResponse performance = mobileAgent.getPerformance();
+```
+Da eine Loginkennung mehrere Depots enthalten kann (teilweise eine Depotnummer mehrfach), lassen sich die Gesamtbestände einfach mit der Utils-Klasse ermitteln:
+```java
+FfbDepotNummer depotNummer = FfbDepotNummer.of("222223"); // Login ohne -01.
+double gesamtBestand = FfbDepotUtils.getGesamtBestand(accountData, depotNummer);
+```
+Hinergrund zu den Depotnummern: Es kann mehrere Depots mit der selben Depotnummer geben: Einmal ein Standard-Depot, und einmal ein VL-Depot. Eine Loginkennung kann aber auch ggf. auf mehrere Depots zugreifen.
+
 
 ## Protokoll
 Das Protokoll basiert auf dem Mobile-Protokoll der FFB-App. Es verwendet Cookies für Session-Informationen und gibt bei bestimmten GET-Requests einfach JSON-Responses aus.
