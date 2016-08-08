@@ -27,6 +27,10 @@ import java.net.URL;
 
 public class FfbMobileClient {
 
+  private static final String ERROR_LOGGING_IN_WHILE_READING_THE_RESPONSE_STREAM = "Error logging in while reading the response stream. Please submit a bug.";
+
+  private static final String ERROR_WITH_LOGIN_HTTP_STATUSCODE = "Error with login (http statuscode). Please submit a bug.";
+
   private static final Logger LOG = LoggerFactory.getLogger(FfbMobileClient.class);
 
   private static final String DOMAIN = "https://www.fidelity.de/";
@@ -141,11 +145,11 @@ public class FfbMobileClient {
       LoginResponse response = gson.fromJson(reader, LoginResponse.class);
       this.login = Optional.<LoginResponse>of(response);
     } catch (FailingHttpStatusCodeException fsce) {
-      LOG.error("Error with login (http statuscode). Please submit a bug.", fsce);
-      throw new FfbClientError("Error with login (http statuscode). Please submit a bug.", fsce);
+      LOG.error(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
+      throw new FfbClientError(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
     } catch (IOException ioe) {
-      LOG.error("Error logging in while reading the response stream. Please submit a bug.", ioe);
-      throw new FfbClientError("Error logging in while reading the response stream. Please submit a bug.", ioe);
+      LOG.error(ERROR_LOGGING_IN_WHILE_READING_THE_RESPONSE_STREAM, ioe);
+      throw new FfbClientError(ERROR_LOGGING_IN_WHILE_READING_THE_RESPONSE_STREAM, ioe);
     }
   }
 
@@ -171,11 +175,11 @@ public class FfbMobileClient {
 
       performanceResponse = gson.fromJson(reader, FfbPerformanceResponse.class);
     } catch (FailingHttpStatusCodeException fsce) {
-      LOG.error("Error with login (http statuscode). Please submit a bug.", fsce);
-      throw new FfbClientError("Error with login (http statuscode). Please submit a bug.", fsce);
+      LOG.error(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
+      throw new FfbClientError(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
     } catch (IOException ioe) {
-      LOG.error("Error logging in while reading the response stream. Please submit a bug.", ioe);
-      throw new FfbClientError("Error logging in while reading the response stream. Please submit a bug.", ioe);
+      LOG.error(ERROR_LOGGING_IN_WHILE_READING_THE_RESPONSE_STREAM, ioe);
+      throw new FfbClientError(ERROR_LOGGING_IN_WHILE_READING_THE_RESPONSE_STREAM, ioe);
     }
 
     return performanceResponse;
