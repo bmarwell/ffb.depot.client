@@ -72,8 +72,8 @@ public class FfbFondsbestand {
     this.bestandWertInEuro = bestandWertInEuro;
   }
 
-  public String getRuecknahmepreis() {
-    return ruecknahmepreis;
+  public double getRuecknahmepreis() {
+    return Double.parseDouble(ruecknahmepreis.replace(".", "").replace(",", "."));
   }
 
   public void setRuecknahmepreis(String ruecknahmepreis) {
