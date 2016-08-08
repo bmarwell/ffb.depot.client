@@ -3,6 +3,8 @@ package de.bmarwell.ffb.depot.tests;
 import de.bmarwell.ffb.depot.client.FfbDepotUtils;
 import de.bmarwell.ffb.depot.client.FfbMobileClient;
 import de.bmarwell.ffb.depot.client.err.FfbClientError;
+import de.bmarwell.ffb.depot.client.json.FfbDepotInfo;
+import de.bmarwell.ffb.depot.client.json.FfbFondsbestand;
 import de.bmarwell.ffb.depot.client.json.LoginResponse;
 import de.bmarwell.ffb.depot.client.json.MyFfbResponse;
 import de.bmarwell.ffb.depot.client.value.FfbDepotNummer;
@@ -77,8 +79,26 @@ public class TestMobileGetDepotwert {
     Assert.assertTrue(accountData.getGesamtwert() != 0.00d);
     LOG.debug("MyFfb: [{}].", accountData);
 
-    // Assert.assertTrue(mobileAgent.getDepotwert().contains(","));
-    // Assert.assertTrue(mobileAgent.getDepotwert().matches("[0-9]+,[0-9]{2}"));
+    // Teste Depotbestände
+    Assert.assertFalse(accountData.getDepots().isEmpty());
+    boolean hasDepotBestand = false;
+    for (FfbDepotInfo depot : accountData.getDepots()) {
+      if (depot.getFondsbestaende().isEmpty()) {
+        continue;
+      }
+
+      hasDepotBestand = true;
+      for (FfbFondsbestand bestand : depot.getFondsbestaende()) {
+        Assert.assertNotNull(bestand);
+        Assert.assertNotEquals(0.00, bestand.getBestandStueckzahl(), 0.1);
+        Assert.assertNotEquals(0.00, bestand.getBestandWertInEuro(), 0.1);
+        Assert.assertNotEquals(0.00, bestand.getBestandWertInFondswaehrung(), 0.1);
+        Assert.assertNotNull(bestand.getFondsname());
+        Assert.assertNotNull(bestand.getIsin());
+        Assert.assertNotNull(bestand.getWkn());
+      }
+    }
+
   }
 
 }

@@ -16,6 +16,6 @@ public class FfbLoginKennung {
   }
 
   public String getLoginKennung() {
-    return new String(login);
+    return login;
   }
 }
