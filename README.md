@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/bmhm/ffb.depot.client.svg?branch=master)](https://travis-ci.org/bmhm/ffb.depot.client)
+
 # ffb.depot.client
 Ein Java-Client für FFB-Depots. Features: Stammdaten und Depotbestände abholen. Es war ursprünglich eine Scraping-Library für die FFB, die aus dem Projekt [Hibiscus FFB-Depot](https://github.com/bmhm/hibiscus.ffb.depot) entstanden ist. Inzwischen verwendet sie das mobile JSON-Interface von Fidelity.
 
