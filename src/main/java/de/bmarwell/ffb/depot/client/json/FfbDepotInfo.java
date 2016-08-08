@@ -4,10 +4,15 @@ import de.bmarwell.ffb.depot.client.value.FfbDepotNummer;
 
 import com.google.common.base.MoreObjects;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class FfbDepotInfo {
   private String depotname;
   private String depotnummer;
   private String bestand;
+
+  private List<FfbFondsbestand> fondsbestaende = new ArrayList<>();
 
   public String getDepotname() {
     return depotname;
@@ -37,12 +42,21 @@ public class FfbDepotInfo {
     this.bestand = bestand;
   }
 
+  public List<FfbFondsbestand> getFondsbestaende() {
+    return fondsbestaende;
+  }
+
+  public void setFondsbestaende(List<FfbFondsbestand> fondsbestaende) {
+    this.fondsbestaende = fondsbestaende;
+  }
+
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
         .add("depotname", depotname)
         .add("depotnummer", depotnummer)
         .add("bestand", getBestand())
+        .add("fondsbestaende", fondsbestaende)
         .toString();
   }
 }

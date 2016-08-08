@@ -22,7 +22,7 @@ public class FfbPerformanceResponse {
    * <p>I think it is kind of stupid of the FFB not to use ISO date and then convert it. This date holds no locale
    * information or whatsoever.<br><br> See also: <a href="https://xkcd.com/1179/">XKCD ISO 8601</a></p>
    */
-  private static final DateTimeFormatter GERMAN_DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+  public static final DateTimeFormatter GERMAN_DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
   public boolean isLogin() {
     return login;
