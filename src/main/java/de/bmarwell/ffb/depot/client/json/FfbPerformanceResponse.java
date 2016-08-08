@@ -14,7 +14,7 @@ public class FfbPerformanceResponse {
   private String performanceGesamt;
   private String performanceDurchschnitt;
   private String ersterZufluss;
-  private String errormessage = new String("");
+  private String errormessage = "";
 
   /**
    * German date: <code>dd.MM.YYYY</code>.
