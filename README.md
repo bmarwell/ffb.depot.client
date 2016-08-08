@@ -1,5 +1,4 @@
-[![Build Status](https://travis-ci.org/bmhm/ffb.depot.client.svg?branch=master)](https://travis-ci.org/bmhm/ffb.depot.client) [![codecov](https://codecov.io/gh/bmhm/ffb.depot.client/branch/master/graph/badge.svg)](https://codecov.io/gh/bmhm/ffb.depot.client)
-
+[![Build Status](https://travis-ci.org/bmhm/ffb.depot.client.svg?branch=master)](https://travis-ci.org/bmhm/ffb.depot.client) [![codecov](https://codecov.io/gh/bmhm/ffb.depot.client/branch/master/graph/badge.svg)](https://codecov.io/gh/bmhm/ffb.depot.client) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/4f0a36fd479b44a590f0a8bc9e796c68)](https://www.codacy.com/app/bmarwell/ffb-depot-client?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bmhm/ffb.depot.client&amp;utm_campaign=Badge_Grade)
 
 # ffb.depot.client
 Ein Java-Client für FFB-Depots. Features: Stammdaten und Depotbestände abholen. Es war ursprünglich eine Scraping-Library für die FFB, die aus dem Projekt [Hibiscus FFB-Depot](https://github.com/bmhm/hibiscus.ffb.depot) entstanden ist. Inzwischen verwendet sie das mobile JSON-Interface von Fidelity.
