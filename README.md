@@ -5,6 +5,14 @@ Ein Java-Client für FFB-Depots. Features: Stammdaten und Depotbestände abholen
 
 (English) This used to be a FFB scraping library written in Java. Since there is now a mobile HTTP-JSON-Interface, the project switched to this kind of implementation. It is used in the Hibiscus FFB Depot-Project (see link above).
 
+## Features
+
+* Holen von Depotinformationen (Depotbesitzer, Depotnamen, -bestände, etc.).
+* Auslesen der Depotperformance seit Einstand (Gesamtperformance aller Depots).
+* Auslesen der Bestände jedes einzelnen Depots.
+* TODO: Posteingang.
+* TODO: Historische und offene Umsätze.
+
 ## Nutzung
 Zunächst sollte eine PIN und eine Loginkennung erstellt werden:
 ```java
@@ -113,7 +121,7 @@ Origin: file://</code></pre></td>
       "depotname": "Standard-Depot",
       "depotnummer": "1234567890",
       "bestand": "1.234,56",
-      "fondsbestaende"  : [    
+      "fondsbestaende"  : [
         {
           "wkn"           : "847512",
           "isin"            : "DE0008475120",
