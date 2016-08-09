@@ -112,7 +112,22 @@ Origin: file://</code></pre></td>
     {
       "depotname": "Standard-Depot",
       "depotnummer": "1234567890",
-      "bestand": "1.234,56"
+      "bestand": "1.234,56",
+      "fondsbestaende"  : [    
+        {
+          "wkn"           : "847512",
+          "isin"            : "DE0008475120",
+          "fondsname"         : "Allianz Informationstechnologie ",
+          "fondswaehrung"       : "EUR",
+          "bestandStueckzahl"     : "132,633",
+          "bestandWertInFondswaehrung"  : "22.758,50",
+          "bestandWertInEuro"     : "22.758,50",
+          "ruecknahmepreis"     : "171,59",
+          "preisDatum"        : "05.08.2016",
+          "benchmarkName"       : "MSCI ACWI/INFORMATION TECH STRD USD"
+        },
+        {..}
+      ]
     }
   ]
 }</code></pre></td>
