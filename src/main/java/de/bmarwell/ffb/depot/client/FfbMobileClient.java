@@ -2,6 +2,7 @@ package de.bmarwell.ffb.depot.client;
 
 import de.bmarwell.ffb.depot.client.err.FfbClientError;
 import de.bmarwell.ffb.depot.client.json.FfbPerformanceResponse;
+import de.bmarwell.ffb.depot.client.json.FfbUmsatzResponse;
 import de.bmarwell.ffb.depot.client.json.LoginResponse;
 import de.bmarwell.ffb.depot.client.json.MyFfbResponse;
 import de.bmarwell.ffb.depot.client.value.FfbLoginKennung;
@@ -37,6 +38,7 @@ public class FfbMobileClient {
   private static final String PATH_LOGIN = "de/mobile/MyFFB/account/userLogin.page";
   private static final String PATH_DEPOT = "de/mobile/MyFFB/account/MyFFB.page";
   private static final String PATH_PERFORMANCE = "/de/mobile/account/performance.page";
+  private static final String PATH_UMSAETZE = "/de/mobile/account/dispositionen.page";
 
   private final WebClient webClient;
 
@@ -48,6 +50,7 @@ public class FfbMobileClient {
   private final URL urlMyffb;
   private final URL urlLogin;
   private final URL urlPerformance;
+  private final URL urlUmsaetze;
 
   /**
    * Konstruktor für Tests und interne Verwendung. Bitte stattdessen {@link #FfbMobileClient(FfbLoginKennung, FfbPin)}
@@ -65,6 +68,7 @@ public class FfbMobileClient {
     urlMyffb = new URL(DOMAIN + PATH_DEPOT);
     urlLogin = new URL(DOMAIN + PATH_LOGIN);
     urlPerformance = new URL(DOMAIN + PATH_PERFORMANCE);
+    urlUmsaetze = new URL(DOMAIN + PATH_UMSAETZE);
   }
 
   /**
@@ -183,6 +187,31 @@ public class FfbMobileClient {
     }
 
     return performanceResponse;
+  }
+
+  public FfbUmsatzResponse getUmsaetze() throws FfbClientError {
+    Preconditions.checkState(login.isPresent(), "Not used login method before.");
+    Preconditions.checkState(login.get().isLoggedIn(), "User could not log in. Check credentials.");
+
+    FfbUmsatzResponse umsaetze = null;
+
+    try {
+      Page umsatzPage = webClient.getPage(urlUmsaetze);
+
+      /* Read json response */
+      JsonReader reader = new JsonReader(new InputStreamReader(umsatzPage.getWebResponse().getContentAsStream()));
+      Gson gson = new Gson();
+
+      umsaetze = gson.fromJson(reader, FfbUmsatzResponse.class);
+    } catch (FailingHttpStatusCodeException fsce) {
+      LOG.error(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
+      throw new FfbClientError(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
+    } catch (IOException ioe) {
+      LOG.error(ERROR_LOGGING_IN_WHILE_READING_THE_RESPONSE_STREAM, ioe);
+      throw new FfbClientError(ERROR_LOGGING_IN_WHILE_READING_THE_RESPONSE_STREAM, ioe);
+    }
+
+    return umsaetze;
   }
 
   /**
