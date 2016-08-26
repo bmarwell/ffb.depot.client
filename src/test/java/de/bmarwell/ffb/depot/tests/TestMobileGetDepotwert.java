@@ -70,6 +70,11 @@ public class TestMobileGetDepotwert {
     MyFfbResponse accountData = mobileAgent.fetchAccountData();
     Assert.assertTrue(accountData != null);
     LOG.debug("Account data: [{}].", accountData);
+
+    for (FfbDepotInfo depot : accountData.getDepots()) {
+      LOG.debug("Depotinfo: [{}].", depot);
+    }
+
     double depotBestand = FfbDepotUtils.getGesamtBestand(accountData, DEPOTNUMMER);
     LOG.debug("Depotbestand: [{}].", depotBestand);
 
@@ -99,6 +104,7 @@ public class TestMobileGetDepotwert {
       }
     }
 
+    Assert.assertTrue(hasDepotBestand);
   }
 
 }

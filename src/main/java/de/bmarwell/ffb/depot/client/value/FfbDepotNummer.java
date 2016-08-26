@@ -2,6 +2,10 @@ package de.bmarwell.ffb.depot.client.value;
 
 import de.bmarwell.ffb.depot.client.FfbMobileClient;
 
+import com.google.common.base.MoreObjects;
+
+import java.util.Objects;
+
 /**
  * Dieses Objekt hält eine FFB-Depotnummer.
  *
@@ -38,5 +42,36 @@ public class FfbDepotNummer {
 
   public static FfbDepotNummer empty() {
     return of("");
+  }
+
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+        .add("depotnummer", getDepotNummer())
+        .toString();
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+
+    if (obj == null) {
+      return false;
+    }
+
+    if (!this.getClass().equals(obj.getClass())) {
+      return false;
+    }
+
+    FfbDepotNummer other = (FfbDepotNummer) obj;
+
+    return this.getDepotNummer().equals(other.getDepotNummer());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(getDepotNummer());
   }
 }

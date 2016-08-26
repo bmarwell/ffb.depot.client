@@ -16,6 +16,8 @@ import com.gargoylesoftware.htmlunit.WebRequest;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapterFactory;
 import com.google.gson.stream.JsonReader;
 
 import org.slf4j.Logger;
@@ -25,6 +27,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.ServiceLoader;
 
 public class FfbMobileClient {
 
@@ -52,6 +56,8 @@ public class FfbMobileClient {
   private final URL urlPerformance;
   private final URL urlUmsaetze;
 
+  private final GsonBuilder gsonBuilder;
+
   /**
    * Konstruktor für Tests und interne Verwendung. Bitte stattdessen {@link #FfbMobileClient(FfbLoginKennung, FfbPin)}
    * verwenden.
@@ -69,6 +75,11 @@ public class FfbMobileClient {
     urlLogin = new URL(DOMAIN + PATH_LOGIN);
     urlPerformance = new URL(DOMAIN + PATH_PERFORMANCE);
     urlUmsaetze = new URL(DOMAIN + PATH_UMSAETZE);
+
+    gsonBuilder = new GsonBuilder();
+    for (TypeAdapterFactory factory : ServiceLoader.load(TypeAdapterFactory.class)) {
+      gsonBuilder.registerTypeAdapterFactory(factory);
+    }
   }
 
   /**
@@ -107,8 +118,9 @@ public class FfbMobileClient {
       Page myFfbPage = webClient.getPage(urlMyffb);
 
       /* Read json response */
-      JsonReader reader = new JsonReader(new InputStreamReader(myFfbPage.getWebResponse().getContentAsStream()));
-      Gson gson = new Gson();
+      JsonReader reader = new JsonReader(
+          new InputStreamReader(myFfbPage.getWebResponse().getContentAsStream(), StandardCharsets.UTF_8));
+      Gson gson = gsonBuilder.create();
       bestandsResponse = gson.fromJson(reader, MyFfbResponse.class);
     } catch (FailingHttpStatusCodeException fsce) {
       LOG.error("Error with reading account information (http statuscode). Are you logged in?", fsce);
@@ -144,8 +156,9 @@ public class FfbMobileClient {
       requestSettings.setRequestBody("login=" + user.getLoginKennung() + "&password=" + pin.getPinAsString());
       Page redirectPage = webClient.getPage(requestSettings);
       redirectPage.getWebResponse();
-      JsonReader reader = new JsonReader(new InputStreamReader(redirectPage.getWebResponse().getContentAsStream()));
-      Gson gson = new Gson();
+      JsonReader reader = new JsonReader(
+          new InputStreamReader(redirectPage.getWebResponse().getContentAsStream(), StandardCharsets.UTF_8));
+      Gson gson = gsonBuilder.create();
       LoginResponse response = gson.fromJson(reader, LoginResponse.class);
       this.login = Optional.<LoginResponse>of(response);
     } catch (FailingHttpStatusCodeException fsce) {
@@ -174,8 +187,9 @@ public class FfbMobileClient {
       Page performancePage = webClient.getPage(urlPerformance);
 
       /* Read json response */
-      JsonReader reader = new JsonReader(new InputStreamReader(performancePage.getWebResponse().getContentAsStream()));
-      Gson gson = new Gson();
+      JsonReader reader = new JsonReader(
+          new InputStreamReader(performancePage.getWebResponse().getContentAsStream(), StandardCharsets.UTF_8));
+      Gson gson = gsonBuilder.create();
 
       performanceResponse = gson.fromJson(reader, FfbPerformanceResponse.class);
     } catch (FailingHttpStatusCodeException fsce) {
@@ -199,8 +213,9 @@ public class FfbMobileClient {
       Page umsatzPage = webClient.getPage(urlUmsaetze);
 
       /* Read json response */
-      JsonReader reader = new JsonReader(new InputStreamReader(umsatzPage.getWebResponse().getContentAsStream()));
-      Gson gson = new Gson();
+      JsonReader reader = new JsonReader(
+          new InputStreamReader(umsatzPage.getWebResponse().getContentAsStream(), StandardCharsets.UTF_8));
+      Gson gson = gsonBuilder.create();
 
       umsaetze = gson.fromJson(reader, FfbUmsatzResponse.class);
     } catch (FailingHttpStatusCodeException fsce) {

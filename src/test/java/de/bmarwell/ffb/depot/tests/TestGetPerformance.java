@@ -28,11 +28,11 @@ public class TestGetPerformance {
     LOG.debug("Performance: [{}].", performance.toString());
 
     /* Die Felder mit Umwandlungen testen */
-    Assert.assertEquals(true, performance.isLogin());
+    Assert.assertTrue(performance.isLogin());
     Assert.assertEquals(LocalDate.of(2013, 12, 2), performance.getErsterZufluss());
     Assert.assertTrue(performance.getPerformanceDurchschnitt() != 0.00);
     Assert.assertTrue(performance.getPerformanceGesamt() != 0.00);
-    Assert.assertTrue(performance.getErrormessage().equals(""));
+    Assert.assertEquals("", performance.getErrormessage());
   }
 
   @Test(expected = IllegalStateException.class)

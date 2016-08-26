@@ -2,8 +2,11 @@ package de.bmarwell.ffb.depot.tests;
 
 import de.bmarwell.ffb.depot.client.FfbDepotUtils;
 import de.bmarwell.ffb.depot.client.json.FfbDepotInfo;
+import de.bmarwell.ffb.depot.client.json.FfbFondsbestand;
 import de.bmarwell.ffb.depot.client.json.MyFfbResponse;
 import de.bmarwell.ffb.depot.client.value.FfbDepotNummer;
+
+import com.google.common.collect.ImmutableList;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -31,18 +34,12 @@ public class TestDepotUtils {
   @Test
   public void testTwoDepotsInResponse() {
     FfbDepotNummer depotNummer = FfbDepotNummer.of("1");
-    FfbDepotInfo depot1 = new FfbDepotInfo();
-    depot1.setDepotnummer(depotNummer);
-    depot1.setBestand("1000,00");
+    FfbDepotInfo depot1 = FfbDepotInfo.of("Testdepot", depotNummer, 1000.00, ImmutableList.<FfbFondsbestand>of());
 
-    FfbDepotInfo depot2 = new FfbDepotInfo();
-    depot2.setDepotnummer(depotNummer);
-    depot2.setBestand("1000,00");
+    FfbDepotInfo depot2 = FfbDepotInfo.of("Testdepot2", depotNummer, 1000.00, ImmutableList.<FfbFondsbestand>of());
 
     FfbDepotNummer depotNummer2 = FfbDepotNummer.of("2");
-    FfbDepotInfo depot3 = new FfbDepotInfo();
-    depot3.setDepotnummer(depotNummer2);
-    depot3.setBestand("1000,00");
+    FfbDepotInfo depot3 = FfbDepotInfo.of("Testdepot", depotNummer2, 1000.00, ImmutableList.<FfbFondsbestand>of());
 
     MyFfbResponse ffbResponse = new MyFfbResponse();
     ffbResponse.getDepots().add(depot1);

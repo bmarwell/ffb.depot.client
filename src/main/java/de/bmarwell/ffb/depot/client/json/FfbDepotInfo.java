@@ -3,60 +3,67 @@ package de.bmarwell.ffb.depot.client.json;
 import de.bmarwell.ffb.depot.client.value.FfbDepotNummer;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableList;
+import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
+import org.immutables.gson.Gson;
+import org.immutables.value.Value;
+
+import java.util.Collection;
 import java.util.List;
 
-public class FfbDepotInfo {
-  private String depotname;
-  private String depotnummer;
-  private String bestand;
+@Gson.TypeAdapters
+@Value.Immutable
+public abstract class FfbDepotInfo {
 
-  private List<FfbFondsbestand> fondsbestaende = new ArrayList<>();
+  @Value.Parameter
+  public abstract String getDepotname();
 
-  public String getDepotname() {
-    return depotname;
+  @Value.Parameter
+  @SerializedName("depotnummer")
+  protected abstract String getDepotNummerAsString();
+
+  @Value.Derived
+  public FfbDepotNummer getDepotNummer() {
+    return FfbDepotNummer.of(getDepotNummerAsString());
   }
 
-  public void setDepotname(String depotname) {
-    this.depotname = depotname;
+  @Value.Parameter
+  @SerializedName("bestand")
+  protected abstract String getBestandAsString();
+
+  @Value.Derived
+  public double getGesamtDepotBestand() {
+    return Double.parseDouble(getBestandAsString().replace(".", "").replace(',', '.'));
   }
 
-  public String getDepotnummer() {
-    return depotnummer;
+  @Value.Parameter
+  public abstract List<FfbFondsbestand> getFondsbestaende();
+
+  public static FfbDepotInfo of(
+      String depotname,
+      String depotnummer,
+      String bestand,
+      Collection<FfbFondsbestand> bestaende) {
+    return ImmutableFfbDepotInfo.of(depotname, depotnummer, bestand, ImmutableList.<FfbFondsbestand>copyOf(bestaende));
   }
 
-  public void setDepotnummer(String depotnummer) {
-    this.depotnummer = depotnummer;
-  }
-
-  public void setDepotnummer(FfbDepotNummer depotnummer) {
-    this.depotnummer = depotnummer.getDepotNummer();
-  }
-
-  public double getBestand() {
-    return Double.parseDouble(bestand.replace(".", "").replace(",", "."));
-  }
-
-  public void setBestand(String bestand) {
-    this.bestand = bestand;
-  }
-
-  public List<FfbFondsbestand> getFondsbestaende() {
-    return fondsbestaende;
-  }
-
-  public void setFondsbestaende(List<FfbFondsbestand> fondsbestaende) {
-    this.fondsbestaende = fondsbestaende;
+  public static FfbDepotInfo of(String depotname, FfbDepotNummer depotnummer, double bestand,
+      Collection<FfbFondsbestand> bestaende) {
+    return FfbDepotInfo.of(
+        depotname,
+        depotnummer.getDepotNummer(),
+        Double.toString(bestand).replace('.', ','),
+        bestaende);
   }
 
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
-        .add("depotname", depotname)
-        .add("depotnummer", depotnummer)
-        .add("bestand", getBestand())
-        .add("fondsbestaende", fondsbestaende)
+        .add("depotname", getDepotname())
+        .add("depotnummer", getDepotNummer())
+        .add("bestand", getGesamtDepotBestand())
+        .add("fondsbestaende", getFondsbestaende())
         .toString();
   }
 }

@@ -33,12 +33,12 @@ public class FfbDepotUtils {
 
     /* Es kann mehrere Depots mit der gleichen Depotnummer geben (z.B. Haupt- und VL-Depot). */
     for (FfbDepotInfo di : myFfbResponse.getDepots()) {
-      if (!di.getDepotnummer().equals(depotnummer.getDepotNummer())) {
+      if (!di.getDepotNummer().equals(depotnummer)) {
         /* Dieses Depot im sichtbaren Login ist ein anderes, als das für Umsätze angefordete */
         continue;
       }
 
-      tempDepotwert += di.getBestand();
+      tempDepotwert += di.getGesamtDepotBestand();
     }
 
     return tempDepotwert;
