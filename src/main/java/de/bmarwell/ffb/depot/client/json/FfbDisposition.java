@@ -77,11 +77,11 @@ public class FfbDisposition implements Comparable<FfbDisposition> {
   }
 
   public double getBetrag() {
-    return Double.parseDouble(betrag.replace(".", "").replace(",", "."));
+    return Double.parseDouble(betrag.replace(".", "").replace(',', '.'));
   }
 
   public double getStuecke() {
-    return Double.parseDouble(stuecke.replace(".", "").replace(",", "."));
+    return Double.parseDouble(stuecke.replace(".", "").replace(',', '.'));
   }
 
   @Override

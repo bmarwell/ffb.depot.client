@@ -29,11 +29,11 @@ public class FfbPerformanceResponse {
   }
 
   public double getPerformanceGesamt() {
-    return Double.parseDouble(performanceGesamt.replace(".", "").replace(",", "."));
+    return Double.parseDouble(performanceGesamt.replace(".", "").replace(',', '.'));
   }
 
   public double getPerformanceDurchschnitt() {
-    return Double.parseDouble(performanceDurchschnitt.replace(".", "").replace(",", "."));
+    return Double.parseDouble(performanceDurchschnitt.replace(".", "").replace(',', '.'));
   }
 
   public LocalDate getErsterZufluss() {

@@ -41,7 +41,7 @@ public class MyFfbResponse {
   }
 
   public double getGesamtwert() {
-    return Double.parseDouble(gesamtwert.replace(".", "").replace(",", "."));
+    return Double.parseDouble(gesamtwert.replace(".", "").replace(',', '.'));
   }
 
   public void setGesamtwert(String gesamtwert) {
@@ -49,11 +49,11 @@ public class MyFfbResponse {
   }
 
   public FfbDepotliste getDepots() {
-    return depots;
+    return depots.copy();
   }
 
   public void setDepots(FfbDepotliste depots) {
-    this.depots = depots;
+    this.depots = depots.copy();
   }
 
   @Override

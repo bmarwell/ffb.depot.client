@@ -1,6 +1,7 @@
 package de.bmarwell.ffb.depot.client.json;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,11 +22,11 @@ public class FfbUmsatzResponse {
   }
 
   public double getDispositionenBetrag() {
-    return Double.parseDouble(dispositionenBetrag.replace(".", "").replace(",", "."));
+    return Double.parseDouble(dispositionenBetrag.replace(".", "").replace(',', '.'));
   }
 
   public List<FfbDisposition> getDispositionen() {
-    return dispositionen;
+    return ImmutableList.<FfbDisposition>copyOf(dispositionen);
   }
 
   public String getErrormessage() {

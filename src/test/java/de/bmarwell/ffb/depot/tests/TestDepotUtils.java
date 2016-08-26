@@ -2,6 +2,7 @@ package de.bmarwell.ffb.depot.tests;
 
 import de.bmarwell.ffb.depot.client.FfbDepotUtils;
 import de.bmarwell.ffb.depot.client.json.FfbDepotInfo;
+import de.bmarwell.ffb.depot.client.json.FfbDepotliste;
 import de.bmarwell.ffb.depot.client.json.FfbFondsbestand;
 import de.bmarwell.ffb.depot.client.json.MyFfbResponse;
 import de.bmarwell.ffb.depot.client.value.FfbDepotNummer;
@@ -35,16 +36,23 @@ public class TestDepotUtils {
   public void testTwoDepotsInResponse() {
     FfbDepotNummer depotNummer = FfbDepotNummer.of("1");
     FfbDepotInfo depot1 = FfbDepotInfo.of("Testdepot", depotNummer, 1000.00, ImmutableList.<FfbFondsbestand>of());
-
     FfbDepotInfo depot2 = FfbDepotInfo.of("Testdepot2", depotNummer, 1000.00, ImmutableList.<FfbFondsbestand>of());
 
     FfbDepotNummer depotNummer2 = FfbDepotNummer.of("2");
     FfbDepotInfo depot3 = FfbDepotInfo.of("Testdepot", depotNummer2, 1000.00, ImmutableList.<FfbFondsbestand>of());
 
     MyFfbResponse ffbResponse = new MyFfbResponse();
-    ffbResponse.getDepots().add(depot1);
-    ffbResponse.getDepots().add(depot2);
-    ffbResponse.getDepots().add(depot3);
+    FfbDepotliste depotliste = new FfbDepotliste();
+    depotliste.add(depot1);
+    depotliste.add(depot2);
+    depotliste.add(depot3);
+    ffbResponse.setDepots(depotliste);
+
+    Assert.assertEquals(3, ffbResponse.getDepots().size());
+
+    Assert.assertEquals(depotNummer, depot1.getDepotNummer());
+    Assert.assertEquals(depotNummer, depot2.getDepotNummer());
+    Assert.assertNotEquals(depotNummer, depot3.getDepotNummer());
 
     double gesamtBestand = FfbDepotUtils.getGesamtBestand(ffbResponse, depotNummer);
 

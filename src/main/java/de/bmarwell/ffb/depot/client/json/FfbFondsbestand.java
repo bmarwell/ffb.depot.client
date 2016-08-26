@@ -49,7 +49,7 @@ public class FfbFondsbestand {
   }
 
   public double getBestandStueckzahl() {
-    return Double.parseDouble(bestandStueckzahl.replace(".", "").replace(",", "."));
+    return Double.parseDouble(bestandStueckzahl.replace(".", "").replace(',', '.'));
   }
 
   public void setBestandStueckzahl(String bestandStueckzahl) {
@@ -57,7 +57,7 @@ public class FfbFondsbestand {
   }
 
   public double getBestandWertInFondswaehrung() {
-    return Double.parseDouble(bestandWertInFondswaehrung.replace(".", "").replace(",", "."));
+    return Double.parseDouble(bestandWertInFondswaehrung.replace(".", "").replace(',', '.'));
   }
 
   public void setBestandWertInFondswaehrung(String bestandWertInFondswaehrung) {
@@ -65,7 +65,7 @@ public class FfbFondsbestand {
   }
 
   public double getBestandWertInEuro() {
-    return Double.parseDouble(bestandWertInEuro.replace(".", "").replace(",", "."));
+    return Double.parseDouble(bestandWertInEuro.replace(".", "").replace(',', '.'));
   }
 
   public void setBestandWertInEuro(String bestandWertInEuro) {
@@ -73,7 +73,7 @@ public class FfbFondsbestand {
   }
 
   public double getRuecknahmepreis() {
-    return Double.parseDouble(ruecknahmepreis.replace(".", "").replace(",", "."));
+    return Double.parseDouble(ruecknahmepreis.replace(".", "").replace(',', '.'));
   }
 
   public void setRuecknahmepreis(String ruecknahmepreis) {
