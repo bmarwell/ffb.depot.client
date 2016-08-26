@@ -21,6 +21,7 @@
 package de.bmarwell.ffb.depot.client;
 
 import de.bmarwell.ffb.depot.client.json.FfbDepotInfo;
+import de.bmarwell.ffb.depot.client.json.FfbDepotliste;
 import de.bmarwell.ffb.depot.client.json.MyFfbResponse;
 import de.bmarwell.ffb.depot.client.value.FfbDepotNummer;
 
@@ -47,12 +48,12 @@ public class FfbDepotUtils {
    */
   public static double getGesamtBestand(MyFfbResponse myFfbResponse, FfbDepotNummer depotnummer) {
     Preconditions.checkNotNull(depotnummer, "Depotnummer null.");
-    Preconditions.checkNotNull(myFfbResponse, "Keine Daten übergeben!");
+    final FfbDepotliste depots = Preconditions.checkNotNull(myFfbResponse, "Keine Daten übergeben!").getDepots();
 
-    double tempDepotwert = 0.00d;
+    double tempDepotwert = 0.00D;
 
     /* Es kann mehrere Depots mit der gleichen Depotnummer geben (z.B. Haupt- und VL-Depot). */
-    for (FfbDepotInfo di : myFfbResponse.getDepots()) {
+    for (final FfbDepotInfo di : depots) {
       if (!di.getDepotNummer().equals(depotnummer)) {
         /* Dieses Depot im sichtbaren Login ist ein anderes, als das für Umsätze angefordete */
         continue;
