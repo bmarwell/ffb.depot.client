@@ -20,88 +20,69 @@
 
 package de.bmarwell.ffb.depot.client.json;
 
-import com.google.common.base.MoreObjects;
 import com.google.common.collect.ComparisonChain;
+import com.google.gson.annotations.SerializedName;
 
+import org.immutables.gson.Gson;
+import org.immutables.value.Value;
 import org.threeten.bp.LocalDate;
 
-public class FfbDisposition implements Comparable<FfbDisposition> {
-  private String depot;
-  private String fondsname;
-  private String isin;
-  private String wkn;
-  private String kagName;
-  private String auftragtyp;
-  private String teilauftragtyp;
-  private String eingabedatum;
-  private String verrechnungskonto;
-  private String betrag;
-  private String stuecke;
+@Gson.TypeAdapters
+@Value.Immutable
+public abstract class FfbDisposition implements Comparable<FfbDisposition> {
 
-  /**
-   * empty constructor for json/gson.
-   */
-  public FfbDisposition() {
-    // empty constructor for json/gson
-  }
+  @Value.Parameter
+  public abstract String getDepot();
 
-  public FfbDisposition(String depot, String fondsname, String isin, String wkn, String kagName, String auftragtyp,
-      String teilauftragtyp, String eingabedatum, String verrechnungskonto, String betrag, String stuecke) {
-    this.depot = depot;
-    this.fondsname = fondsname;
-    this.isin = isin;
-    this.wkn = wkn;
-    this.kagName = kagName;
-    this.auftragtyp = auftragtyp;
-    this.teilauftragtyp = teilauftragtyp;
-    this.eingabedatum = eingabedatum;
-    this.verrechnungskonto = verrechnungskonto;
-    this.betrag = betrag;
-    this.stuecke = stuecke;
-  }
+  @Value.Parameter
+  public abstract String getFondsname();
 
-  public String getDepot() {
-    return depot;
-  }
+  @Value.Parameter
+  public abstract String getIsin();
 
-  public String getFondsname() {
-    return fondsname;
-  }
+  @Value.Parameter
+  public abstract String getWkn();
 
-  public String getIsin() {
-    return isin;
-  }
+  @Value.Parameter
+  public abstract String getKagName();
 
-  public String getWkn() {
-    return wkn;
-  }
+  @Value.Parameter
+  public abstract String getAuftragtyp();
 
-  public String getKagName() {
-    return kagName;
-  }
+  @Value.Parameter
+  public abstract String getTeilauftragtyp();
 
-  public String getAuftragtyp() {
-    return auftragtyp;
-  }
-
-  public String getTeilauftragtyp() {
-    return teilauftragtyp;
-  }
+  @Value.Parameter
+  @SerializedName("eingabedatum")
+  protected abstract String getEingabedatumAsString();
 
   public LocalDate getEingabedatum() {
-    return LocalDate.parse(eingabedatum, FfbPerformanceResponse.GERMAN_DATE_FORMAT);
+    return LocalDate.parse(getEingabedatumAsString(), FfbPerformanceResponse.GERMAN_DATE_FORMAT);
   }
 
-  public String getVerrechnungskonto() {
-    return verrechnungskonto;
-  }
+  @Value.Parameter
+  public abstract String getVerrechnungskonto();
+
+  @Value.Parameter
+  @SerializedName("betrag")
+  protected abstract String getBetragAsString();
 
   public double getBetrag() {
-    return Double.parseDouble(betrag.replace(".", "").replace(',', '.'));
+    return Double.parseDouble(getBetragAsString().replace(".", "").replace(',', '.'));
   }
 
+  @Value.Parameter
+  @SerializedName("stuecke")
+  protected abstract String getStueckeAsString();
+
   public double getStuecke() {
-    return Double.parseDouble(stuecke.replace(".", "").replace(',', '.'));
+    return Double.parseDouble(getStueckeAsString().replace(".", "").replace(',', '.'));
+  }
+
+  public static FfbDisposition of(String depot, String fondsname, String isin, String wkn, String kagName, String auftragtyp,
+      String teilauftragtyp, String eingabedatum, String verrechnungskonto, String betrag, String stuecke) {
+    return ImmutableFfbDisposition.of(depot, fondsname, isin, wkn, kagName, auftragtyp, teilauftragtyp, eingabedatum,
+        verrechnungskonto, betrag, stuecke);
   }
 
   @Override
@@ -114,23 +95,6 @@ public class FfbDisposition implements Comparable<FfbDisposition> {
         .compare(this.getBetrag(), other.getBetrag())
         .compare(this.getStuecke(), other.getStuecke())
         .result();
-  }
-
-  @Override
-  public String toString() {
-    return MoreObjects.toStringHelper(this)
-        .add("depot", getDepot())
-        .add("fondsnamme", getFondsname())
-        .add("isin", getIsin())
-        .add("wkn", getWkn())
-        .add("kagName", getKagName())
-        .add("auftragtyp", getAuftragtyp())
-        .add("teilauftragtyp", getTeilauftragtyp())
-        .add("eingabedatum", getEingabedatum())
-        .add("verrechnungskonto", getVerrechnungskonto())
-        .add("betrag", getBetrag())
-        .add("stuecke", getStuecke())
-        .toString();
   }
 
 }
