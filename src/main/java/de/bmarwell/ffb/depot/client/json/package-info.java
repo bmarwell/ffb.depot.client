@@ -1,20 +1,20 @@
 /*
- * (c) Copyright 2016 Hbiscus FFB Connector Developers.
+ * (c) Copyright 2016 FFB Depot Client Developers.
  *
- * This file is part of Hbiscus FFB Connector.
+ * This file is part of FFB Depot Client.
  *
- * Hbiscus FFB Connector is free software: you can redistribute it and/or modify
+ * FFB Depot Client is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
  *
- * Hbiscus FFB Connector is distributed in the hope that it will be useful,
+ * FFB Depot Client is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Hbiscus FFB Connector.  If not, see <http://www.gnu.org/licenses/>.
+ * along with FFB Depot Client.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
