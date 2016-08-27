@@ -22,9 +22,7 @@ package de.bmarwell.ffb.depot.client.value;
 
 import de.bmarwell.ffb.depot.client.FfbMobileClient;
 
-import com.google.common.base.MoreObjects;
-
-import java.util.Objects;
+import org.immutables.value.Value;
 
 /**
  * Dieses Objekt hält eine FFB-Depotnummer.
@@ -33,13 +31,11 @@ import java.util.Objects;
  * Die Depotnummer enthält oftmals nicht das <i>-01</i>-Suffix, wird von der FFB fest vergeben und kann nicht geändert
  * werden.</p>
  */
-public class FfbDepotNummer {
+@Value.Immutable
+public abstract class FfbDepotNummer {
 
-  private String depotnummer;
-
-  private FfbDepotNummer(String depotnummer) {
-    this.depotnummer = depotnummer;
-  }
+  @Value.Parameter
+  public abstract String getDepotNummer();
 
   /**
    * Erstellt eine Depotnummer als Immutable Objekt, die dem Konstruktor {@link FfbMobileClient} übergeben werden kann.
@@ -52,46 +48,12 @@ public class FfbDepotNummer {
    *          vergeben und kann nicht geändert werden.</p>
    * @return ein Depotnummer-Objekt, immutable.
    */
-  public static FfbDepotNummer of(String depotnummer) {
-    return new FfbDepotNummer(depotnummer);
-  }
-
-  public String getDepotNummer() {
-    return this.depotnummer;
+  public static FfbDepotNummer of(final String depotnummer) {
+    return ImmutableFfbDepotNummer.of(depotnummer);
   }
 
   public static FfbDepotNummer empty() {
     return of("");
   }
 
-  @Override
-  public String toString() {
-    return MoreObjects.toStringHelper(this)
-        .add("depotnummer", getDepotNummer())
-        .toString();
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-
-    if (obj == null) {
-      return false;
-    }
-
-    if (!this.getClass().equals(obj.getClass())) {
-      return false;
-    }
-
-    FfbDepotNummer other = (FfbDepotNummer) obj;
-
-    return this.getDepotNummer().equals(other.getDepotNummer());
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(getDepotNummer());
-  }
 }
