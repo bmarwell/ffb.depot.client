@@ -127,4 +127,16 @@ public class TestMobileGetDepotwert {
     Assert.assertTrue(hasDepotBestand);
   }
 
+  @Test
+  public void testToString() throws MalformedURLException {
+    FfbMobileClient mobileAgent = new FfbMobileClient(LOGIN, PIN);
+    String mobileToString = mobileAgent.toString();
+
+    Assert.assertNotNull("ToString may not be missing.", mobileToString);
+
+    LOG.debug("FfbMobileClient: [{}]", mobileToString);
+
+    Assert.assertTrue("User should be set.", mobileToString.contains(LOGIN.getLoginKennung()));
+  }
+
 }

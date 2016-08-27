@@ -20,13 +20,15 @@
 
 package de.bmarwell.ffb.depot.client.value;
 
+import com.google.common.base.MoreObjects;
+
 /**
  * Eine von der Depotnummer abweichende Login-Kennung. Immutable.
  */
 public class FfbLoginKennung {
   private String login;
 
-  private FfbLoginKennung(String loginkennung) {
+  private FfbLoginKennung(final String loginkennung) {
     this.login = loginkennung;
   }
 
@@ -37,5 +39,12 @@ public class FfbLoginKennung {
 
   public String getLoginKennung() {
     return login;
+  }
+
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+        .add("login", login)
+        .toString();
   }
 }

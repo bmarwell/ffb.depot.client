@@ -21,8 +21,8 @@
 package de.bmarwell.ffb.depot.client;
 
 import de.bmarwell.ffb.depot.client.err.FfbClientError;
-import de.bmarwell.ffb.depot.client.json.FfbPerformanceResponse;
 import de.bmarwell.ffb.depot.client.json.FfbDispositionenResponse;
+import de.bmarwell.ffb.depot.client.json.FfbPerformanceResponse;
 import de.bmarwell.ffb.depot.client.json.LoginResponse;
 import de.bmarwell.ffb.depot.client.json.MyFfbResponse;
 import de.bmarwell.ffb.depot.client.value.FfbLoginKennung;
@@ -33,6 +33,7 @@ import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
@@ -263,6 +264,18 @@ public class FfbMobileClient {
    */
   public Optional<LoginResponse> loginInformation() {
     return login;
+  }
+
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+        .add("webClient", webClient)
+        .add("pin", "xxxxx")
+        .add("user", user)
+        .add("login", loginInformation().orNull())
+        .add("urlMyffb", urlMyffb.toString())
+        .add("gsonBuilder", gsonBuilder)
+        .toString();
   }
 
 }
