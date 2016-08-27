@@ -20,48 +20,38 @@
 
 package de.bmarwell.ffb.depot.client.json;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.collect.ImmutableList;
+import de.bmarwell.ffb.depot.client.FfbDepotUtils;
 
-import java.util.ArrayList;
+import com.google.gson.annotations.SerializedName;
+
+import org.immutables.gson.Gson;
+import org.immutables.value.Value;
+
 import java.util.List;
 
-public class FfbUmsatzResponse {
-  private boolean login;
-  private int dispositionenAnzahl;
-  private String dispositionenBetrag;
-  private List<FfbDisposition> dispositionen = new ArrayList<>();
-  private String errormessage;
+@Value.Immutable
+@Gson.TypeAdapters
+public abstract class FfbUmsatzResponse {
+
+  @SerializedName("login")
+  protected abstract String isLoginAsString();
 
   public boolean isLogin() {
-    return login;
+    return Boolean.parseBoolean(isLoginAsString());
   }
 
-  public int getDispositionenAnzahl() {
-    return dispositionenAnzahl;
-  }
+  @SerializedName("dispositionenAnzahl")
+  public abstract int getDispositionenAnzahl();
+
+  @SerializedName("dispositionenBetrag")
+  protected abstract String getDispositionenBetragAsString();
 
   public double getDispositionenBetrag() {
-    return Double.parseDouble(dispositionenBetrag.replace(".", "").replace(',', '.'));
+    return FfbDepotUtils.convertGermanNumberToDouble(getDispositionenBetragAsString());
   }
 
-  public List<FfbDisposition> getDispositionen() {
-    return ImmutableList.<FfbDisposition>copyOf(dispositionen);
-  }
+  public abstract List<FfbDisposition> getDispositionen();
 
-  public String getErrormessage() {
-    return errormessage;
-  }
-
-  @Override
-  public String toString() {
-    return MoreObjects.toStringHelper(this)
-        .add("login", login)
-        .add("dispositionenAnzahl", getDispositionenAnzahl())
-        .add("dispositionenBetrag", getDispositionenBetrag())
-        .add("dispositionen", getDispositionen())
-        .add("errormessage", getErrormessage())
-        .toString();
-  }
+  public abstract String getErrormessage();
 
 }
