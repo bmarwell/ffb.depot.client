@@ -114,7 +114,9 @@ Origin: file://</code></pre></td>
     <td>Response-Body</td>
     <td><pre><code>{
   "login": "true",
-  "modelportfolio": "false",
+  "modelportfolio":
+    false
+    ,
   "letztesUpdate": "",
   "gesamtwert": "1.234,56",
   "depots": [
