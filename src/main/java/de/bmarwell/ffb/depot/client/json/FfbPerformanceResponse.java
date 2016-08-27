@@ -20,10 +20,11 @@
 
 package de.bmarwell.ffb.depot.client.json;
 
+import de.bmarwell.ffb.depot.client.FfbDepotUtils;
+
 import com.google.common.base.MoreObjects;
 
 import org.threeten.bp.LocalDate;
-import org.threeten.bp.format.DateTimeFormatter;
 
 /**
  * Das JSON-Response-Objekt von fidelity.de (FFB), welches Performanceinformationen zu allen Depots dieses Logins enthält.
@@ -35,14 +36,6 @@ public class FfbPerformanceResponse {
   private String performanceDurchschnitt;
   private String ersterZufluss;
   private String errormessage = "";
-
-  /**
-   * German date: <code>dd.MM.YYYY</code>.
-   *
-   * <p>I think it is kind of stupid of the FFB not to use ISO date and then convert it. This date holds no locale
-   * information or whatsoever.<br><br> See also: <a href="https://xkcd.com/1179/">XKCD ISO 8601</a></p>
-   */
-  public static final DateTimeFormatter GERMAN_DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
   public boolean isLogin() {
     return login;
@@ -57,7 +50,7 @@ public class FfbPerformanceResponse {
   }
 
   public LocalDate getErsterZufluss() {
-    return LocalDate.parse(ersterZufluss, GERMAN_DATE_FORMAT);
+    return LocalDate.parse(ersterZufluss, FfbDepotUtils.GERMAN_DATE_FORMAT);
   }
 
   public String getErrormessage() {

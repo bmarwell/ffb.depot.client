@@ -20,115 +20,89 @@
 
 package de.bmarwell.ffb.depot.client.json;
 
-import com.google.common.base.MoreObjects;
+import de.bmarwell.ffb.depot.client.FfbDepotUtils;
 
+import com.google.gson.annotations.SerializedName;
+
+import org.immutables.gson.Gson;
+import org.immutables.value.Value;
 import org.threeten.bp.LocalDate;
 
-public class FfbFondsbestand {
-  private String wkn;
-  private String isin;
-  private String fondsname;
-  private String fondswaehrung;
-  private String bestandStueckzahl;
-  private String bestandWertInFondswaehrung;
-  private String bestandWertInEuro;
-  private String ruecknahmepreis;
-  private String preisDatum;
-  private String benchmarkName;
+@Value.Immutable
+@Gson.TypeAdapters
+public abstract class FfbFondsbestand {
 
-  public String getWkn() {
-    return wkn;
-  }
+  @Value.Parameter
+  public abstract String getWkn();
 
-  public void setWkn(String wkn) {
-    this.wkn = wkn;
-  }
+  @Value.Parameter
+  public abstract String getIsin();
 
-  public String getIsin() {
-    return isin;
-  }
+  @Value.Parameter
+  public abstract String getFondsname();
 
-  public void setIsin(String isin) {
-    this.isin = isin;
-  }
+  @Value.Parameter
+  public abstract String getFondswaehrung();
 
-  public String getFondsname() {
-    return fondsname.trim();
-  }
+  @Value.Parameter
+  @SerializedName("bestandStueckzahl")
+  protected abstract String getBestandStueckzahlAsString();
 
-  public void setFondsname(String fondsname) {
-    this.fondsname = fondsname;
-  }
-
-  public String getFondswaehrung() {
-    return fondswaehrung;
-  }
-
-  public void setFondswaehrung(String fondswaehrung) {
-    this.fondswaehrung = fondswaehrung;
-  }
-
+  @Value.Derived
+  @SerializedName("bestandStueckzahlAsDouble")
   public double getBestandStueckzahl() {
-    return Double.parseDouble(bestandStueckzahl.replace(".", "").replace(',', '.'));
+    return FfbDepotUtils.convertGermanNumberToDouble(getBestandStueckzahlAsString());
   }
 
-  public void setBestandStueckzahl(String bestandStueckzahl) {
-    this.bestandStueckzahl = bestandStueckzahl;
-  }
+  @Value.Parameter
+  @SerializedName("bestandWertInFondswaehrung")
+  public abstract String getBestandWertInFondswaehrungAsString();
 
+  @Value.Derived
+  @SerializedName("bestandWertInFondswaehrungAsDouble")
   public double getBestandWertInFondswaehrung() {
-    return Double.parseDouble(bestandWertInFondswaehrung.replace(".", "").replace(',', '.'));
+    return FfbDepotUtils.convertGermanNumberToDouble(getBestandWertInFondswaehrungAsString());
   }
 
-  public void setBestandWertInFondswaehrung(String bestandWertInFondswaehrung) {
-    this.bestandWertInFondswaehrung = bestandWertInFondswaehrung;
-  }
+  @Value.Parameter
+  @SerializedName("bestandWertInEuro")
+  protected abstract String getBestandWertInEuroAsString();
 
+  @Value.Derived
+  @SerializedName("bestandWertInEuroAsDouble")
   public double getBestandWertInEuro() {
-    return Double.parseDouble(bestandWertInEuro.replace(".", "").replace(',', '.'));
+    return FfbDepotUtils.convertGermanNumberToDouble(getBestandWertInEuroAsString());
   }
 
-  public void setBestandWertInEuro(String bestandWertInEuro) {
-    this.bestandWertInEuro = bestandWertInEuro;
+  @Value.Parameter
+  @SerializedName("ruecknahmepreis")
+  protected abstract String getRuecknahmePreisAsString();
+
+  @Value.Derived
+  @SerializedName("ruecknahmepreisAsDouble")
+  public double getRuecknahmePreis() {
+    return FfbDepotUtils.convertGermanNumberToDouble(getRuecknahmePreisAsString());
   }
 
-  public double getRuecknahmepreis() {
-    return Double.parseDouble(ruecknahmepreis.replace(".", "").replace(',', '.'));
+  @Value.Parameter
+  @SerializedName("preisDatum")
+  protected abstract String getPreisDatumAsString();
+
+  @Value.Derived
+  @SerializedName("preisDatumAsDate")
+  public LocalDate getPreisdatum() {
+    return FfbDepotUtils.convertGermanDateToLocalDate(getPreisDatumAsString());
   }
 
-  public void setRuecknahmepreis(String ruecknahmepreis) {
-    this.ruecknahmepreis = ruecknahmepreis;
+  @Value.Parameter
+  @SerializedName("benchmarkName")
+  public abstract String getBenchmarkName();
+
+  public static FfbFondsbestand of(String wkn, String isin, String fondsname, String fondswaehrung, String bestandStueckzahl,
+      String bestandWertInFondswaehrung,  String bestandWertInEuro, String ruecknahmepreis, String preisDatum, String benchmark) {
+    return ImmutableFfbFondsbestand.of(wkn, isin, fondsname,
+        fondswaehrung, bestandStueckzahl, bestandWertInFondswaehrung, bestandWertInEuro, ruecknahmepreis, preisDatum,
+        benchmark);
   }
 
-  public LocalDate getPreisDatum() {
-    return LocalDate.parse(preisDatum, FfbPerformanceResponse.GERMAN_DATE_FORMAT);
-  }
-
-  public void setPreisDatum(String preisDatum) {
-    this.preisDatum = preisDatum;
-  }
-
-  public String getBenchmarkName() {
-    return benchmarkName;
-  }
-
-  public void setBenchmarkName(String benchmarkName) {
-    this.benchmarkName = benchmarkName;
-  }
-
-  @Override
-  public String toString() {
-    return MoreObjects.toStringHelper(this)
-        .add("wkn", wkn)
-        .add("isin", isin)
-        .add("fondsname", fondsname)
-        .add("fondswaehrung", fondswaehrung)
-        .add("bestandStueckzahl", bestandStueckzahl)
-        .add("bestandWertInFondswaehrung", bestandWertInFondswaehrung)
-        .add("bestandWertInEuro", bestandWertInEuro)
-        .add("ruecknahmepreis", ruecknahmepreis)
-        .add("preisDatum", preisDatum)
-        .add("benchmarkName", benchmarkName)
-        .toString();
-  }
 }

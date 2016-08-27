@@ -27,7 +27,18 @@ import de.bmarwell.ffb.depot.client.value.FfbDepotNummer;
 
 import com.google.common.base.Preconditions;
 
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.format.DateTimeFormatter;
+
 public class FfbDepotUtils {
+  /**
+   * German date: <code>dd.MM.YYYY</code>.
+   *
+   * <p>I think it is kind of stupid of the FFB not to use ISO date and then convert it. This date holds no locale
+   * information or whatsoever.<br><br> See also: <a href="https://xkcd.com/1179/">XKCD ISO 8601</a></p>
+   */
+  public static final DateTimeFormatter GERMAN_DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
   private FfbDepotUtils() {
     // utility class
   }
@@ -63,6 +74,28 @@ public class FfbDepotUtils {
     }
 
     return tempDepotwert;
+  }
+
+  public static LocalDate convertGermanDateToLocalDate(String germanDate) {
+    Preconditions.checkNotNull(germanDate, "Parameter germanDate in convertGermanDateToLocalDate.");
+    Preconditions.checkArgument(germanDate.matches("[0-9]{2}\\.[0-9]{2}\\.[0-9]{4}"), "Format of GermanDate != dd.mm.yyyy");
+
+    return LocalDate.parse(germanDate, GERMAN_DATE_FORMAT);
+  }
+
+  /**
+   * Converts a german number to a Java Double primitive.
+   * 
+   * @param germanNumber
+   *          a german number format (like 1234,56 or 1.234.567,89).
+   * @return a double primitive with the same value.
+   * @throws NumberFormatException
+   *           if the input is not a german number.
+   */
+  public static double convertGermanNumberToDouble(String germanNumber) {
+    Preconditions.checkNotNull(germanNumber, "Parameter germanDate in convertGermanNumberToDouble.");
+
+    return Double.parseDouble(germanNumber.replace(".", "").replace(',', '.'));
   }
 
 }

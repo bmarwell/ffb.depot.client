@@ -20,6 +20,8 @@
 
 package de.bmarwell.ffb.depot.client.json;
 
+import de.bmarwell.ffb.depot.client.FfbDepotUtils;
+
 import com.google.common.collect.ComparisonChain;
 import com.google.gson.annotations.SerializedName;
 
@@ -57,7 +59,7 @@ public abstract class FfbDisposition implements Comparable<FfbDisposition> {
   protected abstract String getEingabedatumAsString();
 
   public LocalDate getEingabedatum() {
-    return LocalDate.parse(getEingabedatumAsString(), FfbPerformanceResponse.GERMAN_DATE_FORMAT);
+    return LocalDate.parse(getEingabedatumAsString(), FfbDepotUtils.GERMAN_DATE_FORMAT);
   }
 
   @Value.Parameter

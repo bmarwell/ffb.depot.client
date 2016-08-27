@@ -96,10 +96,16 @@ public class FfbMobileClient {
     urlPerformance = new URL(DOMAIN + PATH_PERFORMANCE);
     urlUmsaetze = new URL(DOMAIN + PATH_UMSAETZE);
 
-    gsonBuilder = new GsonBuilder();
+    gsonBuilder = initGsonBuilder();
+  }
+
+  public static GsonBuilder initGsonBuilder() {
+    GsonBuilder localBuilder = new GsonBuilder();
     for (TypeAdapterFactory factory : ServiceLoader.load(TypeAdapterFactory.class)) {
-      gsonBuilder.registerTypeAdapterFactory(factory);
+      localBuilder.registerTypeAdapterFactory(factory);
     }
+
+    return localBuilder;
   }
 
   /**

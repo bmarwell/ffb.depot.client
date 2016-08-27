@@ -32,6 +32,7 @@ import com.google.common.collect.ImmutableList;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.threeten.bp.LocalDate;
 
 public class TestDepotUtils {
 
@@ -78,5 +79,13 @@ public class TestDepotUtils {
 
     /* Depot 3 should not count into it. */
     Assert.assertEquals(2000.00, gesamtBestand, 0.10);
+  }
+
+  @Test
+  public void testConvertGermanDateWorks() {
+    final String firstOfJanuary2016 = "01.01.2016";
+    LocalDate germanDateToLocalDate = FfbDepotUtils.convertGermanDateToLocalDate(firstOfJanuary2016);
+
+    Assert.assertNotNull("computed date should not be null.", germanDateToLocalDate);
   }
 }
