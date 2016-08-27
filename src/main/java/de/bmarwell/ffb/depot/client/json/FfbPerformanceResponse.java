@@ -22,69 +22,47 @@ package de.bmarwell.ffb.depot.client.json;
 
 import de.bmarwell.ffb.depot.client.FfbDepotUtils;
 
-import com.google.common.base.MoreObjects;
+import com.google.gson.annotations.SerializedName;
 
+import org.immutables.gson.Gson;
+import org.immutables.value.Value;
 import org.threeten.bp.LocalDate;
 
 /**
  * Das JSON-Response-Objekt von fidelity.de (FFB), welches Performanceinformationen zu allen Depots dieses Logins enthält.
  */
-public class FfbPerformanceResponse {
+@Value.Immutable
+@Gson.TypeAdapters
+public abstract class FfbPerformanceResponse {
 
-  private boolean login;
-  private String performanceGesamt;
-  private String performanceDurchschnitt;
-  private String ersterZufluss;
-  private String errormessage = "";
+  @SerializedName("login")
+  protected abstract String isLoginAsString();
 
   public boolean isLogin() {
-    return login;
+    return Boolean.parseBoolean(isLoginAsString());
   }
+
+  @SerializedName("performanceGesamt")
+  protected abstract String getPerformanceGesamtAsString();
 
   public double getPerformanceGesamt() {
-    return Double.parseDouble(performanceGesamt.replace(".", "").replace(',', '.'));
+    return FfbDepotUtils.convertGermanNumberToDouble(getPerformanceGesamtAsString());
   }
+
+  @SerializedName("performanceDurchschnitt")
+  protected abstract String getPerformanceDurchschnittAsString();
 
   public double getPerformanceDurchschnitt() {
-    return Double.parseDouble(performanceDurchschnitt.replace(".", "").replace(',', '.'));
+    return FfbDepotUtils.convertGermanNumberToDouble(getPerformanceDurchschnittAsString());
   }
+
+  @SerializedName("ersterZufluss")
+  protected abstract String getErsterZuflussAsString();
 
   public LocalDate getErsterZufluss() {
-    return LocalDate.parse(ersterZufluss, FfbDepotUtils.GERMAN_DATE_FORMAT);
+    return FfbDepotUtils.convertGermanDateToLocalDate(getErsterZuflussAsString());
   }
 
-  public String getErrormessage() {
-    return errormessage;
-  }
+  public abstract String getErrormessage();
 
-  public void setLogin(boolean login) {
-    this.login = login;
-  }
-
-  public void setPerformanceGesamt(String performanceGesamt) {
-    this.performanceGesamt = performanceGesamt;
-  }
-
-  public void setPerformanceDurchschnitt(String performanceDurchschnitt) {
-    this.performanceDurchschnitt = performanceDurchschnitt;
-  }
-
-  public void setErsterZufluss(String ersterZufluss) {
-    this.ersterZufluss = ersterZufluss;
-  }
-
-  public void setErrormessage(String errormessage) {
-    this.errormessage = errormessage;
-  }
-
-  @Override
-  public String toString() {
-    return MoreObjects.toStringHelper(this)
-        .add("login", login)
-        .add("performanceGesamt", performanceGesamt)
-        .add("performanceDurchschnitt", performanceDurchschnitt)
-        .add("ersterZufluss", ersterZufluss)
-        .add("errormessage", errormessage)
-        .toString();
-  }
 }
