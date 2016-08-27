@@ -20,7 +20,7 @@
 
 package de.bmarwell.ffb.depot.client.value;
 
-import java.util.Arrays;
+import org.immutables.value.Value;
 
 /**
  * Die Pin, die für das Login zusammen mit der {@link FfbLoginKennung} bei der FFB verwendet wird.
@@ -29,17 +29,11 @@ import java.util.Arrays;
  * liegt. Hier ist aber noch Optimierungspotential. Im Gegensatz zu z.B. Hibiscus selbst wird aber die Login nur so lange wie
  * notwendig im Speicher gehalten, und ist als CharArray nicht sofort als PIN ersichtlich.</p>
  */
-public class FfbPin {
+@Value.Immutable
+public abstract class FfbPin {
 
-  /**
-   * Die Pin wird als Char-Array gespeichert, damit sie wenigstens nicht komplett offensichtlich im Speicher liegt.
-   */
-  private char[] pin;
-
-  public FfbPin(char[] pin) {
-    // Should store a copy, so the pin won't change while working with it.
-    this.pin = Arrays.copyOf(pin, pin.length);
-  }
+  @Value.Parameter
+  public abstract char[] getPin();
 
   /**
    * Konstruktur für das Immutable-Objekt der Ffb-PIN.
@@ -50,8 +44,8 @@ public class FfbPin {
    *          die Pin als String.
    * @return eine FfbPin, immutable.
    */
-  public static FfbPin of(String pin) {
-    return new FfbPin(pin.toCharArray());
+  public static FfbPin of(final String pin) {
+    return ImmutableFfbPin.of(pin.toCharArray());
   }
 
   /**
@@ -61,11 +55,11 @@ public class FfbPin {
    *          die Pin als char[].
    * @return eine FfbPin, immutable.
    */
-  public static FfbPin of(char[] pin) {
-    return new FfbPin(pin);
+  public static FfbPin of(final char[] pin) {
+    return ImmutableFfbPin.of(pin);
   }
 
   public String getPinAsString() {
-    return new String(pin);
+    return new String(getPin());
   }
 }
