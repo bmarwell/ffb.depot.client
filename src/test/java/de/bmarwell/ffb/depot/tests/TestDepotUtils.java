@@ -24,6 +24,7 @@ import de.bmarwell.ffb.depot.client.FfbDepotUtils;
 import de.bmarwell.ffb.depot.client.json.FfbDepotInfo;
 import de.bmarwell.ffb.depot.client.json.FfbDepotliste;
 import de.bmarwell.ffb.depot.client.json.FfbFondsbestand;
+import de.bmarwell.ffb.depot.client.json.ImmutableMyFfbResponse;
 import de.bmarwell.ffb.depot.client.json.MyFfbResponse;
 import de.bmarwell.ffb.depot.client.value.FfbDepotNummer;
 
@@ -47,7 +48,13 @@ public class TestDepotUtils {
 
   @Test
   public void testEmptyResponse() {
-    MyFfbResponse ffbResponse = new MyFfbResponse();
+    MyFfbResponse ffbResponse = ImmutableMyFfbResponse.builder()
+        .depots(new FfbDepotliste())
+        .gesamtwertAsString("0.00")
+        .isLoginAsString("true")
+        .letztesUpdate("")
+        .isModelportfolio(false)
+        .build();
     double gesamtBestand = FfbDepotUtils.getGesamtBestand(ffbResponse, FfbDepotNummer.empty());
 
     Assert.assertEquals(0.00, gesamtBestand, 0.01);
@@ -62,12 +69,12 @@ public class TestDepotUtils {
     FfbDepotNummer depotNummer2 = FfbDepotNummer.of("2");
     FfbDepotInfo depot3 = FfbDepotInfo.of("Testdepot", depotNummer2, 1000.00, ImmutableList.<FfbFondsbestand>of());
 
-    MyFfbResponse ffbResponse = new MyFfbResponse();
     FfbDepotliste depotliste = new FfbDepotliste();
     depotliste.add(depot1);
     depotliste.add(depot2);
     depotliste.add(depot3);
-    ffbResponse.setDepots(depotliste);
+
+    MyFfbResponse ffbResponse = ImmutableMyFfbResponse.of(true, false, "", 0.00D, depotliste);
 
     Assert.assertEquals(3, ffbResponse.getDepots().size());
 

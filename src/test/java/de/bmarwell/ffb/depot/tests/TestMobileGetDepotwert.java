@@ -99,7 +99,7 @@ public class TestMobileGetDepotwert {
     LOG.debug("Depotbestand: [{}].", depotBestand);
 
     Assert.assertTrue(depotBestand > 0.0);
-    Assert.assertTrue(accountData.isLogin());
+    Assert.assertTrue(accountData.isLoggedIn());
     Assert.assertFalse(accountData.isModelportfolio());
     Assert.assertTrue(accountData.getGesamtwert() != 0.00d);
     LOG.debug("MyFfb: [{}].", accountData);

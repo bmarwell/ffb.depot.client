@@ -20,7 +20,12 @@
 
 package de.bmarwell.ffb.depot.client.json;
 
-import com.google.common.base.MoreObjects;
+import de.bmarwell.ffb.depot.client.FfbDepotUtils;
+
+import com.google.gson.annotations.SerializedName;
+
+import org.immutables.gson.Gson;
+import org.immutables.value.Value;
 
 /**
  * Der FFB-Response zur internen Seite &quot;MyFFB.page&quot;.
@@ -28,62 +33,48 @@ import com.google.common.base.MoreObjects;
  * <p>Leider ist die Benennung seitens der FFB nicht sonderlich glücklich, denn dieses Objekt enthält wirklich alle wichtigen
  * Daten des FFB-Kontos.</p>
  */
-public class MyFfbResponse {
-  private boolean login;
-  private boolean modelportfolio;
-  private String letztesUpdate;
-  private String gesamtwert;
+@Value.Immutable
+@Gson.TypeAdapters
+public abstract class MyFfbResponse {
 
-  private FfbDepotliste depots = new FfbDepotliste();
+  @SerializedName("login")
+  @Value.Parameter
+  protected abstract String isLoginAsString();
 
-  public boolean isLogin() {
-    return login;
+  @Value.Derived
+  public boolean isLoggedIn() {
+    return Boolean.parseBoolean(isLoginAsString());
   }
 
-  public void setLogin(boolean login) {
-    this.login = login;
-  }
+  @SerializedName("modelportfolio")
+  @Value.Parameter
+  public abstract boolean isModelportfolio();
 
-  public boolean isModelportfolio() {
-    return modelportfolio;
-  }
+  @Value.Parameter
+  public abstract String getLetztesUpdate();
 
-  public void setModelportfolio(boolean modelportfolio) {
-    this.modelportfolio = modelportfolio;
-  }
+  @SerializedName("gesamtwert")
+  @Value.Parameter
+  protected abstract String getGesamtwertAsString();
 
-  public String getLetztesUpdate() {
-    return letztesUpdate;
-  }
-
-  public void setLetztesUpdate(String letztesUpdate) {
-    this.letztesUpdate = letztesUpdate;
-  }
-
+  @Value.Derived
+  @SerializedName("gesamtwertAsDouble")
   public double getGesamtwert() {
-    return Double.parseDouble(gesamtwert.replace(".", "").replace(',', '.'));
+    return FfbDepotUtils.convertGermanNumberToDouble(getGesamtwertAsString());
   }
 
-  public void setGesamtwert(String gesamtwert) {
-    this.gesamtwert = gesamtwert;
+  @SerializedName("depots")
+  @Value.Parameter
+  public abstract FfbDepotliste getDepots();
+
+  public static MyFfbResponse of(String loggedIn, boolean modelportfolio, String letztesUpdate, String gesamtwert,
+      FfbDepotliste depots) {
+    return ImmutableMyFfbResponse.of(loggedIn, modelportfolio, letztesUpdate, gesamtwert, depots);
   }
 
-  public FfbDepotliste getDepots() {
-    return depots.copy();
-  }
-
-  public void setDepots(FfbDepotliste depots) {
-    this.depots = depots.copy();
-  }
-
-  @Override
-  public String toString() {
-    return MoreObjects.toStringHelper(this)
-        .add("login", login)
-        .add("modelportfolio", modelportfolio)
-        .add("letztesUpdate", letztesUpdate)
-        .add("gesamtwert", getGesamtwert())
-        .add("depots", depots)
-        .toString();
+  public static MyFfbResponse of(boolean loggedIn, boolean modelportfolio, String letztesUpdate, double gesamtwert,
+      FfbDepotliste depots) {
+    return ImmutableMyFfbResponse.of(Boolean.toString(loggedIn), modelportfolio, letztesUpdate,
+        Double.toString(gesamtwert), depots);
   }
 }
