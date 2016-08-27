@@ -22,7 +22,7 @@ package de.bmarwell.ffb.depot.tests;
 
 import de.bmarwell.ffb.depot.client.FfbMobileClient;
 import de.bmarwell.ffb.depot.client.err.FfbClientError;
-import de.bmarwell.ffb.depot.client.json.FfbUmsatzResponse;
+import de.bmarwell.ffb.depot.client.json.FfbDispositionenResponse;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -49,7 +49,7 @@ public class TestDispositionen {
     mobileAgent.logon();
     Assert.assertTrue(mobileAgent.loginInformation().isPresent());
 
-    FfbUmsatzResponse umsaetze = mobileAgent.getUmsaetze();
+    FfbDispositionenResponse umsaetze = mobileAgent.getUmsaetze();
     Assert.assertNotNull(umsaetze);
     LOG.debug("Umsätze: [{}].", umsaetze);
   }

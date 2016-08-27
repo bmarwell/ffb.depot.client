@@ -31,7 +31,7 @@ import java.util.List;
 
 @Value.Immutable
 @Gson.TypeAdapters
-public abstract class FfbUmsatzResponse {
+public abstract class FfbDispositionenResponse {
 
   @SerializedName("login")
   protected abstract String isLoginAsString();

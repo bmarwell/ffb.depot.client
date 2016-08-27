@@ -22,7 +22,7 @@ package de.bmarwell.ffb.depot.client;
 
 import de.bmarwell.ffb.depot.client.err.FfbClientError;
 import de.bmarwell.ffb.depot.client.json.FfbPerformanceResponse;
-import de.bmarwell.ffb.depot.client.json.FfbUmsatzResponse;
+import de.bmarwell.ffb.depot.client.json.FfbDispositionenResponse;
 import de.bmarwell.ffb.depot.client.json.LoginResponse;
 import de.bmarwell.ffb.depot.client.json.MyFfbResponse;
 import de.bmarwell.ffb.depot.client.value.FfbLoginKennung;
@@ -229,11 +229,11 @@ public class FfbMobileClient {
     return performanceResponse;
   }
 
-  public FfbUmsatzResponse getUmsaetze() throws FfbClientError {
+  public FfbDispositionenResponse getUmsaetze() throws FfbClientError {
     Preconditions.checkState(login.isPresent(), "Not used login method before.");
     Preconditions.checkState(login.get().isLoggedIn(), "User could not log in. Check credentials.");
 
-    FfbUmsatzResponse umsaetze = null;
+    FfbDispositionenResponse umsaetze = null;
 
     try {
       Page umsatzPage = webClient.getPage(urlUmsaetze);
@@ -243,7 +243,7 @@ public class FfbMobileClient {
           new InputStreamReader(umsatzPage.getWebResponse().getContentAsStream(), StandardCharsets.UTF_8));
       Gson gson = gsonBuilder.create();
 
-      umsaetze = gson.fromJson(reader, FfbUmsatzResponse.class);
+      umsaetze = gson.fromJson(reader, FfbDispositionenResponse.class);
     } catch (FailingHttpStatusCodeException fsce) {
       LOG.error(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
       throw new FfbClientError(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
