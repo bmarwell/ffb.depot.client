@@ -37,6 +37,41 @@ double gesamtBestand = FfbDepotUtils.getGesamtBestand(accountData, depotNummer);
 Hinergrund zu den Depotnummern: Es kann mehrere Depots mit der selben Depotnummer geben: Einmal ein Standard-Depot, und einmal ein VL-Depot. Eine Loginkennung kann aber auch ggf. auf mehrere Depots zugreifen.
 
 
+### Nutzungshinweise
+(German) Das Protokoll ist von der FFB nicht offiziell freigegeben. Zum Sniffen habe ich die App [Packet Capture](https://play.google.com/store/apps/details?id=app.greyshirts.sslcapture&hl=de)
+für Android genutzt.
+
+
+(English) The protocol is neither documented or officially released. For sniffing I used packet capture for android, see link above.
+
+
+### Protokollqualität (Quality of the protocol)
+(German) Das Protokoll ist furchtbar schlecht designed. Es besitzt außer https (tls) keine Transportsicherheit.
+Einige Felder fallen je nach anderen Feldern weg, oder sie nutzen oft den falschen Datentyp (gestringte Felder).
+Das sind typische Fehler einer eigenen Protokollentwicklung. Man hätte natürlich auch einfach [HBCI/FinTS](https://de.wikipedia.org/wiki/Financial_Transaction_Services) nutzen können, womit
+man auch XML-Signaturen etc. hätte nutzen können.
+
+(English) The protocol is awful. It does not have transport security other than relying on https (tls).
+Most datatypes were stringified (booleans, doubles, dates, etc.).
+This is a problem when you design your own protocols. There is [FinTS](https://en.wikipedia.org/wiki/FinTS) (famous among german banks) which uses XML Signatures etc.
+
+### HTTPS protocol
+
+The bank is not very trustworthy. It does offer the obsolete TLS 1, but no HTTP2.0 nor SPDY. On the other hand, triple
+DES ciphers are allowed, they are probably vulnerable to Secure Client-Initiated Renegotiation, to BREACH and BEAST (DES-CBC3-SHA).
+
+```bash
+$ testssl.sh -p www.fidelity.de
+--> Testing protocols (via sockets except TLS 1.2 and SPDY/NPN)
+
+ SSLv2      not offered (OK)
+ SSLv3      not offered (OK)
+ TLS 1      offered
+ TLS 1.1    not offered
+ TLS 1.2    offered (OK)
+ SPDY/NPN   not offered
+```
+
 ## Protokoll
 Das Protokoll basiert auf dem Mobile-Protokoll der FFB-App. Es verwendet Cookies für Session-Informationen und gibt bei bestimmten GET-Requests einfach JSON-Responses aus.
 
@@ -84,6 +119,7 @@ Origin: file://</code></pre></td>
   </tr>
 </tbody>
 </table>
+
 
 ### Depotübersicht
 <table>
@@ -192,3 +228,40 @@ Origin: file://</code></pre></td>
   <td>Die Ausgabe erfolgt "pretty printed" und mit eigentlich unnötigen, sogar doppelten Zeilenumbruechen. Das Datum ist irrsinnigerweise nicht per ISO 8601, sondern im Deutschen Datumsformat angegeben. Ach die Prozentbeträge verwenden das international unübliche Komma als Dezimaltrennzeichen. Die Begriffe Zufluss, Durchschnitt und Gesamt sind Deutsche Begriffe, während die restlichen Begriffe englisch sind (login, performance, error, message).</td>
 </tbody>
 </table>
+
+
+### Logout
+<table>
+<thead><th>Parameter</th><th>Content</th></thead>
+<tbody>
+  <tr>
+    <td>URL</td>
+    <td>https://www.fidelity.de/de/mobile/account/logout.page</td>
+  </tr>
+  <tr>
+    <td>Method</td>
+    <td>GET</td>
+  </tr>
+  <tr>
+    <td>Header</td>
+    <td><pre><code>Accept: application/json; q=0.01
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+Accept-Language: en-GB,en-US,en;q=0.8
+Accept-Encoding: gzip,deflate
+Accept-Charset: utf-8;q=0.7,*;q=0.3
+X-Requested-With: ffb.depot.client
+User-Agent: ffb.depot.client
+Cache-Control: no-cache
+Pragma: no-cache
+Origin: file://</code></pre></td>
+  </tr>
+  <tr>
+    <td>Response-Body</td>
+    <td>none</td>
+  </tr>
+<tr>
+  <td>Additional information</td>
+  <td>Cookie should probably be deleted by hand.</td>
+</tbody>
+</table>
+
