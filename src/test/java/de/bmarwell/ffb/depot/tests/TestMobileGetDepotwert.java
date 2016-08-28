@@ -70,11 +70,11 @@ public class TestMobileGetDepotwert {
     FfbMobileClient mobileAgent = new FfbMobileClient(LOGIN, PIN);
     mobileAgent.logon();
 
-    Assert.assertTrue(mobileAgent.loginInformation().isPresent());
+    Assert.assertTrue("login information should be present.", mobileAgent.loginInformation().isPresent());
     LoginResponse loginResponse = mobileAgent.loginInformation().get();
     LOG.debug("Login: [{}].", loginResponse);
 
-    Assert.assertTrue(loginResponse.isLoggedIn());
+    Assert.assertTrue("Should be logged in.", loginResponse.isLoggedIn());
 
     boolean logout = mobileAgent.logout();
     Assert.assertThat("logout should yield success.", logout, CoreMatchers.is(true));
@@ -82,15 +82,11 @@ public class TestMobileGetDepotwert {
   }
 
   @Test(expected = IllegalStateException.class)
-  public void testFfbIllegalState() throws MalformedURLException {
+  public void testFfbIllegalState() throws MalformedURLException, FfbClientError {
     FfbMobileClient mobileAgent = new FfbMobileClient();
 
-    try {
-      mobileAgent.logon();
-      mobileAgent.getPerformance();
-    } catch (FfbClientError e) {
-      Assert.fail("Should not have happened.");
-    }
+    mobileAgent.logon();
+    mobileAgent.getPerformance();
   }
 
   /**

@@ -17,7 +17,7 @@ public class TestFfbClientError {
     try {
       throw new FfbClientError();
     } catch (FfbClientError e) {
-      Assert.assertNotNull(e);
+      Assert.assertNotNull("Exception should not be null.", e);
     }
   }
 
