@@ -290,6 +290,8 @@ public class FfbMobileClient {
    * @return ein {@link FfbPerformanceResponse} mit einigen Performance-Infos.
    * @throws FfbClientError
    *           Falls es zuvor keinen (derzeit noch) gültigen Login gab.
+   * @throws IllegalStateException
+   *           if not logged in.
    */
   public FfbPerformanceResponse getPerformance() throws FfbClientError {
     Preconditions.checkState(login.isPresent(), NOT_USED_LOGIN_METHOD_BEFORE);
