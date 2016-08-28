@@ -30,6 +30,12 @@ import com.google.common.base.Preconditions;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.format.DateTimeFormatter;
 
+/**
+ * This class has various utilities needed especially for FFB depots.
+ *
+ * <p>The json api will give german numbers and dates, so there are two internal conversion methods. There can be multiple
+ * depots with the same number, so we provide a method to get the sum of all depots.</p>
+ */
 public final class FfbDepotUtils {
   /**
    * German date: <code>dd.MM.YYYY</code>.
