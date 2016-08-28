@@ -33,9 +33,11 @@ import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
+import com.gargoylesoftware.htmlunit.util.Cookie;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapterFactory;
@@ -50,6 +52,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ServiceLoader;
+import java.util.Set;
 
 /**
  * Main class of the mobile client. It stores the current connection status (logged in etc.) and provides access methods for
@@ -378,6 +381,10 @@ public class FfbMobileClient {
    */
   public Optional<LoginResponse> loginInformation() {
     return login;
+  }
+
+  public Set<Cookie> currentCookies() {
+    return ImmutableSet.copyOf(this.webClient.getCookies(urlLogin));
   }
 
   /**
