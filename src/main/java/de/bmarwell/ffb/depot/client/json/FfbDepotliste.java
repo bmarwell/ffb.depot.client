@@ -21,6 +21,7 @@
 package de.bmarwell.ffb.depot.client.json;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * A wrapper arround <code>List&lt;FfbDepotInfo&gt;</code> for gson/json marshalling.
@@ -47,6 +48,20 @@ public class FfbDepotliste extends ArrayList<FfbDepotInfo> {
       /* The copy contains the same references, i.e. it is not a deep copy. */
       ffbDepotliste.add(info);
     }
+
+    return ffbDepotliste;
+  }
+
+  /**
+   * Constructor for any number of {@link FfbDepotInfo} objects.
+   * 
+   * @param depotInfos
+   *          any number of objects.
+   * @return an instance.
+   */
+  public static FfbDepotliste of(FfbDepotInfo... depotInfos) {
+    FfbDepotliste ffbDepotliste = new FfbDepotliste();
+    ffbDepotliste.addAll(Arrays.asList(depotInfos));
 
     return ffbDepotliste;
   }
