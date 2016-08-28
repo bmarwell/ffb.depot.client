@@ -22,7 +22,7 @@ package de.bmarwell.ffb.depot.client.json;
 
 import de.bmarwell.ffb.depot.client.value.FfbDepotNummer;
 
-import com.google.common.base.MoreObjects;
+import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.annotations.SerializedName;
 
@@ -32,9 +32,12 @@ import org.immutables.value.Value;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Information about a depot. You can have multiple Depots in your login view, thus this class should be comparable/sortable.
+ */
 @Gson.TypeAdapters
 @Value.Immutable
-public abstract class FfbDepotInfo {
+public abstract class FfbDepotInfo implements Comparable<FfbDepotInfo> {
 
   @Value.Parameter
   public abstract String getDepotname();
@@ -78,12 +81,11 @@ public abstract class FfbDepotInfo {
   }
 
   @Override
-  public String toString() {
-    return MoreObjects.toStringHelper(this)
-        .add("depotname", getDepotname())
-        .add("depotnummer", getDepotNummer())
-        .add("bestand", getGesamtDepotBestand())
-        .add("fondsbestaende", getFondsbestaende())
-        .toString();
+  public int compareTo(FfbDepotInfo other) {
+    return ComparisonChain.start()
+        .compare(this.getDepotNummer(), other.getDepotNummer())
+        .compare(this.getDepotname(), other.getDepotname())
+        .compare(this.getGesamtDepotBestand(), other.getGesamtDepotBestand())
+        .result();
   }
 }

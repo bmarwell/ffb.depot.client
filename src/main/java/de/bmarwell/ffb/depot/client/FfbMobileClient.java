@@ -70,8 +70,7 @@ public class FfbMobileClient {
   /**
    * Error to be logged when reading the response stream.
    */
-  private static final String ERROR_LOGGING_IN_WHILE_READING_THE_RESPONSE_STREAM = "Error logging in while reading the response stream. "
-                                                                                   + "Please submit a bug.";
+  private static final String ERROR_RESPONSE_STREAM = "Error logging in while reading the response stream. Please submit a bug.";
 
   /**
    * Error message on invalid status code.
@@ -104,6 +103,9 @@ public class FfbMobileClient {
    */
   private static final String PATH_DISPOSITIONEN = "/de/mobile/account/dispositionen.page";
 
+  /**
+   * The web client used by this class to perform http requests.
+   */
   private final WebClient webClient;
 
   /**
@@ -116,12 +118,31 @@ public class FfbMobileClient {
    */
   private FfbLoginKennung user = FfbLoginKennung.of("");
 
+  /**
+   * Holding information about successful login.
+   */
   private Optional<LoginResponse> login = Optional.<LoginResponse>absent();
+  /**
+   * The URL to the MyFFB-Page, created in the constructor.
+   */
   private final URL urlMyffb;
+  /**
+   * The URL to the Login-Page, created in the constructor.
+   */
   private final URL urlLogin;
+  /**
+   * The URL to the Performance-Page, created in the constructor.
+   */
   private final URL urlPerformance;
-  private final URL urlUmsaetze;
+  /**
+   * The URL to the Dispositions-Page, created in the constructor.
+   */
+  private final URL urlDispositions;
 
+  /**
+   * A GsonBuilder holds type information and can be used as a factory to create
+   * Gson objects.
+   */
   private final GsonBuilder gsonBuilder;
 
   /**
@@ -140,7 +161,7 @@ public class FfbMobileClient {
     urlMyffb = new URL(DOMAIN + PATH_DEPOT);
     urlLogin = new URL(DOMAIN + PATH_LOGIN);
     urlPerformance = new URL(DOMAIN + PATH_PERFORMANCE);
-    urlUmsaetze = new URL(DOMAIN + PATH_DISPOSITIONEN);
+    urlDispositions = new URL(DOMAIN + PATH_DISPOSITIONEN);
 
     gsonBuilder = initGsonBuilder();
   }
@@ -167,9 +188,9 @@ public class FfbMobileClient {
    * @return a gson builder with typeadapters registered.
    */
   public static GsonBuilder initGsonBuilder() {
-    GsonBuilder localBuilder = new GsonBuilder();
+    final GsonBuilder localBuilder = new GsonBuilder();
 
-    for (TypeAdapterFactory factory : ServiceLoader.load(TypeAdapterFactory.class)) {
+    for (final TypeAdapterFactory factory : ServiceLoader.load(TypeAdapterFactory.class)) {
       localBuilder.registerTypeAdapterFactory(factory);
     }
 
@@ -247,8 +268,8 @@ public class FfbMobileClient {
       LOG.error(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
       throw new FfbClientError(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
     } catch (IOException ioe) {
-      LOG.error(ERROR_LOGGING_IN_WHILE_READING_THE_RESPONSE_STREAM, ioe);
-      throw new FfbClientError(ERROR_LOGGING_IN_WHILE_READING_THE_RESPONSE_STREAM, ioe);
+      LOG.error(ERROR_RESPONSE_STREAM, ioe);
+      throw new FfbClientError(ERROR_RESPONSE_STREAM, ioe);
     }
   }
 
@@ -278,8 +299,8 @@ public class FfbMobileClient {
       LOG.error(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
       throw new FfbClientError(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
     } catch (IOException ioe) {
-      LOG.error(ERROR_LOGGING_IN_WHILE_READING_THE_RESPONSE_STREAM, ioe);
-      throw new FfbClientError(ERROR_LOGGING_IN_WHILE_READING_THE_RESPONSE_STREAM, ioe);
+      LOG.error(ERROR_RESPONSE_STREAM, ioe);
+      throw new FfbClientError(ERROR_RESPONSE_STREAM, ioe);
     }
 
     return performanceResponse;
@@ -300,7 +321,7 @@ public class FfbMobileClient {
     Preconditions.checkState(login.get().isLoggedIn(), USER_COULD_NOT_LOG_IN_CHECK_CREDENTIALS);
 
     try {
-      Page umsatzPage = webClient.getPage(urlUmsaetze);
+      final Page umsatzPage = webClient.getPage(urlDispositions);
 
       /* Read json response */
       final JsonReader reader = new JsonReader(
@@ -312,8 +333,8 @@ public class FfbMobileClient {
       LOG.error(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
       throw new FfbClientError(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
     } catch (IOException ioe) {
-      LOG.error(ERROR_LOGGING_IN_WHILE_READING_THE_RESPONSE_STREAM, ioe);
-      throw new FfbClientError(ERROR_LOGGING_IN_WHILE_READING_THE_RESPONSE_STREAM, ioe);
+      LOG.error(ERROR_RESPONSE_STREAM, ioe);
+      throw new FfbClientError(ERROR_RESPONSE_STREAM, ioe);
     }
   }
 
@@ -339,7 +360,8 @@ public class FfbMobileClient {
         .add("webClient", webClient)
         .add("pin", "*****")
         .add("user", user)
-        .add("login", loginInformation().orNull()) /* like getOrNull() in jdk8. */
+        /* login is optional, the orNull() is like getOrNull() in jdk8. */
+        .add("login", loginInformation().orNull())
         .add("urlMyffb", urlMyffb.toString())
         .add("gsonBuilder", gsonBuilder)
         .toString();
