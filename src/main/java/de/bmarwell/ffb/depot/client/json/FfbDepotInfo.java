@@ -39,6 +39,11 @@ import java.util.List;
 @Value.Immutable
 public abstract class FfbDepotInfo implements Comparable<FfbDepotInfo> {
 
+  /**
+   * A name of th depot. Actually, it is much more like a category ("Standarddepot", "VL-Depot", etc.).
+   *
+   * @return the Depotname as String.
+   */
   @Value.Parameter
   public abstract String getDepotname();
 
@@ -46,6 +51,11 @@ public abstract class FfbDepotInfo implements Comparable<FfbDepotInfo> {
   @SerializedName("depotnummer")
   protected abstract String getDepotNummerAsString();
 
+  /**
+   * The depotnumber as value class.
+   * 
+   * @return the depotnumber as value class.
+   */
   @Value.Derived
   public FfbDepotNummer getDepotNummer() {
     return FfbDepotNummer.of(getDepotNummerAsString());
@@ -55,11 +65,21 @@ public abstract class FfbDepotInfo implements Comparable<FfbDepotInfo> {
   @SerializedName("bestand")
   protected abstract String getBestandAsString();
 
+  /**
+   * The actual worth of this depot in EUR.
+   *
+   * @return the worth as double.
+   */
   @Value.Derived
   public double getGesamtDepotBestand() {
     return Double.parseDouble(getBestandAsString().replace(".", "").replace(',', '.'));
   }
 
+  /**
+   * Each fund is represendet by {@link FfbFondsbestand}.
+   *
+   * @return a list of funds.
+   */
   @Value.Parameter
   public abstract List<FfbFondsbestand> getFondsbestaende();
 
@@ -71,6 +91,19 @@ public abstract class FfbDepotInfo implements Comparable<FfbDepotInfo> {
     return ImmutableFfbDepotInfo.of(depotname, depotnummer, bestand, ImmutableList.<FfbFondsbestand>copyOf(bestaende));
   }
 
+  /**
+   * Constructor with correct data types.
+   *
+   * @param depotname
+   *          the name of the depot.
+   * @param depotnummer
+   *          the number of the depot.
+   * @param bestand
+   *          the amount (probably in EUR) contained in this depot.
+   * @param bestaende
+   *          a list of {@link FfbFondsbestand}, holdings.
+   * @return a {@link FfbDepotInfo} instance.
+   */
   public static FfbDepotInfo of(String depotname, FfbDepotNummer depotnummer, double bestand,
       Collection<FfbFondsbestand> bestaende) {
     return FfbDepotInfo.of(
