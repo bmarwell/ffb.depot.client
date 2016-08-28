@@ -30,7 +30,7 @@ import com.google.common.base.Preconditions;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.format.DateTimeFormatter;
 
-public class FfbDepotUtils {
+public final class FfbDepotUtils {
   /**
    * German date: <code>dd.MM.YYYY</code>.
    *
@@ -85,7 +85,7 @@ public class FfbDepotUtils {
 
   /**
    * Converts a german number to a Java Double primitive.
-   * 
+   *
    * @param germanNumber
    *          a german number format (like 1234,56 or 1.234.567,89).
    * @return a double primitive with the same value.
