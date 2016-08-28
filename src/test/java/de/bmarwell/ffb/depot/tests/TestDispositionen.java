@@ -51,7 +51,7 @@ public class TestDispositionen {
 
     FfbDispositionenResponse umsaetze = mobileAgent.getDispositionen();
     Assert.assertNotNull(umsaetze);
-    LOG.debug("Umsätze: [{}].", umsaetze);
+    LOG.debug("Dispositionen: [{}].", umsaetze);
   }
 
 }

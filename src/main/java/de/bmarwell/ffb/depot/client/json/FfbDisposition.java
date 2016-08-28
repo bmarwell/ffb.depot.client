@@ -112,6 +112,8 @@ public abstract class FfbDisposition implements Comparable<FfbDisposition> {
    *
    * @return the date of when the order was placed.
    */
+  @Value.Derived
+  @SerializedName("eingabedatumAsDate")
   public LocalDate getEingabedatum() {
     return LocalDate.parse(getEingabedatumAsString(), FfbDepotUtils.GERMAN_DATE_FORMAT);
   }
@@ -140,6 +142,8 @@ public abstract class FfbDisposition implements Comparable<FfbDisposition> {
    *
    * @return the amount in EUR (probably).
    */
+  @Value.Derived
+  @SerializedName("betragAsDouble")
   public double getBetrag() {
     return Double.parseDouble(getBetragAsString().replace(".", "").replace(',', '.'));
   }
@@ -158,14 +162,27 @@ public abstract class FfbDisposition implements Comparable<FfbDisposition> {
    *
    * @return the number of units traded.
    */
+  @Value.Derived
+  @SerializedName("stueckeAsDouble")
   public double getStuecke() {
-    return Double.parseDouble(getStueckeAsString().replace(".", "").replace(',', '.'));
+    return FfbDepotUtils.convertGermanNumberToDouble(getStueckeAsString());
+  }
+
+  @Value.Parameter
+  @SerializedName("rabatt")
+  @Nullable
+  protected abstract String getRabattAsString();
+
+  @Value.Derived
+  @SerializedName("rabattAsDouble")
+  public double getRabatt() {
+    return FfbDepotUtils.convertGermanNumberToDouble(getRabattAsString());
   }
 
   public static FfbDisposition of(String depot, String fondsname, String isin, String wkn, String kagName, String auftragtyp,
-      String teilauftragtyp, String eingabedatum, String verrechnungskonto, String betrag, String stuecke) {
+      String teilauftragtyp, String eingabedatum, String verrechnungskonto, String betrag, String stuecke, String rabatt) {
     return ImmutableFfbDisposition.of(depot, fondsname, isin, wkn, kagName, auftragtyp, teilauftragtyp, eingabedatum,
-        verrechnungskonto, betrag, stuecke);
+        verrechnungskonto, betrag, stuecke, rabatt);
   }
 
   /**

@@ -36,6 +36,8 @@ public abstract class FfbDispositionenResponse {
   @SerializedName("login")
   protected abstract String isLoginAsString();
 
+  @Value.Derived
+  @SerializedName("loginAsBoolean")
   public boolean isLogin() {
     return Boolean.parseBoolean(isLoginAsString());
   }
@@ -46,6 +48,8 @@ public abstract class FfbDispositionenResponse {
   @SerializedName("dispositionenBetrag")
   protected abstract String getDispositionenBetragAsString();
 
+  @Value.Derived
+  @SerializedName("dispositionenBetragAsDouble")
   public double getDispositionenBetrag() {
     return FfbDepotUtils.convertGermanNumberToDouble(getDispositionenBetragAsString());
   }
