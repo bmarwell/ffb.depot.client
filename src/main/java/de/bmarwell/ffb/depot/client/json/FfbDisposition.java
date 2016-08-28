@@ -29,28 +29,77 @@ import org.immutables.gson.Gson;
 import org.immutables.value.Value;
 import org.threeten.bp.LocalDate;
 
+import javax.annotation.Nullable;
+
+/**
+ * Holds information about future transactions.
+ */
 @Gson.TypeAdapters
 @Value.Immutable
 public abstract class FfbDisposition implements Comparable<FfbDisposition> {
 
+  /**
+   * Returns the name of the depot this transaction belongs to.
+   *
+   * @return the name of the depot this transaction belongs to.
+   */
   @Value.Parameter
   public abstract String getDepot();
 
+  /**
+   * Returns the name of the fund this transaction belongs to.
+   *
+   * @return the name of the fund this transaction belongs to.
+   */
   @Value.Parameter
   public abstract String getFondsname();
 
+  /**
+   * The Internation Securities Identification Number of the fund which was traded.
+   *
+   * @return the ISIN as string.
+   */
   @Value.Parameter
   public abstract String getIsin();
 
+  /**
+   * The german Wertpapierkennnummer.
+   *
+   * <p>If you prepend this string with three zeroes (padding), than you have the NSIN.</p>
+   *
+   * @return the WKN as String.
+   */
   @Value.Parameter
   public abstract String getWkn();
 
+  /**
+   * The name of the Kapitalanlagegesellschaft, the investment trust.
+   *
+   * @return the name of the investment trust.
+   */
   @Value.Parameter
   public abstract String getKagName();
 
+  /**
+   * The type of the order.
+   *
+   * <p>Can be one of the following:
+   * <ul><li>erträgnis</li>
+   * <li>Kauf Betrag</li></ul>
+   * </p>
+   *
+   * @return the type ot the order as String.
+   */
   @Value.Parameter
   public abstract String getAuftragtyp();
 
+  /**
+   * The sub category of the order type (see {@link #getAuftragtyp()}).
+   *
+   * <p>Known values: <ul><li>Kauf</li></ul></p>
+   *
+   * @return the sub category of the order.
+   */
   @Value.Parameter
   public abstract String getTeilauftragtyp();
 
@@ -58,25 +107,57 @@ public abstract class FfbDisposition implements Comparable<FfbDisposition> {
   @SerializedName("eingabedatum")
   protected abstract String getEingabedatumAsString();
 
+  /**
+   * The date of when the order was placed.
+   *
+   * @return the date of when the order was placed.
+   */
   public LocalDate getEingabedatum() {
     return LocalDate.parse(getEingabedatumAsString(), FfbDepotUtils.GERMAN_DATE_FORMAT);
   }
 
+  /**
+   * The account where the amount will be withdrawn from, if applicable.
+   *
+   * <p>Warning! Can be null as seen here: <a
+   * href="https://github.com/bmhm/ffb.depot.client/issues/1#issuecomment-241121829">
+   * Comment on github issue #1</a>.<br><br>
+   * Known values: <ul><li>Referenzkonto</li></ul>
+   * </p>
+   *
+   * @return the type of the account where the amount will be withdrawn from, if applicable.
+   */
   @Value.Parameter
+  @Nullable
   public abstract String getVerrechnungskonto();
 
   @Value.Parameter
   @SerializedName("betrag")
   protected abstract String getBetragAsString();
 
+  /**
+   * The amount, probably in EUR (€), this order is worth.
+   *
+   * @return the amount in EUR (probably).
+   */
   public double getBetrag() {
     return Double.parseDouble(getBetragAsString().replace(".", "").replace(',', '.'));
   }
 
+  /**
+   * How many units of the investment funds are traded.
+   *
+   * @return the number of units traded.
+   */
   @Value.Parameter
   @SerializedName("stuecke")
   protected abstract String getStueckeAsString();
 
+  /**
+   * How many units of the investment funds are traded.
+   *
+   * @return the number of units traded.
+   */
   public double getStuecke() {
     return Double.parseDouble(getStueckeAsString().replace(".", "").replace(',', '.'));
   }
@@ -87,6 +168,11 @@ public abstract class FfbDisposition implements Comparable<FfbDisposition> {
         verrechnungskonto, betrag, stuecke);
   }
 
+  /**
+   * Compares transactions, sorted by depot, isin, auftragstyp, date, etc.
+   *
+   * <p>A date sorter might be an interesting alternative.</p>
+   */
   @Override
   public int compareTo(FfbDisposition other) {
     return ComparisonChain.start()
