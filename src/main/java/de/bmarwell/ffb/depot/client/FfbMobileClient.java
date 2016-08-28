@@ -383,6 +383,11 @@ public class FfbMobileClient {
     return login;
   }
 
+  /**
+   * Gets cookie information. A copy, so you can't modify the cookies.
+   * 
+   * @return the cookies of the current client.
+   */
   public Set<Cookie> currentCookies() {
     return ImmutableSet.copyOf(this.webClient.getCookies(urlLogin));
   }
