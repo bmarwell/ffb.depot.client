@@ -82,6 +82,17 @@ public final class FfbDepotUtils {
     return tempDepotwert;
   }
 
+  /**
+   * Convert german dates (dd.mm.yyyy) to LocalDate objects.
+   *
+   * @param germanDate
+   *          the german date, given as String.
+   * @return the parsed date.
+   * @throws NullPointerException
+   *           if parameter germanDate is <code>null</code>.
+   * @throws IllegalArgumentException
+   *           if the format of the paramter does not match <code>dd.mm.yyyy</code>.
+   */
   public static LocalDate convertGermanDateToLocalDate(String germanDate) {
     Preconditions.checkNotNull(germanDate, "Parameter germanDate in convertGermanDateToLocalDate.");
     Preconditions.checkArgument(germanDate.matches("[0-9]{2}\\.[0-9]{2}\\.[0-9]{4}"), "Format of GermanDate != dd.mm.yyyy");

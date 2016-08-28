@@ -95,4 +95,10 @@ public class TestDepotUtils {
 
     Assert.assertNotNull("computed date should not be null.", germanDateToLocalDate);
   }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testInvalidGermanDate() {
+    final String noDate = "ab.cd.efff";
+    FfbDepotUtils.convertGermanDateToLocalDate(noDate);
+  }
 }
