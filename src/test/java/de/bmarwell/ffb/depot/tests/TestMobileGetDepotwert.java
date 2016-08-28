@@ -31,6 +31,7 @@ import de.bmarwell.ffb.depot.client.value.FfbDepotNummer;
 import de.bmarwell.ffb.depot.client.value.FfbLoginKennung;
 import de.bmarwell.ffb.depot.client.value.FfbPin;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,6 +61,22 @@ public class TestMobileGetDepotwert {
     LOG.debug("Login: [{}].", loginResponse);
 
     Assert.assertFalse(loginResponse.isLoggedIn());
+  }
+
+  @Test
+  public void testLoginLogout() throws MalformedURLException, FfbClientError {
+    FfbMobileClient mobileAgent = new FfbMobileClient(LOGIN, PIN);
+    mobileAgent.logon();
+
+    Assert.assertTrue(mobileAgent.loginInformation().isPresent());
+    LoginResponse loginResponse = mobileAgent.loginInformation().get();
+    LOG.debug("Login: [{}].", loginResponse);
+
+    Assert.assertTrue(loginResponse.isLoggedIn());
+
+    boolean logout = mobileAgent.logout();
+    Assert.assertThat("logout should yield success.", logout, CoreMatchers.is(true));
+    Assert.assertFalse("loginInformation should be gone now.", mobileAgent.loginInformation().isPresent());
   }
 
   /**

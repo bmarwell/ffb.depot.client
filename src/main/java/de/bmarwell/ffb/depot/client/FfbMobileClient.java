@@ -358,7 +358,7 @@ public class FfbMobileClient {
     try {
       final Page umsatzPage = webClient.getPage(urlLogout);
 
-      return umsatzPage.getWebResponse().getStatusCode() == 404;
+      return umsatzPage.getWebResponse().getStatusCode() == 200;
     } catch (FailingHttpStatusCodeException fsce) {
       LOG.error(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
       throw new FfbClientError(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
