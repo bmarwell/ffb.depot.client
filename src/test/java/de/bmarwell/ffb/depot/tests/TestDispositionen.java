@@ -49,7 +49,7 @@ public class TestDispositionen {
     mobileAgent.logon();
     Assert.assertTrue(mobileAgent.loginInformation().isPresent());
 
-    FfbDispositionenResponse umsaetze = mobileAgent.getUmsaetze();
+    FfbDispositionenResponse umsaetze = mobileAgent.getDispositionen();
     Assert.assertNotNull(umsaetze);
     LOG.debug("Umsätze: [{}].", umsaetze);
   }
