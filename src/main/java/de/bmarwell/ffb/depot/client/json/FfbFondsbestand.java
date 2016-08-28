@@ -36,9 +36,19 @@ import org.threeten.bp.LocalDate;
 @Gson.TypeAdapters
 public abstract class FfbFondsbestand implements Comparable<FfbFondsbestand> {
 
+  /**
+   * German funds identification number. Wertpapierkennnummer.
+   *
+   * @return the WKN.
+   */
   @Value.Parameter
   public abstract String getWkn();
 
+  /**
+   * International funds number.
+   *
+   * @return the ISIN as string.
+   */
   @Value.Parameter
   public abstract String getIsin();
 
@@ -101,13 +111,6 @@ public abstract class FfbFondsbestand implements Comparable<FfbFondsbestand> {
   @Value.Parameter
   @SerializedName("benchmarkName")
   public abstract String getBenchmarkName();
-
-  public static FfbFondsbestand of(String wkn, String isin, String fondsname, String fondswaehrung, String bestandStueckzahl,
-      String bestandWertInFondswaehrung,  String bestandWertInEuro, String ruecknahmepreis, String preisDatum, String benchmark) {
-    return ImmutableFfbFondsbestand.of(wkn, isin, fondsname,
-        fondswaehrung, bestandStueckzahl, bestandWertInFondswaehrung, bestandWertInEuro, ruecknahmepreis, preisDatum,
-        benchmark);
-  }
 
   /**
    * Compares by ISIN and WKN, then the currency and the amount of units, then the worth of the funds, the price date and the

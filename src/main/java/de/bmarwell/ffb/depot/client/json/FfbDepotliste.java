@@ -41,10 +41,10 @@ public class FfbDepotliste extends ArrayList<FfbDepotInfo> {
    * @return a copy of the contents.
    */
   public FfbDepotliste copy() {
-    FfbDepotliste ffbDepotliste = new FfbDepotliste();
+    final FfbDepotliste ffbDepotliste = new FfbDepotliste();
 
     /* iterate over self to get the contents */
-    for (FfbDepotInfo info : this) {
+    for (final FfbDepotInfo info : this) {
       /* The copy contains the same references, i.e. it is not a deep copy. */
       ffbDepotliste.add(info);
     }
@@ -54,13 +54,13 @@ public class FfbDepotliste extends ArrayList<FfbDepotInfo> {
 
   /**
    * Constructor for any number of {@link FfbDepotInfo} objects.
-   * 
+   *
    * @param depotInfos
    *          any number of objects.
    * @return an instance.
    */
-  public static FfbDepotliste of(FfbDepotInfo... depotInfos) {
-    FfbDepotliste ffbDepotliste = new FfbDepotliste();
+  public static FfbDepotliste of(FfbDepotInfo[] depotInfos) {
+    final FfbDepotliste ffbDepotliste = new FfbDepotliste();
     ffbDepotliste.addAll(Arrays.asList(depotInfos));
 
     return ffbDepotliste;

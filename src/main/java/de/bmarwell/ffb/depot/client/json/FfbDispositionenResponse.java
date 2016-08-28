@@ -29,13 +29,24 @@ import org.immutables.value.Value;
 
 import java.util.List;
 
+/**
+ * The response object for the Dispositionen page (order history).
+ */
 @Value.Immutable
 @Gson.TypeAdapters
 public abstract class FfbDispositionenResponse {
 
+  /**
+   * Boolean as string, if user is logged in.
+   *
+   * @return &qout;true&qout; if logged in.
+   */
   @SerializedName("login")
   protected abstract String isLoginAsString();
 
+  /**
+   * @return true if logged in.
+   */
   @Value.Derived
   @SerializedName("loginAsBoolean")
   public boolean isLogin() {
@@ -56,6 +67,11 @@ public abstract class FfbDispositionenResponse {
 
   public abstract List<FfbDisposition> getDispositionen();
 
+  /**
+   * If non- empty, error.
+   *
+   * @return error message.
+   */
   public abstract String getErrormessage();
 
 }

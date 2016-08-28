@@ -25,6 +25,9 @@ import com.google.gson.annotations.SerializedName;
 import org.immutables.gson.Gson;
 import org.immutables.value.Value;
 
+/**
+ * Information which is sent by the server on successful login.
+ */
 @Value.Immutable
 @Gson.TypeAdapters
 public abstract class LoginResponse {
@@ -36,22 +39,54 @@ public abstract class LoginResponse {
     return Boolean.parseBoolean(isLoggedInAsString());
   }
 
+  /**
+   * The name of the user.
+   *
+   * @return the username.
+   */
   @SerializedName("username")
   public abstract String getUsername();
 
+  /**
+   * The customers first name.
+   *
+   * @return the first name.
+   */
   public abstract String getFirstname();
 
+  /**
+   * The customers last name.
+   *
+   * @return the last name.
+   */
   public abstract String getLastname();
 
+  /**
+   * The type of the user.
+   *
+   * <p>Known values:<ul><li>Customer</li></ul></p>
+   *
+   * @return the user type.
+   */
   public abstract String getUsertype();
 
   @SerializedName("ZustimmungNutzungsbedingungenFFS")
   protected abstract String getAgbAgreedAsString();
 
+  /**
+   * True if user agreed to AGB (terms and conditions)
+   *
+   * @return true if he agreed.
+   */
   public boolean getAgbAgreed() {
     return Boolean.parseBoolean(getAgbAgreedAsString());
   }
 
+  /**
+   * Error message set by FFB.
+   * 
+   * @return the error message.
+   */
   public abstract String getErrormessage();
 
 }
