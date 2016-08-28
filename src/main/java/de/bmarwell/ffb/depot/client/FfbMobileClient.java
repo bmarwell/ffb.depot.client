@@ -104,6 +104,11 @@ public class FfbMobileClient {
   private static final String PATH_DISPOSITIONEN = "/de/mobile/account/dispositionen.page";
 
   /**
+   * Path to Logout.
+   */
+  private static final String PATH_LOGOUT = "/de/mobile/account/logout.page";
+
+  /**
    * The web client used by this class to perform http requests.
    */
   private final WebClient webClient;
@@ -140,6 +145,11 @@ public class FfbMobileClient {
   private final URL urlDispositions;
 
   /**
+   * The URL to the Logout-Page, created in the constructor.
+   */
+  private URL urlLogout;
+
+  /**
    * A GsonBuilder holds type information and can be used as a factory to create
    * Gson objects.
    */
@@ -162,6 +172,7 @@ public class FfbMobileClient {
     urlLogin = new URL(DOMAIN + PATH_LOGIN);
     urlPerformance = new URL(DOMAIN + PATH_PERFORMANCE);
     urlDispositions = new URL(DOMAIN + PATH_DISPOSITIONEN);
+    urlLogout = new URL(DOMAIN + PATH_LOGOUT);
 
     gsonBuilder = initGsonBuilder();
   }
@@ -329,6 +340,25 @@ public class FfbMobileClient {
       final Gson gson = gsonBuilder.create();
 
       return gson.fromJson(reader, FfbDispositionenResponse.class);
+    } catch (FailingHttpStatusCodeException fsce) {
+      LOG.error(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
+      throw new FfbClientError(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
+    } catch (IOException ioe) {
+      LOG.error(ERROR_RESPONSE_STREAM, ioe);
+      throw new FfbClientError(ERROR_RESPONSE_STREAM, ioe);
+    }
+  }
+
+  public boolean logout() throws FfbClientError {
+    Preconditions.checkState(login.isPresent(), NOT_USED_LOGIN_METHOD_BEFORE);
+    Preconditions.checkState(login.get().isLoggedIn(), USER_COULD_NOT_LOG_IN_CHECK_CREDENTIALS);
+
+    this.login = Optional.absent();
+
+    try {
+      final Page umsatzPage = webClient.getPage(urlLogout);
+
+      return umsatzPage.getWebResponse().getStatusCode() == 404;
     } catch (FailingHttpStatusCodeException fsce) {
       LOG.error(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
       throw new FfbClientError(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
