@@ -22,6 +22,9 @@ package de.bmarwell.ffb.depot.client.json;
 
 import java.util.ArrayList;
 
+/**
+ * A wrapper arround <code>List&lt;FfbDepotInfo&gt;</code> for gson/json marshalling.
+ */
 public class FfbDepotliste extends ArrayList<FfbDepotInfo> {
 
   /**
@@ -29,10 +32,19 @@ public class FfbDepotliste extends ArrayList<FfbDepotInfo> {
    */
   private static final long serialVersionUID = -873301810368313616L;
 
+  /**
+   * Copies the contents of this list into a new object.
+   *
+   * <p>This is not a deep copy, only the references are copied to a new list.</p>
+   *
+   * @return a copy of the contents.
+   */
   public FfbDepotliste copy() {
     FfbDepotliste ffbDepotliste = new FfbDepotliste();
 
+    /* iterate over self to get the contents */
     for (FfbDepotInfo info : this) {
+      /* The copy contains the same references, i.e. it is not a deep copy. */
       ffbDepotliste.add(info);
     }
 

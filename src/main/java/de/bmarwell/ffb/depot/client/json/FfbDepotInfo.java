@@ -80,6 +80,9 @@ public abstract class FfbDepotInfo implements Comparable<FfbDepotInfo> {
         bestaende);
   }
 
+  /**
+   * Compare to other by {@link #getDepotNummer()}, {@link #getDepotname()} and {@link #getGesamtDepotBestand()}.
+   */
   @Override
   public int compareTo(FfbDepotInfo other) {
     return ComparisonChain.start()

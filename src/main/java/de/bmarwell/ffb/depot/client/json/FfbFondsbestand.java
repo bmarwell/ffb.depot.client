@@ -22,15 +22,19 @@ package de.bmarwell.ffb.depot.client.json;
 
 import de.bmarwell.ffb.depot.client.FfbDepotUtils;
 
+import com.google.common.collect.ComparisonChain;
 import com.google.gson.annotations.SerializedName;
 
 import org.immutables.gson.Gson;
 import org.immutables.value.Value;
 import org.threeten.bp.LocalDate;
 
+/**
+ * A single fund representation.
+ */
 @Value.Immutable
 @Gson.TypeAdapters
-public abstract class FfbFondsbestand {
+public abstract class FfbFondsbestand implements Comparable<FfbFondsbestand> {
 
   @Value.Parameter
   public abstract String getWkn();
@@ -103,6 +107,27 @@ public abstract class FfbFondsbestand {
     return ImmutableFfbFondsbestand.of(wkn, isin, fondsname,
         fondswaehrung, bestandStueckzahl, bestandWertInFondswaehrung, bestandWertInEuro, ruecknahmepreis, preisDatum,
         benchmark);
+  }
+
+  /**
+   * Compares by ISIN and WKN, then the currency and the amount of units, then the worth of the funds, the price date and the
+   * benchmark name.
+   *
+   * <p>Other possible comperators: By unit amount ({@link #getBestandStueckzahl()}) and Worth ({@link #getRuecknahmePreis()}
+   * ).
+   */
+  @Override
+  public int compareTo(FfbFondsbestand other) {
+    return ComparisonChain.start()
+        .compare(this.getIsin(), other.getIsin())
+        .compare(this.getWkn(), other.getWkn())
+        .compare(this.getFondsname(), other.getFondsname())
+        .compare(this.getFondswaehrung(), other.getFondswaehrung())
+        .compare(this.getBestandStueckzahl(), other.getBestandStueckzahl())
+        .compare(this.getBestandWertInEuro(), other.getBestandWertInEuro())
+        .compare(this.getPreisdatum(), other.getPreisdatum())
+        .compare(this.getBenchmarkName(), other.getBenchmarkName())
+        .result();
   }
 
 }
