@@ -376,6 +376,9 @@ public class FfbMobileClient {
     Preconditions.checkNotNull(auftragsTyp, "from");
     Preconditions.checkNotNull(auftragsTyp, "until");
 
+    Preconditions.checkArgument(LocalDate.now().minusMonths(5).minusDays(15).isBefore(from),
+        "Period may not exceed 5 Months, 15 Days ago from now.");
+
     try {
       WebRequest requestSettings = new WebRequest(urlUmsaetze, HttpMethod.GET);
       ImmutableList<NameValuePair> queryParameters = ImmutableList.<NameValuePair>of(
