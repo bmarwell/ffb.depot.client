@@ -1,0 +1,107 @@
+{
+  "login": "true",
+  "error": "",
+  "anzahlUmsaetze": "4",
+  "urlFactsheetOverlay": "/de/fonds/quick-factsheet-overlay.page?",
+  "hash": "1234567890",
+  "auftragstyp": [
+    {
+      "value": "ALLE",
+      "name": "Alle"
+    },
+    {
+      "value": "ENTGELTVERKAUF",
+      "name": "Entgeltverkauf"
+    },
+    {
+      "value": "ERTRAG",
+      "name": "Ertrag"
+    },
+    {
+      "value": "KAUF",
+      "name": "Kauf"
+    },
+    {
+      "value": "TAUSCH",
+      "name": "Tausch"
+    },
+    {
+      "value": "UEBERTRAG",
+      "name": "Übertrag"
+    },
+    {
+      "value": "VERKAUF",
+      "name": "Verkauf"
+    }
+  ],
+  "umsaetze": [
+    {
+      "depotnummer": "1234567890",
+      "isin": "FR0010655738",
+      "wkn": "A0REJU",
+      "fondsname": "AMUNDI ETF MSCI NORDIC UCITS ETF",
+      "fondsgesellschaft": "Amundi Asset Management",
+      "transaktionArt": "Kauf Betrag",
+      "buchungDatum": "22.08.2016",
+      "abrechnungDatum": "19.08.2016",
+      "abrechnungAnteile": "0,123",
+      "abrechnungpreis": "123,4567",
+      "fondswaehrung": "EUR",
+      "ausgabeaufschlagInProzent": "0,20",
+      "rabattProzent": "100,00",
+      "abrechnungBetragInFondswaehrung": "10,00",
+      "abrechnungBetragInEuro": "10,00"
+    },
+    {
+      "depotnummer": "1234567890",
+      "isin": "DE000A0H0785",
+      "wkn": "A0H078",
+      "fondsname": "iShares Markit iBoxx (R) EUR Liqu. Sov. Capped 1.5-10.5 (DE) ",
+      "fondsgesellschaft": "iShares",
+      "transaktionArt": "Erträgnis",
+      "buchungDatum": "19.08.2016",
+      "abrechnungDatum": "18.08.2016",
+      "abrechnungAnteile": "0,004",
+      "abrechnungpreis": "123,4567",
+      "fondswaehrung": "EUR",
+      "ausgabeaufschlagInProzent": "",
+      "rabattProzent": "",
+      "abrechnungBetragInFondswaehrung": "1,05",
+      "abrechnungBetragInEuro": "1,05"
+    },
+    {
+      "depotnummer": "1234567890",
+      "isin": "FR0010429068",
+      "wkn": "LYX0BX",
+      "fondsname": "LYXOR ETF MSCI EMERGING MARKETS ",
+      "fondsgesellschaft": "Lyxor International Asset Management",
+      "transaktionArt": "Kauf aus Splittsparplan",
+      "buchungDatum": "04.08.2016",
+      "abrechnungDatum": "02.08.2016",
+      "abrechnungAnteile": "1,234",
+      "abrechnungpreis": "1,2345",
+      "fondswaehrung": "EUR",
+      "ausgabeaufschlagInProzent": "0,20",
+      "rabattProzent": "100,00",
+      "abrechnungBetragInFondswaehrung": "5,00",
+      "abrechnungBetragInEuro": "5,00"
+    },
+    {
+      "depotnummer": "1234567890",
+      "isin": "LU0392494562",
+      "wkn": "ETF110",
+      "fondsname": "ComStage ETF MSCI World TRN UCITS ETF ",
+      "fondsgesellschaft": "Commerz Funds Solution",
+      "transaktionArt": "Kauf aus Splittsparplan",
+      "buchungDatum": "04.08.2016",
+      "abrechnungDatum": "02.08.2016",
+      "abrechnungAnteile": "1,234",
+      "abrechnungpreis": "12,2345",
+      "fondswaehrung": "USD",
+      "ausgabeaufschlagInProzent": "0,20",
+      "rabattProzent": "100,00",
+      "abrechnungBetragInFondswaehrung": "46,16",
+      "abrechnungBetragInEuro": "32,00"
+    }
+  ]
+}

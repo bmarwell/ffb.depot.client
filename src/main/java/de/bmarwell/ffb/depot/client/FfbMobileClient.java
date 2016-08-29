@@ -23,6 +23,7 @@ package de.bmarwell.ffb.depot.client;
 import de.bmarwell.ffb.depot.client.err.FfbClientError;
 import de.bmarwell.ffb.depot.client.json.FfbDispositionenResponse;
 import de.bmarwell.ffb.depot.client.json.FfbPerformanceResponse;
+import de.bmarwell.ffb.depot.client.json.FfbUmsatzResponse;
 import de.bmarwell.ffb.depot.client.json.LoginResponse;
 import de.bmarwell.ffb.depot.client.json.MyFfbResponse;
 import de.bmarwell.ffb.depot.client.value.FfbAuftragsTyp;
@@ -369,13 +370,14 @@ public class FfbMobileClient {
     }
   }
 
-  public void getUmsaetze(FfbAuftragsTyp auftragsTyp, LocalDate from, LocalDate until) throws FfbClientError {
+  public FfbUmsatzResponse getUmsaetze(FfbAuftragsTyp auftragsTyp, LocalDate from, LocalDate until) throws FfbClientError {
     Preconditions.checkState(login.isPresent(), NOT_USED_LOGIN_METHOD_BEFORE);
     Preconditions.checkState(login.get().isLoggedIn(), USER_COULD_NOT_LOG_IN_CHECK_CREDENTIALS);
     Preconditions.checkNotNull(auftragsTyp, "auftragsTyp");
     Preconditions.checkNotNull(auftragsTyp, "from");
     Preconditions.checkNotNull(auftragsTyp, "until");
 
+    /* Make sure, the from date is not older than the other one */
     Preconditions.checkArgument(LocalDate.now().minusMonths(5).minusDays(15).isBefore(from),
         "Period may not exceed 5 Months, 15 Days ago from now.");
 
@@ -391,13 +393,11 @@ public class FfbMobileClient {
       final Page umsatzPage = webClient.getPage(requestSettings);
 
       /* Read json response */
-      LOG.debug("Umsaetze: [{}].", umsatzPage.getWebResponse().getContentAsString());
+      final JsonReader reader = new JsonReader(
+          new InputStreamReader(umsatzPage.getWebResponse().getContentAsStream(), StandardCharsets.UTF_8));
+      final Gson gson = gsonBuilder.create();
 
-      // final JsonReader reader = new JsonReader(
-      // new InputStreamReader(umsatzPage.getWebResponse().getContentAsStream(), StandardCharsets.UTF_8));
-      // final Gson gson = gsonBuilder.create();
-      //
-      // return gson.fromJson(reader, FfbDispositionenResponse.class);
+      return gson.fromJson(reader, FfbUmsatzResponse.class);
     } catch (FailingHttpStatusCodeException fsce) {
       LOG.error(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
       throw new FfbClientError(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
