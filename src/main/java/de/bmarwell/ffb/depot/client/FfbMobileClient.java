@@ -25,6 +25,7 @@ import de.bmarwell.ffb.depot.client.json.FfbDispositionenResponse;
 import de.bmarwell.ffb.depot.client.json.FfbPerformanceResponse;
 import de.bmarwell.ffb.depot.client.json.LoginResponse;
 import de.bmarwell.ffb.depot.client.json.MyFfbResponse;
+import de.bmarwell.ffb.depot.client.value.FfbAuftragsTyp;
 import de.bmarwell.ffb.depot.client.value.FfbLoginKennung;
 import de.bmarwell.ffb.depot.client.value.FfbPin;
 
@@ -34,9 +35,11 @@ import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.util.Cookie;
+import com.gargoylesoftware.htmlunit.util.NameValuePair;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -45,6 +48,7 @@ import com.google.gson.stream.JsonReader;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.threeten.bp.LocalDate;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -53,6 +57,8 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ServiceLoader;
 import java.util.Set;
+
+import javax.annotation.Nullable;
 
 /**
  * Main class of the mobile client. It stores the current connection status (logged in etc.) and provides access methods for
@@ -107,6 +113,11 @@ public class FfbMobileClient {
   private static final String PATH_DISPOSITIONEN = "/de/mobile/account/dispositionen.page";
 
   /**
+   * Path to Umsaetze (transactions).
+   */
+  private static final String PATH_UMSAETZE = "/de/mobile/account/umsaetze.page";
+
+  /**
    * Path to Logout.
    */
   private static final String PATH_LOGOUT = "/de/mobile/account/logout.page";
@@ -148,6 +159,11 @@ public class FfbMobileClient {
   private final URL urlDispositions;
 
   /**
+   * The URL to the Umsaetze-Page, created in the constructor.
+   */
+  private final URL urlUmsaetze;
+
+  /**
    * The URL to the Logout-Page, created in the constructor.
    */
   private URL urlLogout;
@@ -175,6 +191,7 @@ public class FfbMobileClient {
     urlLogin = new URL(DOMAIN + PATH_LOGIN);
     urlPerformance = new URL(DOMAIN + PATH_PERFORMANCE);
     urlDispositions = new URL(DOMAIN + PATH_DISPOSITIONEN);
+    urlUmsaetze = new URL(DOMAIN + PATH_UMSAETZE);
     urlLogout = new URL(DOMAIN + PATH_LOGOUT);
 
     gsonBuilder = initGsonBuilder();
@@ -337,14 +354,46 @@ public class FfbMobileClient {
     Preconditions.checkState(login.get().isLoggedIn(), USER_COULD_NOT_LOG_IN_CHECK_CREDENTIALS);
 
     try {
-      final Page umsatzPage = webClient.getPage(urlDispositions);
+      final Page dispositionenPage = webClient.getPage(urlDispositions);
 
       /* Read json response */
       final JsonReader reader = new JsonReader(
-          new InputStreamReader(umsatzPage.getWebResponse().getContentAsStream(), StandardCharsets.UTF_8));
+          new InputStreamReader(dispositionenPage.getWebResponse().getContentAsStream(), StandardCharsets.UTF_8));
       final Gson gson = gsonBuilder.create();
 
       return gson.fromJson(reader, FfbDispositionenResponse.class);
+    } catch (FailingHttpStatusCodeException fsce) {
+      LOG.error(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
+      throw new FfbClientError(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
+    } catch (IOException ioe) {
+      LOG.error(ERROR_RESPONSE_STREAM, ioe);
+      throw new FfbClientError(ERROR_RESPONSE_STREAM, ioe);
+    }
+  }
+
+  public void getUmsaetze(FfbAuftragsTyp auftragsTyp, @Nullable LocalDate from, @Nullable LocalDate until) throws FfbClientError {
+    Preconditions.checkState(login.isPresent(), NOT_USED_LOGIN_METHOD_BEFORE);
+    Preconditions.checkState(login.get().isLoggedIn(), USER_COULD_NOT_LOG_IN_CHECK_CREDENTIALS);
+
+    try {
+      WebRequest requestSettings = new WebRequest(urlUmsaetze, HttpMethod.GET);
+      ImmutableList<NameValuePair> queryParameters = ImmutableList.<NameValuePair>of(
+          new NameValuePair("auftragstyp", auftragsTyp.toString()),
+          new NameValuePair("datumsauswahl", FfbDepotUtils.convertDateRangeToGermanDateRangeString(from, until)));
+      requestSettings.setRequestParameters(queryParameters);
+
+      LOG.debug("Requesting URL: [{}].", requestSettings.getRequestParameters());
+
+      final Page umsatzPage = webClient.getPage(requestSettings);
+
+      /* Read json response */
+      LOG.debug("Umsaetze: [{}].", umsatzPage.getWebResponse().getContentAsString());
+
+      // final JsonReader reader = new JsonReader(
+      // new InputStreamReader(umsatzPage.getWebResponse().getContentAsStream(), StandardCharsets.UTF_8));
+      // final Gson gson = gsonBuilder.create();
+      //
+      // return gson.fromJson(reader, FfbDispositionenResponse.class);
     } catch (FailingHttpStatusCodeException fsce) {
       LOG.error(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
       throw new FfbClientError(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
@@ -385,7 +434,7 @@ public class FfbMobileClient {
 
   /**
    * Gets cookie information. A copy, so you can't modify the cookies.
-   * 
+   *
    * @return the cookies of the current client.
    */
   public Set<Cookie> currentCookies() {

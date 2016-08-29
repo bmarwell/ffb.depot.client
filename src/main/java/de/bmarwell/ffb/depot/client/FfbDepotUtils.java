@@ -10,11 +10,11 @@
  *
  * FFB Depot Client is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with FFB Depot Client.  If not, see <http://www.gnu.org/licenses/>.
+ * along with FFB Depot Client. If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -113,6 +113,19 @@ public final class FfbDepotUtils {
     Preconditions.checkNotNull(germanNumber, "Parameter germanDate in convertGermanNumberToDouble.");
 
     return Double.parseDouble(germanNumber.replace(".", "").replace(',', '.'));
+  }
+
+  public static String convertDateRangeToGermanDateRangeString(LocalDate from, LocalDate until) {
+    Preconditions.checkNotNull(from, "from is null");
+    Preconditions.checkNotNull(until, "from is null");
+    Preconditions.checkArgument(from.isBefore(until), "from must be before until!");
+
+    StringBuilder germanDateRange = new StringBuilder();
+    germanDateRange.append(from.format(GERMAN_DATE_FORMAT));
+    germanDateRange.append("+-+");
+    germanDateRange.append(until.format(GERMAN_DATE_FORMAT));
+
+    return germanDateRange.toString();
   }
 
 }
