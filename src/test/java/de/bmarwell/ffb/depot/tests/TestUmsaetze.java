@@ -25,7 +25,7 @@ public class TestUmsaetze {
     mobileAgent.logon();
     Assert.assertTrue(mobileAgent.loginInformation().isPresent());
 
-    mobileAgent.getUmsaetze(FfbAuftragsTyp.ALLE, LocalDate.now().minusMonths(5), LocalDate.now());
+    mobileAgent.getUmsaetze(FfbAuftragsTyp.ALLE, LocalDate.now().minusMonths(5).minusDays(15), LocalDate.now());
 
     mobileAgent.logout();
   }

@@ -58,8 +58,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ServiceLoader;
 import java.util.Set;
 
-import javax.annotation.Nullable;
-
 /**
  * Main class of the mobile client. It stores the current connection status (logged in etc.) and provides access methods for
  * various account information.
@@ -371,9 +369,12 @@ public class FfbMobileClient {
     }
   }
 
-  public void getUmsaetze(FfbAuftragsTyp auftragsTyp, @Nullable LocalDate from, @Nullable LocalDate until) throws FfbClientError {
+  public void getUmsaetze(FfbAuftragsTyp auftragsTyp, LocalDate from, LocalDate until) throws FfbClientError {
     Preconditions.checkState(login.isPresent(), NOT_USED_LOGIN_METHOD_BEFORE);
     Preconditions.checkState(login.get().isLoggedIn(), USER_COULD_NOT_LOG_IN_CHECK_CREDENTIALS);
+    Preconditions.checkNotNull(auftragsTyp, "auftragsTyp");
+    Preconditions.checkNotNull(auftragsTyp, "from");
+    Preconditions.checkNotNull(auftragsTyp, "until");
 
     try {
       WebRequest requestSettings = new WebRequest(urlUmsaetze, HttpMethod.GET);
