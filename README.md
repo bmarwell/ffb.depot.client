@@ -32,28 +32,39 @@ FfbPerformanceResponse performance = mobileAgent.getPerformance();
 Da eine Loginkennung mehrere Depots enthalten kann (teilweise eine Depotnummer mehrfach), lassen sich die Gesamtbestände einfach mit der Utils-Klasse ermitteln:
 ```java
 FfbDepotNummer depotNummer = FfbDepotNummer.of("222223"); // Login ohne -01.
-double gesamtBestand = FfbDepotUtils.getGesamtBestand(accountData, depotNummer);
+BigDecimal gesamtBestand = FfbDepotUtils.getGesamtBestand(accountData, depotNummer);
 ```
 Hinergrund zu den Depotnummern: Es kann mehrere Depots mit der selben Depotnummer geben: Einmal ein Standard-Depot, und einmal ein VL-Depot. Eine Loginkennung kann aber auch ggf. auf mehrere Depots zugreifen.
 
 
 ### Nutzungshinweise
-(German) Das Protokoll ist von der FFB nicht offiziell freigegeben. Zum Sniffen habe ich die App [Packet Capture](https://play.google.com/store/apps/details?id=app.greyshirts.sslcapture&hl=de)
+(German) Das Protokoll ist von der FFB nicht offiziell freigegeben.
+Zum Sniffen habe ich die App [Packet Capture](https://play.google.com/store/apps/details?id=app.greyshirts.sslcapture&hl=de)
 für Android genutzt.
 
 
-(English) The protocol is neither documented or officially released. For sniffing I used packet capture for android, see link above.
+(English) The protocol is neither documented or officially released.
+For sniffing I used packet capture for android, see link above.
 
 
 ### Protokollqualität (Quality of the protocol)
 (German) Das Protokoll ist furchtbar schlecht designed. Es besitzt außer https (tls) keine Transportsicherheit.
 Einige Felder fallen je nach anderen Feldern weg, oder sie nutzen oft den falschen Datentyp (gestringte Felder).
-Das sind typische Fehler einer eigenen Protokollentwicklung. Man hätte natürlich auch einfach [HBCI/FinTS](https://de.wikipedia.org/wiki/Financial_Transaction_Services) nutzen können, womit
+Das sind typische Fehler einer eigenen Protokollentwicklung.
+Man hätte natürlich auch einfach [HBCI/FinTS](https://de.wikipedia.org/wiki/Financial_Transaction_Services) nutzen können, womit
 man auch XML-Signaturen etc. hätte nutzen können.
 
+Die Stringifizierung der Daten wird mittels Jackson Deserializer wieder rückgängig gemacht.
+Derzeit werden Geldbeträge in BigDecimal gewandelt. Ein eigener Datentyp inkl. Währung wäre ebenfalls möglich.
+
 (English) The protocol is awful. It does not have transport security other than relying on https (tls).
-Most datatypes were stringified (booleans, doubles, dates, etc.).
-This is a problem when you design your own protocols. There is [FinTS](https://en.wikipedia.org/wiki/FinTS) (famous among german banks) which uses XML Signatures etc.
+Most datatypes were stringified (booleans, floats, dates, etc.).
+This is a problem when you design your own protocols. There is [FinTS](https://en.wikipedia.org/wiki/FinTS)
+(famous among german banks) which uses XML Signatures etc.
+
+Stringification is being reversed using Jackson Deserializers.
+Money amounts are converted to BigDecimal instances. It would also be possible to convert to it's own datatype,
+including currency.
 
 ### HTTPS protocol
 
@@ -71,6 +82,7 @@ $ testssl.sh -p www.fidelity.de
  TLS 1.2    offered (OK)
  SPDY/NPN   not offered
 ```
+
 
 ## Protokoll
 Das Protokoll basiert auf dem Mobile-Protokoll der FFB-App. Es verwendet Cookies für Session-Informationen und gibt bei bestimmten GET-Requests einfach JSON-Responses aus.
