@@ -57,6 +57,7 @@
     <dependency.slf4j.version>1.7.16</dependency.slf4j.version>
     <dependency.jackson.version>2.9.4</dependency.jackson.version>
     <dependency.jersey.version>2.26</dependency.jersey.version>
+    <plugin.jacoco.version>0.8.0</plugin.jacoco.version>
 
     <!-- Sonar -->
     <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
@@ -221,7 +222,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.7.7.201606060606</version>
+        <version>${plugin.jacoco.version}</version>
         <configuration>
           <destFile>${sonar.jacoco.reportPath}</destFile>
           <append>true</append>
