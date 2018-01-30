@@ -1,56 +1,53 @@
 package de.bmarwell.ffb.depot.client.json;
 
-import com.google.gson.annotations.SerializedName;
-
-import org.immutables.gson.Gson;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.immutables.value.Value;
 
 @Value.Immutable
-@Gson.TypeAdapters
-public abstract class FfbUmsatz {
-  @SerializedName("depotnummer")
-  protected abstract String getDepotnummer();
+public interface FfbUmsatz {
+  @JsonProperty("depotnummer")
+  String getDepotnummer();
 
-  @SerializedName("isin")
-  protected abstract String getIsin();
+  @JsonProperty("isin")
+  String getIsin();
 
-  @SerializedName("wkn")
-  protected abstract String getWkn();
+  @JsonProperty("wkn")
+  String getWkn();
 
-  @SerializedName("fondsname")
-  protected abstract String getFondsname();
+  @JsonProperty("fondsname")
+  String getFondsname();
 
-  @SerializedName("fondsgesellschaft")
-  protected abstract String getFondsgesellschaft();
+  @JsonProperty("fondsgesellschaft")
+  String getFondsgesellschaft();
 
-  @SerializedName("transaktionArt")
-  protected abstract String getTransaktionArt();
+  @JsonProperty("transaktionArt")
+  String getTransaktionArt();
 
-  @SerializedName("buchungDatum")
-  protected abstract String getBuchungDatum();
+  @JsonProperty("buchungDatum")
+  String getBuchungDatum();
 
-  @SerializedName("abrechnungDatum")
-  protected abstract String getAbrechnungDatum();
+  @JsonProperty("abrechnungDatum")
+  String getAbrechnungDatum();
 
-  @SerializedName("abrechnungAnteile")
-  protected abstract String getAbrechnungAnteile();
+  @JsonProperty("abrechnungAnteile")
+  String getAbrechnungAnteile();
 
-  @SerializedName("abrechnungpreis")
-  protected abstract String getAbrechnungpreis();
+  @JsonProperty("abrechnungpreis")
+  String getAbrechnungpreis();
 
-  @SerializedName("fondswaehrung")
-  protected abstract String getFondswaehrung();
+  @JsonProperty("fondswaehrung")
+  String getFondswaehrung();
 
-  @SerializedName("ausgabeaufschlagInProzent")
-  protected abstract String getAusgabeaufschlagInProzent();
+  @JsonProperty("ausgabeaufschlagInProzent")
+  String getAusgabeaufschlagInProzent();
 
-  @SerializedName("rabattProzent")
-  protected abstract String getRabattProzent();
+  @JsonProperty("rabattProzent")
+  String getRabattProzent();
 
-  @SerializedName("abrechnungBetragInFondswaehrung")
-  protected abstract String getAbrechnungBetragInFondswaehrung();
+  @JsonProperty("abrechnungBetragInFondswaehrung")
+  String getAbrechnungBetragInFondswaehrung();
 
-  @SerializedName("abrechnungBetragInEuro")
-  protected abstract String getAbrechnungBetragInEuro();
+  @JsonProperty("abrechnungBetragInEuro")
+  String getAbrechnungBetragInEuro();
 
 }

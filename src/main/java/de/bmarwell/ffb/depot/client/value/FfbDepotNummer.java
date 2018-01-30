@@ -21,9 +21,7 @@
 package de.bmarwell.ffb.depot.client.value;
 
 import de.bmarwell.ffb.depot.client.FfbMobileClient;
-
-import com.google.common.collect.ComparisonChain;
-
+import java.util.Comparator;
 import org.immutables.value.Value;
 
 /**
@@ -60,9 +58,9 @@ public abstract class FfbDepotNummer implements Comparable<FfbDepotNummer> {
 
   @Override
   public int compareTo(FfbDepotNummer other) {
-    return ComparisonChain.start()
-        .compare(this.getDepotNummer(), other.getDepotNummer())
-        .result();
+    final Comparator<FfbDepotNummer> comparator = Comparator.comparing(FfbDepotNummer::getDepotNummer);
+
+    return comparator.compare(this, other);
   }
 
 }

@@ -20,30 +20,26 @@
 
 package de.bmarwell.ffb.depot.client;
 
+import static java.util.Objects.requireNonNull;
+
 import de.bmarwell.ffb.depot.client.json.FfbDepotInfo;
 import de.bmarwell.ffb.depot.client.json.FfbDepotliste;
 import de.bmarwell.ffb.depot.client.json.MyFfbResponse;
 import de.bmarwell.ffb.depot.client.value.FfbDepotNummer;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
-import com.google.common.base.Preconditions;
-
-import org.threeten.bp.LocalDate;
-import org.threeten.bp.format.DateTimeFormatter;
 
 /**
  * This class has various utilities needed especially for FFB depots.
  *
- * <p>The json api will give german numbers and dates, so there are two internal conversion methods. There can be multiple
- * depots with the same number, so we provide a method to get the sum of all depots.</p>
+ * <p>The json api will give german numbers and dates, so there are two internal conversion methods.
+ * There can be multiple depots with the same number, so we provide a method to get the sum of all
+ * depots.</p>
  */
 public final class FfbDepotUtils {
-  /**
-   * German date: <code>dd.MM.YYYY</code>.
-   *
-   * <p>I think it is kind of stupid of the FFB not to use ISO date and then convert it. This date holds no locale
-   * information or whatsoever.<br><br> See also: <a href="https://xkcd.com/1179/">XKCD ISO 8601</a></p>
-   */
-  public static final DateTimeFormatter GERMAN_DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
 
   private FfbDepotUtils() {
     // utility class
@@ -52,22 +48,21 @@ public final class FfbDepotUtils {
   /**
    * Ermittelt den Gesamtbestand für ein bestimmtes Depot.
    *
-   * <p>Hintergrund dieser Funktion ist, dass ein Depotlogin durchaus auf mehrere FFB-Depots Zugriff hat. Diese Funktion
-   * iteriert über alle Depots, die in diesem Login verfügbar sind, und ermittelt dessen Gesamtdepotwert.</p>
+   * <p>Hintergrund dieser Funktion ist, dass ein Depotlogin durchaus auf mehrere FFB-Depots Zugriff
+   * hat. Diese Funktion iteriert über alle Depots, die in diesem Login verfügbar sind, und
+   * ermittelt dessen Gesamtdepotwert.</p>
    *
-   * @param myFfbResponse
-   *          Das Ergebnis der {@link FfbMobileClient#fetchAccountData()}-Methode.
-   *
-   * @param depotnummer
-   *          Die Depotnummer, für die der Depotbestand abgefragt werden soll. Ein Login kann ggf. mehrere Depots sehen.
-   *
+   * @param myFfbResponse Das Ergebnis der {@link FfbMobileClient#fetchAccountData()}-Methode.
+   * @param depotnummer Die Depotnummer, für die der Depotbestand abgefragt werden soll. Ein Login
+   * kann ggf. mehrere Depots sehen.
    * @return der Gesamtbestand in Depotwährung.
    */
-  public static double getGesamtBestand(MyFfbResponse myFfbResponse, FfbDepotNummer depotnummer) {
-    Preconditions.checkNotNull(depotnummer, "Depotnummer null.");
-    final FfbDepotliste depots = Preconditions.checkNotNull(myFfbResponse, "Keine Daten übergeben!").getDepots();
+  public static BigDecimal getGesamtBestand(MyFfbResponse myFfbResponse, FfbDepotNummer depotnummer) {
+    requireNonNull(depotnummer, () -> "depotnummer in getGesamtBestand");
+    final FfbDepotliste depots = requireNonNull(myFfbResponse, () -> "Keine Daten übergeben!")
+        .getDepots();
 
-    double tempDepotwert = 0.00D;
+    BigDecimal tempDepotwert = new BigDecimal(0);
 
     /* Es kann mehrere Depots mit der gleichen Depotnummer geben (z.B. Haupt- und VL-Depot). */
     for (final FfbDepotInfo di : depots) {
@@ -76,49 +71,17 @@ public final class FfbDepotUtils {
         continue;
       }
 
-      tempDepotwert += di.getGesamtDepotBestand();
+      tempDepotwert.add(di.getGesamtDepotBestand());
     }
 
     return tempDepotwert;
   }
 
-  /**
-   * Convert german dates (dd.mm.yyyy) to LocalDate objects.
-   *
-   * @param germanDate
-   *          the german date, given as String.
-   * @return the parsed date.
-   * @throws NullPointerException
-   *           if parameter germanDate is <code>null</code>.
-   * @throws IllegalArgumentException
-   *           if the format of the paramter does not match <code>dd.mm.yyyy</code>.
-   */
-  public static LocalDate convertGermanDateToLocalDate(String germanDate) {
-    Preconditions.checkNotNull(germanDate, "Parameter germanDate in convertGermanDateToLocalDate.");
-    Preconditions.checkArgument(germanDate.matches("[0-9]{2}\\.[0-9]{2}\\.[0-9]{4}"), "Format of GermanDate != dd.mm.yyyy");
-
-    return LocalDate.parse(germanDate, GERMAN_DATE_FORMAT);
-  }
-
-  /**
-   * Converts a german number to a Java Double primitive.
-   *
-   * @param germanNumber
-   *          a german number format (like 1234,56 or 1.234.567,89).
-   * @return a double primitive with the same value.
-   * @throws NumberFormatException
-   *           if the input is not a german number.
-   */
-  public static double convertGermanNumberToDouble(String germanNumber) {
-    Preconditions.checkNotNull(germanNumber, "Parameter germanDate in convertGermanNumberToDouble.");
-
-    return Double.parseDouble(germanNumber.replace(".", "").replace(',', '.'));
-  }
 
   public static String convertDateRangeToGermanDateRangeString(LocalDate from, LocalDate until) {
-    Preconditions.checkNotNull(from, "from is null");
-    Preconditions.checkNotNull(until, "from is null");
-    Preconditions.checkArgument(from.isBefore(until), "from must be before until!");
+    requireNonNull(from, () -> "from is null");
+    requireNonNull(until, () -> "from is null");
+    requireNonNull(from.isBefore(until),() ->  "from must be before until!");
 
     StringBuilder germanDateRange = new StringBuilder();
     germanDateRange.append(from.format(GERMAN_DATE_FORMAT));

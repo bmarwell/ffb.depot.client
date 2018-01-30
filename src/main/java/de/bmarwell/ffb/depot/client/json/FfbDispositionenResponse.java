@@ -20,58 +20,43 @@
 
 package de.bmarwell.ffb.depot.client.json;
 
-import de.bmarwell.ffb.depot.client.FfbDepotUtils;
-
-import com.google.gson.annotations.SerializedName;
-
-import org.immutables.gson.Gson;
-import org.immutables.value.Value;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import de.bmarwell.ffb.depot.client.util.GermanNumberToBigDecimalDeserializer;
+import java.math.BigDecimal;
 import java.util.List;
+import org.immutables.value.Value;
 
 /**
  * The response object for the Dispositionen page (order history).
  */
 @Value.Immutable
-@Gson.TypeAdapters
-public abstract class FfbDispositionenResponse {
+public interface FfbDispositionenResponse {
 
   /**
    * Boolean as string, if user is logged in.
    *
    * @return &qout;true&qout; if logged in.
    */
-  @SerializedName("login")
-  protected abstract String isLoginAsString();
+  @JsonProperty("login")
+  boolean isLogin();
 
-  /**
-   * @return true if logged in.
-   */
-  @Value.Derived
-  @SerializedName("loginAsBoolean")
-  public boolean isLogin() {
-    return Boolean.parseBoolean(isLoginAsString());
-  }
 
-  @SerializedName("dispositionenAnzahl")
-  public abstract int getDispositionenAnzahl();
+  @JsonProperty("dispositionenAnzahl")
+  int getDispositionenAnzahl();
 
-  @SerializedName("dispositionenBetrag")
-  protected abstract String getDispositionenBetragAsString();
+  @JsonProperty("dispositionenBetrag")
+  @JsonDeserialize(using = GermanNumberToBigDecimalDeserializer.class)
+  BigDecimal getDispositionenBetragAsString();
 
-  @Value.Derived
-  @SerializedName("dispositionenBetragAsDouble")
-  public double getDispositionenBetrag() {
-    return FfbDepotUtils.convertGermanNumberToDouble(getDispositionenBetragAsString());
-  }
 
-  public abstract List<FfbDisposition> getDispositionen();
+  List<FfbDisposition> getDispositionen();
 
   /**
    * If non- empty, error.
    *
    * @return error message.
    */
-  public abstract String getErrormessage();
+  String getErrormessage();
 
 }

@@ -20,11 +20,8 @@
 
 package de.bmarwell.ffb.depot.client.json;
 
-import de.bmarwell.ffb.depot.client.FfbDepotUtils;
-
-import com.google.gson.annotations.SerializedName;
-
-import org.immutables.gson.Gson;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
 
 /**
@@ -34,47 +31,24 @@ import org.immutables.value.Value;
  * Daten des FFB-Kontos.</p>
  */
 @Value.Immutable
-@Gson.TypeAdapters
-public abstract class MyFfbResponse {
+@JsonSerialize(as = ImmutableFfbDepotInfo.class)
+public interface MyFfbResponse {
 
-  @SerializedName("login")
-  @Value.Parameter
-  protected abstract String isLoginAsString();
+  @JsonProperty("login")
+  String isLoginAsString();
 
-  @Value.Derived
-  public boolean isLoggedIn() {
-    return Boolean.parseBoolean(isLoginAsString());
-  }
+  @JsonProperty("modelportfolio")
+  boolean isModelportfolio();
 
-  @SerializedName("modelportfolio")
-  @Value.Parameter
-  public abstract boolean isModelportfolio();
+  String getLetztesUpdate();
 
-  @Value.Parameter
-  public abstract String getLetztesUpdate();
+  @JsonProperty("gesamtwert")
+  double getGesamtwert();
 
-  @SerializedName("gesamtwert")
-  @Value.Parameter
-  protected abstract String getGesamtwertAsString();
+  @JsonProperty("depots")
+  FfbDepotliste getDepots();
 
-  @Value.Derived
-  @SerializedName("gesamtwertAsDouble")
-  public double getGesamtwert() {
-    return FfbDepotUtils.convertGermanNumberToDouble(getGesamtwertAsString());
-  }
-
-  @SerializedName("depots")
-  @Value.Parameter
-  public abstract FfbDepotliste getDepots();
-
-  public static MyFfbResponse of(String loggedIn, boolean modelportfolio, String letztesUpdate, String gesamtwert,
-      FfbDepotliste depots) {
-    return ImmutableMyFfbResponse.of(loggedIn, modelportfolio, letztesUpdate, gesamtwert, depots);
-  }
-
-  public static MyFfbResponse of(boolean loggedIn, boolean modelportfolio, String letztesUpdate, double gesamtwert,
-      FfbDepotliste depots) {
-    return ImmutableMyFfbResponse.of(Boolean.toString(loggedIn), modelportfolio, letztesUpdate,
-        Double.toString(gesamtwert), depots);
+  static ImmutableMyFfbResponse.Builder builder() {
+    return ImmutableMyFfbResponse.builder();
   }
 }

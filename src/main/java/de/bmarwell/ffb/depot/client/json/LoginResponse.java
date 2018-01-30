@@ -20,46 +20,42 @@
 
 package de.bmarwell.ffb.depot.client.json;
 
-import com.google.gson.annotations.SerializedName;
-
-import org.immutables.gson.Gson;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import java.util.Optional;
 import org.immutables.value.Value;
 
 /**
  * Information which is sent by the server on successful login.
  */
 @Value.Immutable
-@Gson.TypeAdapters
-public abstract class LoginResponse {
+@JsonDeserialize(as = ImmutableLoginResponse.class)
+public interface LoginResponse {
 
-  @SerializedName("loggedIn")
-  protected abstract String isLoggedInAsString();
-
-  public boolean isLoggedIn() {
-    return Boolean.parseBoolean(isLoggedInAsString());
-  }
+  @JsonProperty("loggedIn")
+  boolean isLoggedIn();
 
   /**
    * The name of the user.
    *
    * @return the username.
    */
-  @SerializedName("username")
-  public abstract String getUsername();
+  @JsonProperty("username")
+  String getUsername();
 
   /**
    * The customers first name.
    *
    * @return the first name.
    */
-  public abstract String getFirstname();
+  String getFirstname();
 
   /**
    * The customers last name.
    *
    * @return the last name.
    */
-  public abstract String getLastname();
+  String getLastname();
 
   /**
    * The type of the user.
@@ -68,25 +64,16 @@ public abstract class LoginResponse {
    *
    * @return the user type.
    */
-  public abstract String getUsertype();
+  String getUsertype();
 
-  @SerializedName("ZustimmungNutzungsbedingungenFFS")
-  protected abstract String getAgbAgreedAsString();
-
-  /**
-   * True if user agreed to AGB (terms and conditions)
-   *
-   * @return true if he agreed.
-   */
-  public boolean getAgbAgreed() {
-    return Boolean.parseBoolean(getAgbAgreedAsString());
-  }
+  @JsonProperty("ZustimmungNutzungsbedingungenFFS")
+  boolean getAgbAgreedAsString();
 
   /**
    * Error message set by FFB.
    * 
    * @return the error message.
    */
-  public abstract String getErrormessage();
+  Optional<String> getErrormessage();
 
 }

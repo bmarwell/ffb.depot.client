@@ -23,7 +23,7 @@ package de.bmarwell.ffb.depot.client.err;
 /**
  * Client error.
  */
-public class FfbClientError extends Exception {
+public class FfbClientError extends RuntimeException {
 
   /**
    * Serial.

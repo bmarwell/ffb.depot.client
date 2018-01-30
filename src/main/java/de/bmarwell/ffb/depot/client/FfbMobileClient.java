@@ -20,48 +20,42 @@
 
 package de.bmarwell.ffb.depot.client;
 
+import static java.util.Objects.requireNonNull;
+
 import de.bmarwell.ffb.depot.client.err.FfbClientError;
 import de.bmarwell.ffb.depot.client.json.FfbDispositionenResponse;
 import de.bmarwell.ffb.depot.client.json.FfbPerformanceResponse;
 import de.bmarwell.ffb.depot.client.json.FfbUmsatzResponse;
 import de.bmarwell.ffb.depot.client.json.LoginResponse;
 import de.bmarwell.ffb.depot.client.json.MyFfbResponse;
+import de.bmarwell.ffb.depot.client.util.JacksonMessageBodyReader;
 import de.bmarwell.ffb.depot.client.value.FfbAuftragsTyp;
 import de.bmarwell.ffb.depot.client.value.FfbLoginKennung;
 import de.bmarwell.ffb.depot.client.value.FfbPin;
-
-import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
-import com.gargoylesoftware.htmlunit.HttpMethod;
-import com.gargoylesoftware.htmlunit.Page;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.WebRequest;
-import com.gargoylesoftware.htmlunit.util.Cookie;
-import com.gargoylesoftware.htmlunit.util.NameValuePair;
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.stream.JsonReader;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.threeten.bp.LocalDate;
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.ServiceLoader;
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation.Builder;
+import javax.ws.rs.core.Form;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Main class of the mobile client. It stores the current connection status (logged in etc.) and provides access methods for
- * various account information.
+ * Main class of the mobile client. It stores the current connection status (logged in etc.) and provides access methods for various account
+ * information.
  */
 public class FfbMobileClient {
 
@@ -124,7 +118,7 @@ public class FfbMobileClient {
   /**
    * The web client used by this class to perform http requests.
    */
-  private final WebClient webClient;
+  private final Client webClient;
 
   /**
    * Saved PIN for use in {@link #logon()}-method.
@@ -139,125 +133,92 @@ public class FfbMobileClient {
   /**
    * Holding information about successful login.
    */
-  private Optional<LoginResponse> login = Optional.<LoginResponse>absent();
+  private Optional<LoginResponse> login = Optional.<LoginResponse>empty();
   /**
    * The URL to the MyFFB-Page, created in the constructor.
    */
-  private final URL urlMyffb;
+  private static final URI urlMyffb = URI.create(DOMAIN + PATH_DEPOT);
   /**
    * The URL to the Login-Page, created in the constructor.
    */
-  private final URL urlLogin;
+  private static final URI urlLogin = URI.create(DOMAIN + PATH_LOGIN);
   /**
    * The URL to the Performance-Page, created in the constructor.
    */
-  private final URL urlPerformance;
+  private static final URI urlPerformance = URI.create(DOMAIN + PATH_PERFORMANCE);
   /**
    * The URL to the Dispositions-Page, created in the constructor.
    */
-  private final URL urlDispositions;
+  private static final URI urlDispositions = URI.create(DOMAIN + PATH_DISPOSITIONEN);
 
   /**
    * The URL to the Umsaetze-Page, created in the constructor.
    */
-  private final URL urlUmsaetze;
+  private static final URI urlUmsaetze = URI.create(DOMAIN + PATH_UMSAETZE);
 
   /**
    * The URL to the Logout-Page, created in the constructor.
    */
-  private URL urlLogout;
+  private static final URI urlLogout = URI.create(DOMAIN + PATH_LOGOUT);
+
+  private Map<String, NewCookie> cookies = Collections.unmodifiableMap(new HashMap<>());
+
+  private boolean isLoggedIn = false;
 
   /**
-   * A GsonBuilder holds type information and can be used as a factory to create
-   * Gson objects.
-   */
-  private final GsonBuilder gsonBuilder;
-
-  /**
-   * Konstruktor for tests and internal uses only. PLease use {@link #FfbMobileClient(FfbLoginKennung, FfbPin)}
-   * instead.
+   * Konstruktor for tests and internal uses only. PLease use {@link #FfbMobileClient(FfbLoginKennung, FfbPin)} instead.
    *
    * <p>Wird der Client wie hier ohne User und Pin erstellt, kann gar nichts klappen.</p>
    *
-   * @throws MalformedURLException
-   *           Interner Fehler beim Erstellen der URLs.
+   * @throws MalformedURLException Interner Fehler beim Erstellen der URLs.
    */
-  public FfbMobileClient() throws MalformedURLException {
-    this.webClient = new WebClient();
-    webClient.getCookieManager().setCookiesEnabled(true);
-
-    urlMyffb = new URL(DOMAIN + PATH_DEPOT);
-    urlLogin = new URL(DOMAIN + PATH_LOGIN);
-    urlPerformance = new URL(DOMAIN + PATH_PERFORMANCE);
-    urlDispositions = new URL(DOMAIN + PATH_DISPOSITIONEN);
-    urlUmsaetze = new URL(DOMAIN + PATH_UMSAETZE);
-    urlLogout = new URL(DOMAIN + PATH_LOGOUT);
-
-    gsonBuilder = initGsonBuilder();
+  public FfbMobileClient() {
+    this.webClient = ClientBuilder.newClient()
+        .register(JacksonMessageBodyReader.class);
   }
 
   /**
    * Erstellt ein Retriever, der von der FFB über die Mobile-Schnittstelle Daten empfängt.
    *
-   * @param user
-   *          Der Login. Meistens die Depotnummer. Bei mehreren Depots mit selbem Login einfach ebenfalls das Login.
-   * @param pin
-   *          das Passwort fürs Login.
-   * @throws MalformedURLException
-   *           Fehler beim erstellen der URLs.
+   * @param user Der Login. Meistens die Depotnummer. Bei mehreren Depots mit selbem Login einfach ebenfalls das Login.
+   * @param pin das Passwort fürs Login.
    */
-  public FfbMobileClient(FfbLoginKennung user, FfbPin pin) throws MalformedURLException {
+  public FfbMobileClient(FfbLoginKennung user, FfbPin pin) {
     this();
     this.user = user;
     this.pin = pin;
   }
 
-  /**
-   * Factory method to create a GsonBuilder which knows the immutable types.
-   *
-   * @return a gson builder with typeadapters registered.
-   */
-  public static GsonBuilder initGsonBuilder() {
-    final GsonBuilder localBuilder = new GsonBuilder();
-
-    for (final TypeAdapterFactory factory : ServiceLoader.load(TypeAdapterFactory.class)) {
-      localBuilder.registerTypeAdapterFactory(factory);
-    }
-
-    return localBuilder;
-  }
 
   /**
    * Diese Methode ermittelt die aktuellen Depotbestände und weitere Informationen aus der Gesamtheit aller Depots.
    *
-   * <p><b>Hinweis:</b> Zuvor muss ein {@link #logon()} aufgerufen worden sein, sonst gibt es eine
-   * {@link IllegalStateException}.
+   * <p><b>Hinweis:</b> Zuvor muss ein {@link #logon()} aufgerufen worden sein, sonst gibt es eine {@link IllegalStateException}.
    *
    * @return die Depotinfo.
-   * @throws FfbClientError
-   *           Error while getting account data.
+   * @throws FfbClientError Error while getting account data.
    */
   public MyFfbResponse fetchAccountData() throws FfbClientError {
-    Preconditions.checkState(login.isPresent(), NOT_USED_LOGIN_METHOD_BEFORE);
-    Preconditions.checkState(login.get().isLoggedIn(), USER_COULD_NOT_LOG_IN_CHECK_CREDENTIALS);
+    requireNonNull(login.isPresent(), NOT_USED_LOGIN_METHOD_BEFORE);
 
-    MyFfbResponse bestandsResponse = null;
-
-    try {
-      final Page myFfbPage = webClient.getPage(urlMyffb);
-
-      /* Read json response */
-      final JsonReader reader = new JsonReader(
-          new InputStreamReader(myFfbPage.getWebResponse().getContentAsStream(), StandardCharsets.UTF_8));
-      final Gson gson = gsonBuilder.create();
-      bestandsResponse = gson.fromJson(reader, MyFfbResponse.class);
-    } catch (FailingHttpStatusCodeException fsce) {
-      LOG.error("Error with reading account information (http statuscode). Are you logged in?", fsce);
-      throw new FfbClientError("Error with reading account information (http statuscode). Are you logged in?", fsce);
-    } catch (IOException ioe) {
-      LOG.error("Error with reading account information. Could not read stream.", ioe);
-      throw new FfbClientError("Error with reading account information. Could not read stream.", ioe);
+    if (!isLoggedIn) {
+      throw new IllegalStateException("Not logged in!");
     }
+
+    final Builder target = webClient
+        .target(urlMyffb)
+        .request(MediaType.APPLICATION_JSON_TYPE);
+
+    cookies.entrySet().stream()
+        .map(cookieEntry -> target.cookie(cookieEntry.getKey(),cookieEntry.getValue().toCookie().getValue()));
+
+    final Response response = target
+
+        .get();
+
+    MyFfbResponse bestandsResponse = response.readEntity(MyFfbResponse.class);
+
+    LOG.debug("BestandsResponse: [{}].", bestandsResponse);
 
     return bestandsResponse;
   }
@@ -265,52 +226,44 @@ public class FfbMobileClient {
   /**
    * Login über Cookies.
    *
-   * @throws FfbClientError
-   *           Error logging in. Wrong login data?
+   * @throws FfbClientError Error logging in. Wrong login data?
    */
   public void logon() throws FfbClientError {
-    try {
-      /*
-       * For the original login request, multiple headers are being set.
-       */
-      final WebRequest requestSettings = new WebRequest(urlLogin, HttpMethod.POST);
-      requestSettings.setAdditionalHeader("Accept", "application/json; q=0.01");
-      requestSettings.setAdditionalHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-      requestSettings.setAdditionalHeader("Accept-Language", "en-GB,en-US,en;q=0.8");
-      requestSettings.setAdditionalHeader("Accept-Encoding", "gzip,deflate");
-      requestSettings.setAdditionalHeader("Accept-Charset", "utf-8;q=0.7,*;q=0.3");
-      requestSettings.setAdditionalHeader("X-Requested-With", "hibiscus.ffb.scraper");
-      requestSettings.setAdditionalHeader("User-Agent", "hibiscus.ffb.scraper");
-      requestSettings.setAdditionalHeader("Cache-Control", "no-cache");
-      requestSettings.setAdditionalHeader("Pragma", "no-cache");
-      requestSettings.setAdditionalHeader("Origin", "file://");
+    Form form = new Form();
+    form.param("login", user.getLoginKennung());
+    form.param("password", pin.getPinAsString());
 
-      /* pass user and login as string like 'login=user&password=pin'. */
-      requestSettings.setRequestBody("login=" + user.getLoginKennung() + "&password=" + pin.getPinAsString());
-      final Page redirectPage = webClient.getPage(requestSettings);
-      redirectPage.getWebResponse();
-      final JsonReader reader = new JsonReader(
-          new InputStreamReader(redirectPage.getWebResponse().getContentAsStream(), StandardCharsets.UTF_8));
-      final Gson gson = gsonBuilder.create();
-      final LoginResponse response = gson.fromJson(reader, LoginResponse.class);
-      this.login = Optional.<LoginResponse>of(response);
-    } catch (FailingHttpStatusCodeException fsce) {
-      LOG.error(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
-      throw new FfbClientError(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
-    } catch (IOException ioe) {
-      LOG.error(ERROR_RESPONSE_STREAM, ioe);
-      throw new FfbClientError(ERROR_RESPONSE_STREAM, ioe);
+    final Response loginResponse = webClient
+        .target(urlLogin)
+        .request(MediaType.APPLICATION_JSON_TYPE)
+        .header("Accept", "application/json;charset=utf-8")
+        .header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8" )
+        .header("Accept-Charset", "utf-8;q=0.7,*;q=0.3" )
+        .header("X-Requested-With", "hibiscus.ffb.scraper")
+        .header("User-Agent", "hibiscus.ffb.scraper" )
+        .post(Entity.form(form));
+
+    final LoginResponse ffbLogin = loginResponse.readEntity(LoginResponse.class);
+
+    if (!ffbLogin.isLoggedIn() || ffbLogin.getErrormessage().isPresent()) {
+      LOG.error("Konnte Client nicht einloggen!", ffbLogin);
+      this.cookies = Collections.unmodifiableMap(new HashMap<>());
+      this.isLoggedIn = false;
+
+      return;
     }
+
+    cookies = loginResponse.getCookies();
+    this.isLoggedIn = true;
+    LOG.debug("Cookie names: [{}].", cookies.keySet());
   }
 
   /**
    * Gibt die Performance für alle Depots dieses Logins aus.
    *
    * @return ein {@link FfbPerformanceResponse} mit einigen Performance-Infos.
-   * @throws FfbClientError
-   *           Falls es zuvor keinen (derzeit noch) gültigen Login gab.
-   * @throws IllegalStateException
-   *           if not logged in.
+   * @throws FfbClientError Falls es zuvor keinen (derzeit noch) gültigen Login gab.
+   * @throws IllegalStateException if not logged in.
    */
   public FfbPerformanceResponse getPerformance() throws FfbClientError {
     Preconditions.checkState(login.isPresent(), NOT_USED_LOGIN_METHOD_BEFORE);
@@ -342,11 +295,8 @@ public class FfbMobileClient {
    * Response with pending transactions.
    *
    * @return a pending transactions object.
-   *
-   * @throws FfbClientError
-   *           login error etc.
-   * @throws IllegalStateException
-   *           if not logged in.
+   * @throws FfbClientError login error etc.
+   * @throws IllegalStateException if not logged in.
    */
   public FfbDispositionenResponse getDispositionen() throws FfbClientError {
     Preconditions.checkState(login.isPresent(), NOT_USED_LOGIN_METHOD_BEFORE);
@@ -371,8 +321,10 @@ public class FfbMobileClient {
   }
 
   public FfbUmsatzResponse getUmsaetze(FfbAuftragsTyp auftragsTyp, LocalDate from, LocalDate until) throws FfbClientError {
-    Preconditions.checkState(login.isPresent(), NOT_USED_LOGIN_METHOD_BEFORE);
-    Preconditions.checkState(login.get().isLoggedIn(), USER_COULD_NOT_LOG_IN_CHECK_CREDENTIALS);
+    if (!isLoggedIn) {
+      throw new IllegalStateException("Not logged in");
+    }
+
     Preconditions.checkNotNull(auftragsTyp, "auftragsTyp");
     Preconditions.checkNotNull(auftragsTyp, "from");
     Preconditions.checkNotNull(auftragsTyp, "until");
@@ -427,8 +379,8 @@ public class FfbMobileClient {
   }
 
   /**
-   * Die bei der {@link #logon}-Methode erhaltenen Informationen. Entspricht {@link Optional#absent()}, falls das Login nicht
-   * erfolgreich war, oder es nicht durchgeführt wurde.
+   * Die bei der {@link #logon}-Methode erhaltenen Informationen. Entspricht {@link Optional#absent()}, falls das Login nicht erfolgreich
+   * war, oder es nicht durchgeführt wurde.
    *
    * @return Ein LoginResponse im Optional, falls zuvor {@link #logon()} erfolgreich durchgeführt wurde.
    */
@@ -437,18 +389,8 @@ public class FfbMobileClient {
   }
 
   /**
-   * Gets cookie information. A copy, so you can't modify the cookies.
-   *
-   * @return the cookies of the current client.
-   */
-  public Set<Cookie> currentCookies() {
-    return ImmutableSet.copyOf(this.webClient.getCookies(urlLogin));
-  }
-
-  /**
-   * Returns the {@link FfbMobileClient} as String, including
-   * internal information like webClient, user, loginstatus (but not the PIN),
-   * and the GSON object.
+   * Returns the {@link FfbMobileClient} as String, including internal information like webClient, user, loginstatus (but not the PIN), and
+   * the GSON object.
    */
   @Override
   public String toString() {

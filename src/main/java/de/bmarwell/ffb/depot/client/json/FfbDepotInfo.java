@@ -20,108 +20,57 @@
 
 package de.bmarwell.ffb.depot.client.json;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import de.bmarwell.ffb.depot.client.util.GermanNumberToBigDecimalDeserializer;
 import de.bmarwell.ffb.depot.client.value.FfbDepotNummer;
-
-import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.ImmutableList;
-import com.google.gson.annotations.SerializedName;
-
-import org.immutables.gson.Gson;
-import org.immutables.value.Value;
-
-import java.util.Collection;
+import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.List;
+import org.immutables.value.Value;
 
 /**
  * Information about a depot. You can have multiple Depots in your login view, thus this class should be comparable/sortable.
  */
-@Gson.TypeAdapters
 @Value.Immutable
-public abstract class FfbDepotInfo implements Comparable<FfbDepotInfo> {
+@JsonDeserialize(as = ImmutableFfbDepotInfo.class)
+public interface FfbDepotInfo extends Comparable<FfbDepotInfo> {
 
   /**
    * A name of th depot. Actually, it is much more like a category ("Standarddepot", "VL-Depot", etc.).
    *
    * @return the Depotname as String.
    */
-  @Value.Parameter
-  public abstract String getDepotname();
+  String getDepotname();
 
-  @Value.Parameter
-  @SerializedName("depotnummer")
-  protected abstract String getDepotNummerAsString();
+  @JsonProperty("depotnummer")
+  FfbDepotNummer getDepotNummer();
 
-  /**
-   * The depotnumber as value class.
-   * 
-   * @return the depotnumber as value class.
-   */
-  @Value.Derived
-  public FfbDepotNummer getDepotNummer() {
-    return FfbDepotNummer.of(getDepotNummerAsString());
-  }
-
-  @Value.Parameter
-  @SerializedName("bestand")
-  protected abstract String getBestandAsString();
-
-  /**
-   * The actual worth of this depot in EUR.
-   *
-   * @return the worth as double.
-   */
-  @Value.Derived
-  public double getGesamtDepotBestand() {
-    return Double.parseDouble(getBestandAsString().replace(".", "").replace(',', '.'));
-  }
+  @JsonProperty("bestand")
+  @JsonDeserialize(using = GermanNumberToBigDecimalDeserializer.class)
+  BigDecimal getGesamtDepotBestand();
 
   /**
    * Each fund is represendet by {@link FfbFondsbestand}.
    *
    * @return a list of funds.
    */
-  @Value.Parameter
-  public abstract List<FfbFondsbestand> getFondsbestaende();
+  List<FfbFondsbestand> getFondsbestaende();
 
-  public static FfbDepotInfo of(
-      String depotname,
-      String depotnummer,
-      String bestand,
-      Collection<FfbFondsbestand> bestaende) {
-    return ImmutableFfbDepotInfo.of(depotname, depotnummer, bestand, ImmutableList.<FfbFondsbestand>copyOf(bestaende));
-  }
-
-  /**
-   * Constructor with correct data types.
-   *
-   * @param depotname
-   *          the name of the depot.
-   * @param depotnummer
-   *          the number of the depot.
-   * @param bestand
-   *          the amount (probably in EUR) contained in this depot.
-   * @param bestaende
-   *          a list of {@link FfbFondsbestand}, holdings.
-   * @return a {@link FfbDepotInfo} instance.
-   */
-  public static FfbDepotInfo of(String depotname, FfbDepotNummer depotnummer, double bestand,
-      Collection<FfbFondsbestand> bestaende) {
-    return FfbDepotInfo.of(
-        depotname,
-        depotnummer.getDepotNummer(),
-        Double.toString(bestand).replace('.', ','),
-        bestaende);
+  static ImmutableFfbDepotInfo.Builder builder() {
+    return ImmutableFfbDepotInfo.builder();
   }
 
   /**
    * Compare to other by {@link #getDepotNummer()}, {@link #getDepotname()} and {@link #getGesamtDepotBestand()}.
    */
   @Override
-  public int compareTo(FfbDepotInfo other) {
-    return ComparisonChain.start()
-        .compare(this.getDepotNummer(), other.getDepotNummer())
-        .compare(this.getDepotname(), other.getDepotname())
-        .compare(this.getGesamtDepotBestand(), other.getGesamtDepotBestand())
-        .result();
+  default int compareTo(FfbDepotInfo other) {
+    final Comparator<FfbDepotInfo> comparator = Comparator
+        .comparing(FfbDepotInfo::getDepotNummer)
+        .thenComparing(FfbDepotInfo::getDepotname)
+        .thenComparing(FfbDepotInfo::getGesamtDepotBestand);
+
+    return comparator.compare(this,other);
   }
 }

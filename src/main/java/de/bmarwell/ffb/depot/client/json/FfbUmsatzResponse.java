@@ -20,35 +20,33 @@
 
 package de.bmarwell.ffb.depot.client.json;
 
-import com.google.gson.annotations.SerializedName;
-
-import org.immutables.gson.Gson;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import java.util.List;
 import org.immutables.value.Value;
 
-import java.util.List;
-
 @Value.Immutable
-@Gson.TypeAdapters
-public abstract class FfbUmsatzResponse {
-  @SerializedName("login")
-  protected abstract String getlogin();
+@JsonDeserialize(as = ImmutableFfbUmsatzResponse.class)
+public interface FfbUmsatzResponse {
+  @JsonProperty("login")
+   String getlogin();
 
-  @SerializedName("error")
-  public abstract String getError();
+  @JsonProperty("error")
+  String getError();
 
-  @SerializedName("anzahlUmsaetze")
-  protected abstract String getAnzahlUmsaetze();
+  @JsonProperty("anzahlUmsaetze")
+  String getAnzahlUmsaetze();
 
   /**
    *
    * <p>Example: &quot;/de/fonds/quick-factsheet-overlay.page?&quot;</p>
    * @return a path fragment.
    */
-  @SerializedName("urlFactsheetOverlay")
-  protected abstract String getUrlFactsheetOverlay();
+  @JsonProperty("urlFactsheetOverlay")
+  String getUrlFactsheetOverlay();
 
-  protected abstract String getHash();
+  String getHash();
 
-  @SerializedName("umsaetze")
-  public abstract List<FfbUmsatz> getUmsaetze();
+  @JsonProperty("umsaetze")
+  List<FfbUmsatz> getUmsaetze();
 }

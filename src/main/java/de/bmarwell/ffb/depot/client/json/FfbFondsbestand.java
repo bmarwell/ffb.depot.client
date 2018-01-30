@@ -20,97 +20,63 @@
 
 package de.bmarwell.ffb.depot.client.json;
 
-import de.bmarwell.ffb.depot.client.FfbDepotUtils;
-
-import com.google.common.collect.ComparisonChain;
-import com.google.gson.annotations.SerializedName;
-
-import org.immutables.gson.Gson;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import de.bmarwell.ffb.depot.client.util.GermanDateToLocalDateDeserializer;
+import de.bmarwell.ffb.depot.client.util.GermanNumberToBigDecimalDeserializer;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Comparator;
 import org.immutables.value.Value;
-import org.threeten.bp.LocalDate;
 
 /**
  * A single fund representation.
  */
 @Value.Immutable
-@Gson.TypeAdapters
-public abstract class FfbFondsbestand implements Comparable<FfbFondsbestand> {
+@JsonDeserialize(as = ImmutableFfbFondsbestand.class)
+public interface FfbFondsbestand extends Comparable<FfbFondsbestand> {
 
   /**
    * German funds identification number. Wertpapierkennnummer.
    *
    * @return the WKN.
    */
-  @Value.Parameter
-  public abstract String getWkn();
+  String getWkn();
 
   /**
    * International funds number.
    *
    * @return the ISIN as string.
    */
-  @Value.Parameter
-  public abstract String getIsin();
+  String getIsin();
 
-  @Value.Parameter
-  public abstract String getFondsname();
+  String getFondsname();
 
-  @Value.Parameter
-  public abstract String getFondswaehrung();
+  String getFondswaehrung();
 
-  @Value.Parameter
-  @SerializedName("bestandStueckzahl")
-  protected abstract String getBestandStueckzahlAsString();
+  @JsonProperty("bestandStueckzahl")
+  @JsonDeserialize(using = GermanNumberToBigDecimalDeserializer.class)
+  BigDecimal getBestandStueckzahl();
 
-  @Value.Derived
-  @SerializedName("bestandStueckzahlAsDouble")
-  public double getBestandStueckzahl() {
-    return FfbDepotUtils.convertGermanNumberToDouble(getBestandStueckzahlAsString());
-  }
 
-  @Value.Parameter
-  @SerializedName("bestandWertInFondswaehrung")
-  public abstract String getBestandWertInFondswaehrungAsString();
+  @JsonProperty("bestandWertInFondswaehrung")
+  @JsonDeserialize(using = GermanNumberToBigDecimalDeserializer.class)
+  BigDecimal getBestandWertInFondswaehrung();
 
-  @Value.Derived
-  @SerializedName("bestandWertInFondswaehrungAsDouble")
-  public double getBestandWertInFondswaehrung() {
-    return FfbDepotUtils.convertGermanNumberToDouble(getBestandWertInFondswaehrungAsString());
-  }
+  @JsonProperty("bestandWertInEuro")
+  @JsonDeserialize(using = GermanNumberToBigDecimalDeserializer.class)
+  BigDecimal getBestandWertInEuro();
 
-  @Value.Parameter
-  @SerializedName("bestandWertInEuro")
-  protected abstract String getBestandWertInEuroAsString();
+  @JsonProperty("ruecknahmepreis")
+  @JsonDeserialize(using = GermanNumberToBigDecimalDeserializer.class)
+  BigDecimal getRuecknahmePreis();
 
-  @Value.Derived
-  @SerializedName("bestandWertInEuroAsDouble")
-  public double getBestandWertInEuro() {
-    return FfbDepotUtils.convertGermanNumberToDouble(getBestandWertInEuroAsString());
-  }
+  @JsonProperty("preisDatum")
+  @JsonDeserialize(using = GermanDateToLocalDateDeserializer.class)
+  LocalDate getPreisDatum();
 
-  @Value.Parameter
-  @SerializedName("ruecknahmepreis")
-  protected abstract String getRuecknahmePreisAsString();
-
-  @Value.Derived
-  @SerializedName("ruecknahmepreisAsDouble")
-  public double getRuecknahmePreis() {
-    return FfbDepotUtils.convertGermanNumberToDouble(getRuecknahmePreisAsString());
-  }
-
-  @Value.Parameter
-  @SerializedName("preisDatum")
-  protected abstract String getPreisDatumAsString();
-
-  @Value.Derived
-  @SerializedName("preisDatumAsDate")
-  public LocalDate getPreisdatum() {
-    return FfbDepotUtils.convertGermanDateToLocalDate(getPreisDatumAsString());
-  }
-
-  @Value.Parameter
-  @SerializedName("benchmarkName")
-  public abstract String getBenchmarkName();
+  @JsonProperty("benchmarkName")
+  String getBenchmarkName();
 
   /**
    * Compares by ISIN and WKN, then the currency and the amount of units, then the worth of the funds, the price date and the
@@ -120,17 +86,18 @@ public abstract class FfbFondsbestand implements Comparable<FfbFondsbestand> {
    * ).
    */
   @Override
-  public int compareTo(FfbFondsbestand other) {
-    return ComparisonChain.start()
-        .compare(this.getIsin(), other.getIsin())
-        .compare(this.getWkn(), other.getWkn())
-        .compare(this.getFondsname(), other.getFondsname())
-        .compare(this.getFondswaehrung(), other.getFondswaehrung())
-        .compare(this.getBestandStueckzahl(), other.getBestandStueckzahl())
-        .compare(this.getBestandWertInEuro(), other.getBestandWertInEuro())
-        .compare(this.getPreisdatum(), other.getPreisdatum())
-        .compare(this.getBenchmarkName(), other.getBenchmarkName())
-        .result();
+  default int compareTo(FfbFondsbestand other) {
+    Comparator comparator = Comparator
+        .comparing(FfbFondsbestand::getIsin)
+        .thenComparing(FfbFondsbestand::getWkn)
+        .thenComparing(FfbFondsbestand::getFondsname)
+        .thenComparing(FfbFondsbestand::getFondswaehrung)
+        .thenComparing(FfbFondsbestand::getBestandStueckzahl)
+        .thenComparing(FfbFondsbestand::getBestandWertInEuro)
+        .thenComparing(FfbFondsbestand::getPreisDatum)
+        .thenComparing(FfbFondsbestand::getBenchmarkName);
+
+    return comparator.compare(this, other);
   }
 
 }

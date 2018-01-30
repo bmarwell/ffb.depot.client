@@ -20,49 +20,36 @@
 
 package de.bmarwell.ffb.depot.client.json;
 
-import de.bmarwell.ffb.depot.client.FfbDepotUtils;
-
-import com.google.gson.annotations.SerializedName;
-
-import org.immutables.gson.Gson;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import de.bmarwell.ffb.depot.client.util.GermanDateToLocalDateDeserializer;
+import de.bmarwell.ffb.depot.client.util.GermanNumberToBigDecimalDeserializer;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Optional;
 import org.immutables.value.Value;
-import org.threeten.bp.LocalDate;
 
 /**
  * Das JSON-Response-Objekt von fidelity.de (FFB), welches Performanceinformationen zu allen Depots dieses Logins enthält.
  */
 @Value.Immutable
-@Gson.TypeAdapters
-public abstract class FfbPerformanceResponse {
+public interface FfbPerformanceResponse {
 
-  @SerializedName("login")
-  protected abstract String isLoginAsString();
+  @JsonProperty("login")
+  boolean isLogin();
 
-  public boolean isLogin() {
-    return Boolean.parseBoolean(isLoginAsString());
-  }
+  @JsonProperty("performanceGesamt")
+  @JsonDeserialize(using = GermanNumberToBigDecimalDeserializer.class)
+  BigDecimal getPerformanceGesamt();
 
-  @SerializedName("performanceGesamt")
-  protected abstract String getPerformanceGesamtAsString();
+  @JsonProperty("performanceDurchschnitt")
+  @JsonDeserialize(using = GermanNumberToBigDecimalDeserializer.class)
+  BigDecimal getPerformanceDurchschnitt();
 
-  public double getPerformanceGesamt() {
-    return FfbDepotUtils.convertGermanNumberToDouble(getPerformanceGesamtAsString());
-  }
+  @JsonProperty("ersterZufluss")
+  @JsonDeserialize(using = GermanDateToLocalDateDeserializer.class)
+  LocalDate getErsterZufluss();
 
-  @SerializedName("performanceDurchschnitt")
-  protected abstract String getPerformanceDurchschnittAsString();
-
-  public double getPerformanceDurchschnitt() {
-    return FfbDepotUtils.convertGermanNumberToDouble(getPerformanceDurchschnittAsString());
-  }
-
-  @SerializedName("ersterZufluss")
-  protected abstract String getErsterZuflussAsString();
-
-  public LocalDate getErsterZufluss() {
-    return FfbDepotUtils.convertGermanDateToLocalDate(getErsterZuflussAsString());
-  }
-
-  public abstract String getErrormessage();
+  Optional<String> getErrormessage();
 
 }
