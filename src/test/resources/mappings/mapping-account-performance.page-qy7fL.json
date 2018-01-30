@@ -1,0 +1,26 @@
+{
+  "id" : "25d7de0f-5c2f-3ab0-968e-4d3ba377963b",
+  "request" : {
+    "url" : "/de/mobile/account/performance.page",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-account-performance.page-qy7fL.txt",
+    "headers" : {
+      "Date" : "Tue, 30 Jan 2018 11:39:12 GMT",
+      "FIL-MW-ID" : "E-03147",
+      "X-Powered-By" : "Servlet/3.0",
+      "Vary" : "Accept-Encoding",
+      "Cache-Control" : "max-age=0",
+      "Expires" : "Tue, 30 Jan 2018 11:39:12 GMT",
+      "Keep-Alive" : "timeout=10, max=97",
+      "Connection" : "Keep-Alive",
+      "Content-Type" : "text/html; charset=UTF-8",
+      "Content-Language" : "en-GB",
+      "Set-Cookie" : "TS01b2ea2a=0126dfb55c84ab135a4e507ea52f84ebe7b6171c8e68e912eddd1dbfbbd8573ec10e7fb1625ed308842b433e5c05e2ff5af348bdcda01fe4e06c3e85a7d9e091c2256e16fc; Path=/",
+      "Transfer-Encoding" : "chunked"
+    }
+  },
+  "uuid" : "25d7de0f-5c2f-3ab0-968e-4d3ba377963b"
+}

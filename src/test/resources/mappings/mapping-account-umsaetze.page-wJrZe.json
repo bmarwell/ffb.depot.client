@@ -1,0 +1,26 @@
+{
+  "id" : "181f9e7f-3ae3-38a5-bf1f-20df40766e92",
+  "request" : {
+    "url" : "/de/mobile/account/umsaetze.page?auftragstyp=ALLE&datumsauswahl=16.08.2017%2B-%2B30.01.2018",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-account-umsaetze.page-wJrZe.txt",
+    "headers" : {
+      "Date" : "Tue, 30 Jan 2018 10:49:04 GMT",
+      "FIL-MW-ID" : "E-03147",
+      "X-Powered-By" : "Servlet/3.0",
+      "Set-Cookie" : [ "JSESSIONID=0000DP8NCYXa3-6ZBXNX5iQP5WK:gswspd05w; Path=/; Secure; HttpOnly", "TS01b2ea2a=0126dfb55c4a1fae4cabdd1388bc915ef15a5b716dd9f3d410baef8f9b854337f371d591dac90cafbf9fed41eaa7049639a06933d3a0eefd7b00c2a2213079610e224c7204; Path=/" ],
+      "Expires" : "Thu, 01 Dec 1994 16:00:00 GMT",
+      "Cache-Control" : "no-cache=\"set-cookie, set-cookie2\"",
+      "Vary" : "Accept-Encoding",
+      "Keep-Alive" : "timeout=10, max=98",
+      "Connection" : "Keep-Alive",
+      "Content-Type" : "text/html; charset=UTF-8",
+      "Content-Language" : "en-GB",
+      "Transfer-Encoding" : "chunked"
+    }
+  },
+  "uuid" : "181f9e7f-3ae3-38a5-bf1f-20df40766e92"
+}

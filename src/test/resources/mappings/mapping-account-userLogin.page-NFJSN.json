@@ -1,0 +1,29 @@
+{
+  "id" : "6525306e-2dfa-3da4-8101-d0484e6814fa",
+  "request" : {
+    "url" : "/de/mobile/MyFFB/account/userLogin.page",
+    "method" : "POST",
+    "bodyPatterns" : [ {
+      "equalTo" : "login=22222301&password=91901"
+    } ]
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-account-userLogin.page-NFJSN.txt",
+    "headers" : {
+      "Date" : "Tue, 30 Jan 2018 12:08:40 GMT",
+      "FIL-MW-ID" : "E-03147",
+      "X-Powered-By" : "Servlet/3.0",
+      "Set-Cookie" : [ "JSESSIONID=0000mURJoE1haIBIf2b_KPgML1I:gswspd06w; Path=/; Secure; HttpOnly", "TS01b2ea2a=0126dfb55c3188246e5f195338d9e1daab57dc81305b98ee99889c55b5453d3cdbad657c8c36639c4ef3ce828047e66acd9f5350fa18142952ea427c2df5675bf23b270dfe; Path=/" ],
+      "Expires" : "Thu, 01 Dec 1994 16:00:00 GMT",
+      "Cache-Control" : "no-cache=\"set-cookie, set-cookie2\"",
+      "Vary" : "Accept-Encoding",
+      "Keep-Alive" : "timeout=10, max=100",
+      "Connection" : "Keep-Alive",
+      "Content-Type" : "text/html; charset=UTF-8",
+      "Content-Language" : "en-GB",
+      "Transfer-Encoding" : "chunked"
+    }
+  },
+  "uuid" : "6525306e-2dfa-3da4-8101-d0484e6814fa"
+}

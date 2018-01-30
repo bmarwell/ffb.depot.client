@@ -20,10 +20,11 @@
 
 package de.bmarwell.ffb.depot.client.json;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.bmarwell.ffb.depot.client.util.GermanDateToLocalDateDeserializer;
 import de.bmarwell.ffb.depot.client.util.GermanNumberToBigDecimalDeserializer;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -33,6 +34,7 @@ import org.immutables.value.Value;
  * Das JSON-Response-Objekt von fidelity.de (FFB), welches Performanceinformationen zu allen Depots dieses Logins enthält.
  */
 @Value.Immutable
+@JsonDeserialize(as = ImmutableFfbPerformanceResponse.class)
 public interface FfbPerformanceResponse {
 
   @JsonProperty("login")
@@ -51,5 +53,15 @@ public interface FfbPerformanceResponse {
   LocalDate getErsterZufluss();
 
   Optional<String> getErrormessage();
+
+  @Value.Check
+  default FfbPerformanceResponse normalize() {
+    if (getErrormessage().orElse("NONEMPTY").isEmpty()) {
+      return ImmutableFfbPerformanceResponse.copyOf(this)
+          .withErrormessage(Optional.empty());
+    }
+
+    return this;
+  }
 
 }

@@ -1,0 +1,11 @@
+
+{
+	"login" : "false",
+	"error"	: "Sie sind derzeit nicht als Benutzer eingeloggt. Bitte melden Sie sich an fidelity.de an, um fortzufahren.",
+	"anzahlUmsaetze"	: "",
+  "urlFactsheetOverlay" : "/de/fonds/quick-factsheet-overlay.page?",
+  "hash" : "",
+  "auftragstyp" : [ ],
+	"umsaetze"	: [ ]
+}
+	

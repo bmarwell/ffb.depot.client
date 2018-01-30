@@ -20,6 +20,8 @@
 
 package de.bmarwell.ffb.depot.client.json;
 
+import de.bmarwell.ffb.depot.client.json.ImmutableLoginResponse.Builder;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.util.Optional;
@@ -32,6 +34,10 @@ import org.immutables.value.Value;
 @JsonDeserialize(as = ImmutableLoginResponse.class)
 public interface LoginResponse {
 
+  static Builder builder() {
+    return ImmutableLoginResponse.builder();
+  }
+
   @JsonProperty("loggedIn")
   boolean isLoggedIn();
 
@@ -41,21 +47,30 @@ public interface LoginResponse {
    * @return the username.
    */
   @JsonProperty("username")
-  String getUsername();
+  @Value.Default
+  default String getUsername() {
+    return "";
+  }
 
   /**
    * The customers first name.
    *
    * @return the first name.
    */
-  String getFirstname();
+  @Value.Default
+  default String getFirstname() {
+    return "";
+  }
 
   /**
    * The customers last name.
    *
    * @return the last name.
    */
-  String getLastname();
+  @Value.Default
+  default String getLastname() {
+    return "";
+  }
 
   /**
    * The type of the user.
@@ -64,10 +79,10 @@ public interface LoginResponse {
    *
    * @return the user type.
    */
-  String getUsertype();
-
-  @JsonProperty("ZustimmungNutzungsbedingungenFFS")
-  boolean getAgbAgreedAsString();
+  @Value.Default
+  default String getUsertype() {
+    return "NOT_LOGGED_IN";
+  }
 
   /**
    * Error message set by FFB.
@@ -76,4 +91,6 @@ public interface LoginResponse {
    */
   Optional<String> getErrormessage();
 
+  @JsonProperty("ZustimmungNutzungsbedingungenFFS")
+  boolean getAgbAgreed();
 }

@@ -1,4 +1,4 @@
-package de.bmarwell.ffb.depot.tests;
+package de.bmarwell.ffb.depot.client;
 
 import de.bmarwell.ffb.depot.client.err.FfbClientError;
 

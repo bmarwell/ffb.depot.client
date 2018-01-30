@@ -1,0 +1,142 @@
+
+ { 
+  "login" : "true",
+  
+    "modelportfolio" : 
+          false
+        ,
+    
+    "letztesUpdate"   : "30.01.2018",
+    "transaktionen"   : "",
+    "postfach"      : "",
+    "sparplaene"    : "",
+    "gesamtwert"    : "45.303,82",
+    "fondsbestand"    : "45.296,56",
+    "fondsbestandMitVL" : "45.296,56",    
+    "abwicklungskonto" : "7,26",
+    "einstandswert"   : "29.705,67",
+    "guvAktuell"    : "15.590,89", 
+    "guvAktuellMitVL"    : "15.590,89",
+    "guvReal"     : "0,05",
+    "depotstammnummer"  : "222223",
+    "depots"      : [
+    
+          {
+          "depotname"     : "Standard-Depot",
+          "depotnummer"   : "222223",
+          "bestand"     : "45.296,56",
+          "bestandMitVL"      : "45.296,56",  
+          "guvAktuell"    : "15.590,89",
+          "guvAktuellMitVL"    : "15.590,89",
+          "guvReal"         : "0,05",
+          "fondsbestaende"  : [    
+      {
+        "wkn"           : "847512",
+        "isin"            : "DE0008475120",
+        "fondsname"         : "Allianz Informationstechnologie ",
+        "kagName"         : "Allianz Global Investors KAG",
+        "fondswaehrung"       : "EUR",
+        "bestandStueckzahl"     : "132,633",
+        "bestandWertInFondswaehrung"  : "31.534,82",
+        "bestandWertInEuro"     : "31.534,82",
+        "ruecknahmepreis"     : "237,76",
+        "preisDatum"        : "29.01.2018",
+        "benchmarkName"       : "MSCI ACWI/INFORMATION TECH STRD USD"
+      },    
+      {
+        "wkn"           : "847421",
+        "isin"            : "DE0008474214",
+        "fondsname"         : "DWS Telemedia Typ 0",
+        "kagName"         : "Deutsche Asset &amp; Wealth Management GmbH",
+        "fondswaehrung"       : "EUR",
+        "bestandStueckzahl"     : "6,059",
+        "bestandWertInFondswaehrung"  : "936,24",
+        "bestandWertInEuro"     : "936,24",
+        "ruecknahmepreis"     : "154,52",
+        "preisDatum"        : "29.01.2018",
+        "benchmarkName"       : "FWW® Sektordurchschnitt Aktienfonds Kommunikation Welt"
+      },    
+      {
+        "wkn"           : "764930",
+        "isin"            : "LU0136412771",
+        "fondsname"         : "Ethna-AKTIV A",
+        "kagName"         : "Ethenea Independent Investors S.A.",
+        "fondswaehrung"       : "EUR",
+        "bestandStueckzahl"     : "2,139",
+        "bestandWertInFondswaehrung"  : "283,57",
+        "bestandWertInEuro"     : "283,57",
+        "ruecknahmepreis"     : "132,57",
+        "preisDatum"        : "29.01.2018",
+        "benchmarkName"       : "FWW® Sektordurchschnitt Mischfonds ausgewogen Welt"
+      },    
+      {
+        "wkn"           : "A0M430",
+        "isin"            : "LU0323578657",
+        "fondsname"         : "Flossbach von Storch SICAV - Multiple Opportunities R ",
+        "kagName"         : "Flossbach von Storch Invest S.A.",
+        "fondswaehrung"       : "EUR",
+        "bestandStueckzahl"     : "1,387",
+        "bestandWertInFondswaehrung"  : "338,14",
+        "bestandWertInEuro"     : "338,14",
+        "ruecknahmepreis"     : "243,79",
+        "preisDatum"        : "29.01.2018",
+        "benchmarkName"       : "FWW® Sektordurchschnitt Mischfonds flexibel Welt"
+      },    
+      {
+        "wkn"           : "A0MZK6",
+        "isin"            : "LU0316494805",
+        "fondsname"         : "Franklin Templeton Global Fundamen. Strat. Fund A acc EUR",
+        "kagName"         : "Franklin Templeton Investment",
+        "fondswaehrung"       : "EUR",
+        "bestandStueckzahl"     : "25,709",
+        "bestandWertInFondswaehrung"  : "313,91",
+        "bestandWertInEuro"     : "313,91",
+        "ruecknahmepreis"     : "12,21",
+        "preisDatum"        : "29.01.2018",
+        "benchmarkName"       : "FWW® Sektordurchschnitt Mischfonds flexibel Welt"
+      },    
+      {
+        "wkn"           : "847502",
+        "isin"            : "DE0008475021",
+        "fondsname"         : "Industria A (EUR)",
+        "kagName"         : "Allianz Global Investors KAG",
+        "fondswaehrung"       : "EUR",
+        "bestandStueckzahl"     : "105,814",
+        "bestandWertInFondswaehrung"  : "11.258,61",
+        "bestandWertInEuro"     : "11.258,61",
+        "ruecknahmepreis"     : "106,40",
+        "preisDatum"        : "29.01.2018",
+        "benchmarkName"       : "MSCI EUROPE LARGE CAP STRD USD"
+      },    
+      {
+        "wkn"           : "A0MND8",
+        "isin"            : "GB00B1VMCY93",
+        "fondsname"         : "M&amp;G Optimal Income A",
+        "kagName"         : "M&amp;G Investment Funds",
+        "fondswaehrung"       : "EUR",
+        "bestandStueckzahl"     : "15,230",
+        "bestandWertInFondswaehrung"  : "311,83",
+        "bestandWertInEuro"     : "311,83",
+        "ruecknahmepreis"     : "20,47",
+        "preisDatum"        : "29.01.2018",
+        "benchmarkName"       : "FWW® Sektordurchschnitt Mischfonds defensiv Welt"
+      },    
+      {
+        "wkn"           : "A1J3AM",
+        "isin"            : "DE000A1J3AM3",
+        "fondsname"         : "Max Otte Vermögensbildungsfonds AMI P (t) ",
+        "kagName"         : "AmpegaGerling Investment GmbH",
+        "fondswaehrung"       : "EUR",
+        "bestandStueckzahl"     : "2,391",
+        "bestandWertInFondswaehrung"  : "319,44",
+        "bestandWertInEuro"     : "319,44",
+        "ruecknahmepreis"     : "133,60",
+        "preisDatum"        : "29.01.2018",
+        "benchmarkName"       : "FWW® Sektordurchschnitt Mischfonds dynamisch Welt"
+      }]
+          }
+         
+      ],
+    
+  "ErrorMessage"  : ""
+}

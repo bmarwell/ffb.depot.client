@@ -21,6 +21,9 @@
 package de.bmarwell.ffb.depot.client.value;
 
 import de.bmarwell.ffb.depot.client.FfbMobileClient;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Comparator;
 import org.immutables.value.Value;
 
@@ -32,10 +35,7 @@ import org.immutables.value.Value;
  * werden.</p>
  */
 @Value.Immutable
-public abstract class FfbDepotNummer implements Comparable<FfbDepotNummer> {
-
-  @Value.Parameter
-  public abstract String getDepotNummer();
+public interface FfbDepotNummer extends Comparable<FfbDepotNummer> {
 
   /**
    * Erstellt eine Depotnummer als Immutable Objekt, die dem Konstruktor {@link FfbMobileClient} übergeben werden kann.
@@ -48,16 +48,21 @@ public abstract class FfbDepotNummer implements Comparable<FfbDepotNummer> {
    *          vergeben und kann nicht geändert werden.</p>
    * @return ein Depotnummer-Objekt, immutable.
    */
-  public static FfbDepotNummer of(final String depotnummer) {
+  @JsonCreator
+  static FfbDepotNummer of(final String depotnummer) {
     return ImmutableFfbDepotNummer.of(depotnummer);
   }
 
-  public static FfbDepotNummer empty() {
+  static FfbDepotNummer empty() {
     return of("");
   }
 
+  @Value.Parameter
+  @JsonValue
+  String getDepotNummer();
+
   @Override
-  public int compareTo(FfbDepotNummer other) {
+  default int compareTo(final FfbDepotNummer other) {
     final Comparator<FfbDepotNummer> comparator = Comparator.comparing(FfbDepotNummer::getDepotNummer);
 
     return comparator.compare(this, other);

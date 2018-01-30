@@ -1,0 +1,26 @@
+{
+  "id" : "981315d9-a80a-3c07-80b2-71354b16d90e",
+  "request" : {
+    "url" : "/de/mobile/MyFFB/account/MyFFB.page",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-account-MyFFB.page-z72W2.txt",
+    "headers" : {
+      "Date" : "Tue, 30 Jan 2018 10:27:43 GMT",
+      "FIL-MW-ID" : "E-03147",
+      "X-Powered-By" : "Servlet/3.0",
+      "Vary" : "Accept-Encoding",
+      "Cache-Control" : "max-age=0",
+      "Expires" : "Tue, 30 Jan 2018 10:27:43 GMT",
+      "Keep-Alive" : "timeout=10, max=95",
+      "Connection" : "Keep-Alive",
+      "Content-Type" : "text/html; charset=UTF-8",
+      "Content-Language" : "en-GB",
+      "Set-Cookie" : "TS01b2ea2a=0126dfb55ca49d2d2cab337f3d24eaad4920a64ceac3313e96d69062a82839992dd9ecdf7aac83f327108cfc43da53bc2e674ba5dc; Path=/",
+      "Transfer-Encoding" : "chunked"
+    }
+  },
+  "uuid" : "981315d9-a80a-3c07-80b2-71354b16d90e"
+}

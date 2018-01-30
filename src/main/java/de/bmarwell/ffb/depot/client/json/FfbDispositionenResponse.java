@@ -20,17 +20,20 @@
 
 package de.bmarwell.ffb.depot.client.json;
 
+import de.bmarwell.ffb.depot.client.util.GermanNumberToBigDecimalDeserializer;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import de.bmarwell.ffb.depot.client.util.GermanNumberToBigDecimalDeserializer;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import org.immutables.value.Value;
 
 /**
  * The response object for the Dispositionen page (order history).
  */
 @Value.Immutable
+@JsonDeserialize(as = ImmutableFfbDispositionenResponse.class)
 public interface FfbDispositionenResponse {
 
   /**
@@ -41,14 +44,12 @@ public interface FfbDispositionenResponse {
   @JsonProperty("login")
   boolean isLogin();
 
-
   @JsonProperty("dispositionenAnzahl")
   int getDispositionenAnzahl();
 
   @JsonProperty("dispositionenBetrag")
   @JsonDeserialize(using = GermanNumberToBigDecimalDeserializer.class)
-  BigDecimal getDispositionenBetragAsString();
-
+  BigDecimal getDispositionenBetrag();
 
   List<FfbDisposition> getDispositionen();
 
@@ -57,6 +58,16 @@ public interface FfbDispositionenResponse {
    *
    * @return error message.
    */
-  String getErrormessage();
+  Optional<String> getErrormessage();
+
+  @Value.Check
+  default FfbDispositionenResponse normalize() {
+    if (getErrormessage().orElse("NONEMPTY").isEmpty()) {
+      return ImmutableFfbDispositionenResponse.copyOf(this)
+          .withErrormessage(Optional.empty());
+    }
+
+    return this;
+  }
 
 }

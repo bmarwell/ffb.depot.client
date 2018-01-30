@@ -20,6 +20,8 @@
 
 package de.bmarwell.ffb.depot.client.json;
 
+import de.bmarwell.ffb.depot.client.json.ImmutableFfbDisposition.Builder;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.math.BigDecimal;
@@ -33,6 +35,10 @@ import org.immutables.value.Value;
 @Value.Immutable
 @JsonDeserialize(as = ImmutableFfbDisposition.class)
 public interface FfbDisposition extends Comparable<FfbDisposition> {
+
+  static Builder builder() {
+    return ImmutableFfbDisposition.builder();
+  }
 
   /**
    * Returns the name of the depot this transaction belongs to.
@@ -121,7 +127,6 @@ public interface FfbDisposition extends Comparable<FfbDisposition> {
   @JsonProperty("betrag")
   BigDecimal getBetrag();
 
-
   /**
    * How many units of the investment funds are traded.
    *
@@ -144,8 +149,8 @@ public interface FfbDisposition extends Comparable<FfbDisposition> {
    * <p>A date sorter might be an interesting alternative.</p>
    */
   @Override
-  default int compareTo(FfbDisposition other) {
-    Comparator comparator = Comparator
+  default int compareTo(final FfbDisposition other) {
+    final Comparator comparator = Comparator
         .comparing(FfbDisposition::getDepot)
         .thenComparing(FfbDisposition::getIsin)
         .thenComparing(FfbDisposition::getAuftragtyp)
@@ -155,5 +160,6 @@ public interface FfbDisposition extends Comparable<FfbDisposition> {
 
     return comparator.compare(this, other);
   }
+
 
 }

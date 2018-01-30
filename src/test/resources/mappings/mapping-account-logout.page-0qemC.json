@@ -1,0 +1,24 @@
+{
+  "id" : "e800e118-ebcd-3bed-8173-92254fb87a40",
+  "request" : {
+    "url" : "/de/mobile/account/logout.page",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-account-logout.page-0qemC.txt",
+    "headers" : {
+      "Date" : "Tue, 30 Jan 2018 10:32:08 GMT",
+      "FIL-MW-ID" : "E-03147",
+      "X-Powered-By" : "Servlet/3.0",
+      "Set-Cookie" : [ "JSESSIONID=0000IxvE4H67CjwIhLVmeJ3bRNf:gswspd06w; Path=/; Secure; HttpOnly", "TS01b2ea2a=0126dfb55c65e165c0a39bc5a0106972262c6389e47dd75a5c101d36f3d6b148472fc4021460472d6b5b4225a360fa9a36fe39a83c191a6f38e595e0cbbef5bb197c674921; Path=/" ],
+      "Expires" : "Thu, 01 Dec 1994 16:00:00 GMT",
+      "Cache-Control" : "no-cache=\"set-cookie, set-cookie2\"",
+      "Keep-Alive" : "timeout=10, max=89",
+      "Connection" : "Keep-Alive",
+      "Content-Type" : "text/html; charset=UTF-8",
+      "Content-Language" : "en-GB"
+    }
+  },
+  "uuid" : "e800e118-ebcd-3bed-8173-92254fb87a40"
+}

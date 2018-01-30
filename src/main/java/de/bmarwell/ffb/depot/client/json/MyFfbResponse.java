@@ -20,8 +20,15 @@
 
 package de.bmarwell.ffb.depot.client.json;
 
+import de.bmarwell.ffb.depot.client.util.GermanDateToLocalDateDeserializer;
+import de.bmarwell.ffb.depot.client.util.GermanNumberToBigDecimalDeserializer;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
 import org.immutables.value.Value;
 
 /**
@@ -31,24 +38,27 @@ import org.immutables.value.Value;
  * Daten des FFB-Kontos.</p>
  */
 @Value.Immutable
-@JsonSerialize(as = ImmutableFfbDepotInfo.class)
+@JsonSerialize(as = ImmutableMyFfbResponse.class)
+@JsonDeserialize(as = ImmutableMyFfbResponse.class)
 public interface MyFfbResponse {
-
-  @JsonProperty("login")
-  String isLoginAsString();
-
-  @JsonProperty("modelportfolio")
-  boolean isModelportfolio();
-
-  String getLetztesUpdate();
-
-  @JsonProperty("gesamtwert")
-  double getGesamtwert();
-
-  @JsonProperty("depots")
-  FfbDepotliste getDepots();
 
   static ImmutableMyFfbResponse.Builder builder() {
     return ImmutableMyFfbResponse.builder();
   }
+
+  @JsonProperty("login")
+  boolean isLoggedIn();
+
+  @JsonProperty("modelportfolio")
+  boolean isModelportfolio();
+
+  @JsonDeserialize(using = GermanDateToLocalDateDeserializer.class)
+  LocalDate getLetztesUpdate();
+
+  @JsonProperty("gesamtwert")
+  @JsonDeserialize(using = GermanNumberToBigDecimalDeserializer.class)
+  BigDecimal getGesamtwert();
+
+  @JsonProperty("depots")
+  List<FfbDepotInfo> getDepots();
 }

@@ -1,0 +1,26 @@
+{
+  "id" : "50268995-7b34-3604-9645-202a2d7c71dc",
+  "request" : {
+    "url" : "/de/mobile/account/dispositionen.page",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-account-dispositionen.page-r1zBo.txt",
+    "headers" : {
+      "Date" : "Tue, 30 Jan 2018 12:08:41 GMT",
+      "FIL-MW-ID" : "E-03147",
+      "X-Powered-By" : "Servlet/3.0",
+      "Vary" : "Accept-Encoding",
+      "Cache-Control" : "max-age=0",
+      "Expires" : "Tue, 30 Jan 2018 12:08:41 GMT",
+      "Keep-Alive" : "timeout=10, max=99",
+      "Connection" : "Keep-Alive",
+      "Content-Type" : "text/html; charset=UTF-8",
+      "Content-Language" : "en-GB",
+      "Set-Cookie" : "TS01b2ea2a=0126dfb55c3188246e5f195338d9e1daab57dc81305b98ee99889c55b5453d3cdbad657c8c36639c4ef3ce828047e66acd9f5350fa18142952ea427c2df5675bf23b270dfe; Path=/",
+      "Transfer-Encoding" : "chunked"
+    }
+  },
+  "uuid" : "50268995-7b34-3604-9645-202a2d7c71dc"
+}

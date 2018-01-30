@@ -1,0 +1,11 @@
+
+   {
+   "login" : "true",
+   "dispositionenAnzahl" : 0,
+   "dispositionenBetrag" : "0,00",
+   "dispositionen":[ 
+      
+  ],
+  "errormessage" 	: ""
+  }
+  

@@ -20,15 +20,18 @@
 
 package de.bmarwell.ffb.depot.client;
 
+import static de.bmarwell.ffb.depot.client.util.GermanDateToLocalDateDeserializer.GERMAN_DATE_FORMAT;
 import static java.util.Objects.requireNonNull;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import de.bmarwell.ffb.depot.client.json.FfbDepotInfo;
-import de.bmarwell.ffb.depot.client.json.FfbDepotliste;
 import de.bmarwell.ffb.depot.client.json.MyFfbResponse;
 import de.bmarwell.ffb.depot.client.value.FfbDepotNummer;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.util.List;
+import org.slf4j.Logger;
 
 
 /**
@@ -40,6 +43,10 @@ import java.time.format.DateTimeFormatter;
  */
 public final class FfbDepotUtils {
 
+  /**
+   * Logger.
+   */
+  private static final Logger LOG = getLogger(FfbDepotUtils.class);
 
   private FfbDepotUtils() {
     // utility class
@@ -57,33 +64,28 @@ public final class FfbDepotUtils {
    * kann ggf. mehrere Depots sehen.
    * @return der Gesamtbestand in Depotwährung.
    */
-  public static BigDecimal getGesamtBestand(MyFfbResponse myFfbResponse, FfbDepotNummer depotnummer) {
+  public static BigDecimal getGesamtBestand(final MyFfbResponse myFfbResponse, final FfbDepotNummer depotnummer) {
     requireNonNull(depotnummer, () -> "depotnummer in getGesamtBestand");
-    final FfbDepotliste depots = requireNonNull(myFfbResponse, () -> "Keine Daten übergeben!")
+    final List<FfbDepotInfo> depots = requireNonNull(myFfbResponse, () -> "Keine Daten übergeben!")
         .getDepots();
 
-    BigDecimal tempDepotwert = new BigDecimal(0);
+    final BigDecimal sum = depots.stream()
+        .filter(depot -> depotnummer.equals(depot.getDepotNummer()))
+        .map(FfbDepotInfo::getGesamtDepotBestand)
+        .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-    /* Es kann mehrere Depots mit der gleichen Depotnummer geben (z.B. Haupt- und VL-Depot). */
-    for (final FfbDepotInfo di : depots) {
-      if (!di.getDepotNummer().equals(depotnummer)) {
-        /* Dieses Depot im sichtbaren Login ist ein anderes, als das für Umsätze angefordete */
-        continue;
-      }
+    LOG.debug("Summe aller Depotbestände mit Depotnummer [{}] = [{}].", depotnummer, sum);
 
-      tempDepotwert.add(di.getGesamtDepotBestand());
-    }
-
-    return tempDepotwert;
+    return sum;
   }
 
 
-  public static String convertDateRangeToGermanDateRangeString(LocalDate from, LocalDate until) {
+  public static String convertDateRangeToGermanDateRangeString(final LocalDate from, final LocalDate until) {
     requireNonNull(from, () -> "from is null");
     requireNonNull(until, () -> "from is null");
     requireNonNull(from.isBefore(until),() ->  "from must be before until!");
 
-    StringBuilder germanDateRange = new StringBuilder();
+    final StringBuilder germanDateRange = new StringBuilder();
     germanDateRange.append(from.format(GERMAN_DATE_FORMAT));
     germanDateRange.append("+-+");
     germanDateRange.append(until.format(GERMAN_DATE_FORMAT));

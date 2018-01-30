@@ -1,0 +1,12 @@
+ 
+{ 
+  "loggedIn"      : "true",
+  "username"      : "M1000590054 E1000590054",
+  "firstname"     : "M1000590054",
+  "lastname"      : "E1000590054",
+  "usertype"      : "Customer",
+  "onetimepassword"      : "false",
+  "ZustimmungNutzungsbedingungenFFS"      : "",
+  "errormessage"  : ""
+}    
+  

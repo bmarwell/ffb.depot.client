@@ -1,0 +1,11 @@
+
+    {
+      "login"                   : "true",
+      "performanceGesamt"       : "55,11",
+      
+      "performanceDurchschnitt" : "11,12",
+      
+      "ersterZufluss"           : "02.12.2013",
+      "errormessage"            : ""
+    }
+  

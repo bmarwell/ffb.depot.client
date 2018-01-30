@@ -1,0 +1,11 @@
+ 
+{ 
+  "loggedIn"      : "false",
+  "username"      : "",
+  "firstname"     : "",
+  "lastname"      : "",
+  "usertype"      : "unknown",
+  "onetimepassword"      : "false",
+  "ZustimmungNutzungsbedingungenFFS"      : "",
+  "errormessage"  : ""
+}    

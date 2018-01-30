@@ -32,16 +32,14 @@ import de.bmarwell.ffb.depot.client.util.JacksonMessageBodyReader;
 import de.bmarwell.ffb.depot.client.value.FfbAuftragsTyp;
 import de.bmarwell.ffb.depot.client.value.FfbLoginKennung;
 import de.bmarwell.ffb.depot.client.value.FfbPin;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
+
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Map.Entry;
+import java.util.StringJoiner;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -50,6 +48,8 @@ import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,10 +85,6 @@ public class FfbMobileClient {
   private static final Logger LOG = LoggerFactory.getLogger(FfbMobileClient.class);
 
   /**
-   * Base URL including protocol and domain for access.
-   */
-  private static final String DOMAIN = "https://www.fidelity.de";
-  /**
    * Path to login (DOMAIN + PATH).
    */
   private static final String PATH_LOGIN = "/de/mobile/MyFFB/account/userLogin.page";
@@ -118,63 +114,37 @@ public class FfbMobileClient {
   /**
    * The web client used by this class to perform http requests.
    */
-  private final Client webClient;
-
+  private final Client webClient = ClientBuilder.newClient()
+      .register(JacksonMessageBodyReader.class);
+  /**
+   * Base URL including protocol and domain for access.
+   */
+  private final URI basedomain;
   /**
    * Saved PIN for use in {@link #logon()}-method.
    */
   private FfbPin pin = FfbPin.of("");
-
   /**
    * User for use in {@link #logon()}-method.
    */
   private FfbLoginKennung user = FfbLoginKennung.of("");
-
   /**
    * Holding information about successful login.
    */
-  private Optional<LoginResponse> login = Optional.<LoginResponse>empty();
-  /**
-   * The URL to the MyFFB-Page, created in the constructor.
-   */
-  private static final URI urlMyffb = URI.create(DOMAIN + PATH_DEPOT);
-  /**
-   * The URL to the Login-Page, created in the constructor.
-   */
-  private static final URI urlLogin = URI.create(DOMAIN + PATH_LOGIN);
-  /**
-   * The URL to the Performance-Page, created in the constructor.
-   */
-  private static final URI urlPerformance = URI.create(DOMAIN + PATH_PERFORMANCE);
-  /**
-   * The URL to the Dispositions-Page, created in the constructor.
-   */
-  private static final URI urlDispositions = URI.create(DOMAIN + PATH_DISPOSITIONEN);
-
-  /**
-   * The URL to the Umsaetze-Page, created in the constructor.
-   */
-  private static final URI urlUmsaetze = URI.create(DOMAIN + PATH_UMSAETZE);
-
-  /**
-   * The URL to the Logout-Page, created in the constructor.
-   */
-  private static final URI urlLogout = URI.create(DOMAIN + PATH_LOGOUT);
+  private LoginResponse login = LoginResponse.builder()
+      .agbAgreed(false)
+      .isLoggedIn(false)
+      .build();
 
   private Map<String, NewCookie> cookies = Collections.unmodifiableMap(new HashMap<>());
-
-  private boolean isLoggedIn = false;
 
   /**
    * Konstruktor for tests and internal uses only. PLease use {@link #FfbMobileClient(FfbLoginKennung, FfbPin)} instead.
    *
    * <p>Wird der Client wie hier ohne User und Pin erstellt, kann gar nichts klappen.</p>
-   *
-   * @throws MalformedURLException Interner Fehler beim Erstellen der URLs.
    */
-  public FfbMobileClient() {
-    this.webClient = ClientBuilder.newClient()
-        .register(JacksonMessageBodyReader.class);
+  public FfbMobileClient(final FfbClientConfiguration config) {
+    basedomain = config.getBaseUrl();
   }
 
   /**
@@ -183,8 +153,20 @@ public class FfbMobileClient {
    * @param user Der Login. Meistens die Depotnummer. Bei mehreren Depots mit selbem Login einfach ebenfalls das Login.
    * @param pin das Passwort fürs Login.
    */
-  public FfbMobileClient(FfbLoginKennung user, FfbPin pin) {
-    this();
+  public FfbMobileClient(final FfbLoginKennung user, final FfbPin pin) {
+    this(user, pin, new FfbDefaultConfig());
+  }
+
+  /**
+   * Erstellt ein Retriever, der von der FFB über die Mobile-Schnittstelle Daten empfängt.
+   *
+   * @param user
+   *     Der Login. Meistens die Depotnummer. Bei mehreren Depots mit selbem Login einfach ebenfalls das Login.
+   * @param pin
+   *     das Passwort fürs Login.
+   */
+  public FfbMobileClient(final FfbLoginKennung user, final FfbPin pin, final FfbClientConfiguration config) {
+    basedomain = config.getBaseUrl();
     this.user = user;
     this.pin = pin;
   }
@@ -199,24 +181,25 @@ public class FfbMobileClient {
    * @throws FfbClientError Error while getting account data.
    */
   public MyFfbResponse fetchAccountData() throws FfbClientError {
-    requireNonNull(login.isPresent(), NOT_USED_LOGIN_METHOD_BEFORE);
+    requireNonNull(login, NOT_USED_LOGIN_METHOD_BEFORE);
 
-    if (!isLoggedIn) {
+    if (!isLoggedIn()) {
       throw new IllegalStateException("Not logged in!");
     }
 
-    final Builder target = webClient
-        .target(urlMyffb)
+    LOG.info("Calling URI: [{}].", getMyFfbUri().toASCIIString());
+    Builder target = webClient
+        .target(getMyFfbUri())
         .request(MediaType.APPLICATION_JSON_TYPE);
 
-    cookies.entrySet().stream()
-        .map(cookieEntry -> target.cookie(cookieEntry.getKey(),cookieEntry.getValue().toCookie().getValue()));
+    for (final Entry<String, NewCookie> cookie : cookies.entrySet()) {
+      target = target.cookie(cookie.getKey(), cookie.getValue().toCookie().getValue());
+    }
 
     final Response response = target
-
         .get();
 
-    MyFfbResponse bestandsResponse = response.readEntity(MyFfbResponse.class);
+    final MyFfbResponse bestandsResponse = response.readEntity(MyFfbResponse.class);
 
     LOG.debug("BestandsResponse: [{}].", bestandsResponse);
 
@@ -229,12 +212,13 @@ public class FfbMobileClient {
    * @throws FfbClientError Error logging in. Wrong login data?
    */
   public void logon() throws FfbClientError {
-    Form form = new Form();
+    final Form form = new Form();
     form.param("login", user.getLoginKennung());
     form.param("password", pin.getPinAsString());
 
+    LOG.info("Calling URI: [{}].", getUriLogin().toASCIIString());
     final Response loginResponse = webClient
-        .target(urlLogin)
+        .target(getUriLogin())
         .request(MediaType.APPLICATION_JSON_TYPE)
         .header("Accept", "application/json;charset=utf-8")
         .header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8" )
@@ -244,17 +228,16 @@ public class FfbMobileClient {
         .post(Entity.form(form));
 
     final LoginResponse ffbLogin = loginResponse.readEntity(LoginResponse.class);
+    login = ffbLogin;
 
-    if (!ffbLogin.isLoggedIn() || ffbLogin.getErrormessage().isPresent()) {
-      LOG.error("Konnte Client nicht einloggen!", ffbLogin);
-      this.cookies = Collections.unmodifiableMap(new HashMap<>());
-      this.isLoggedIn = false;
+    if (!ffbLogin.isLoggedIn() || !ffbLogin.getErrormessage().orElse("").isEmpty()) {
+      LOG.error("Konnte Client nicht einloggen! => [{}]", ffbLogin);
+      cookies = Collections.unmodifiableMap(new HashMap<>());
 
       return;
     }
 
     cookies = loginResponse.getCookies();
-    this.isLoggedIn = true;
     LOG.debug("Cookie names: [{}].", cookies.keySet());
   }
 
@@ -266,27 +249,23 @@ public class FfbMobileClient {
    * @throws IllegalStateException if not logged in.
    */
   public FfbPerformanceResponse getPerformance() throws FfbClientError {
-    Preconditions.checkState(login.isPresent(), NOT_USED_LOGIN_METHOD_BEFORE);
-    Preconditions.checkState(login.get().isLoggedIn(), USER_COULD_NOT_LOG_IN_CHECK_CREDENTIALS);
+    checkLoggedIn();
 
-    FfbPerformanceResponse performanceResponse = null;
+    Builder request = webClient
+        .target(getUriPerformance())
+        .request(MediaType.APPLICATION_JSON_TYPE);
 
-    try {
-      final Page performancePage = webClient.getPage(urlPerformance);
-
-      /* Read json response */
-      final JsonReader reader = new JsonReader(
-          new InputStreamReader(performancePage.getWebResponse().getContentAsStream(), StandardCharsets.UTF_8));
-      final Gson gson = gsonBuilder.create();
-
-      performanceResponse = gson.fromJson(reader, FfbPerformanceResponse.class);
-    } catch (FailingHttpStatusCodeException fsce) {
-      LOG.error(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
-      throw new FfbClientError(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
-    } catch (IOException ioe) {
-      LOG.error(ERROR_RESPONSE_STREAM, ioe);
-      throw new FfbClientError(ERROR_RESPONSE_STREAM, ioe);
+    for (final Map.Entry<String, NewCookie> cookie : cookies.entrySet()) {
+      LOG.debug("Adding cookie: [{}] => [{}].", cookie.getKey(), cookie.getValue().toCookie());
+      request = request.cookie(cookie.getValue().toCookie());
     }
+
+    final Response response = request
+        .get();
+
+    final FfbPerformanceResponse performanceResponse = response.readEntity(FfbPerformanceResponse.class);
+
+    LOG.debug("Performance: [{}].", performanceResponse);
 
     return performanceResponse;
   }
@@ -299,93 +278,137 @@ public class FfbMobileClient {
    * @throws IllegalStateException if not logged in.
    */
   public FfbDispositionenResponse getDispositionen() throws FfbClientError {
-    Preconditions.checkState(login.isPresent(), NOT_USED_LOGIN_METHOD_BEFORE);
-    Preconditions.checkState(login.get().isLoggedIn(), USER_COULD_NOT_LOG_IN_CHECK_CREDENTIALS);
+    checkLoggedIn();
 
-    try {
-      final Page dispositionenPage = webClient.getPage(urlDispositions);
+    Builder builder = webClient.target(getUriDispositionen())
+        .request(MediaType.APPLICATION_JSON_TYPE);
 
-      /* Read json response */
-      final JsonReader reader = new JsonReader(
-          new InputStreamReader(dispositionenPage.getWebResponse().getContentAsStream(), StandardCharsets.UTF_8));
-      final Gson gson = gsonBuilder.create();
-
-      return gson.fromJson(reader, FfbDispositionenResponse.class);
-    } catch (FailingHttpStatusCodeException fsce) {
-      LOG.error(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
-      throw new FfbClientError(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
-    } catch (IOException ioe) {
-      LOG.error(ERROR_RESPONSE_STREAM, ioe);
-      throw new FfbClientError(ERROR_RESPONSE_STREAM, ioe);
-    }
-  }
-
-  public FfbUmsatzResponse getUmsaetze(FfbAuftragsTyp auftragsTyp, LocalDate from, LocalDate until) throws FfbClientError {
-    if (!isLoggedIn) {
-      throw new IllegalStateException("Not logged in");
+    for (final NewCookie cookie : cookies.values()) {
+      builder = builder.cookie(cookie);
     }
 
-    Preconditions.checkNotNull(auftragsTyp, "auftragsTyp");
-    Preconditions.checkNotNull(auftragsTyp, "from");
-    Preconditions.checkNotNull(auftragsTyp, "until");
+    final Response response = builder
+        .get();
 
-    /* Make sure, the from date is not older than the other one */
-    Preconditions.checkArgument(LocalDate.now().minusMonths(5).minusDays(15).isBefore(from),
-        "Period may not exceed 5 Months, 15 Days ago from now.");
+    final FfbDispositionenResponse dispositionenResponse = response.readEntity(FfbDispositionenResponse.class);
 
-    try {
-      WebRequest requestSettings = new WebRequest(urlUmsaetze, HttpMethod.GET);
-      ImmutableList<NameValuePair> queryParameters = ImmutableList.<NameValuePair>of(
-          new NameValuePair("auftragstyp", auftragsTyp.toString()),
-          new NameValuePair("datumsauswahl", FfbDepotUtils.convertDateRangeToGermanDateRangeString(from, until)));
-      requestSettings.setRequestParameters(queryParameters);
+    LOG.debug("Dispositionen: [{}].", dispositionenResponse);
 
-      LOG.debug("Requesting URL: [{}].", requestSettings.getRequestParameters());
-
-      final Page umsatzPage = webClient.getPage(requestSettings);
-
-      /* Read json response */
-      final JsonReader reader = new JsonReader(
-          new InputStreamReader(umsatzPage.getWebResponse().getContentAsStream(), StandardCharsets.UTF_8));
-      final Gson gson = gsonBuilder.create();
-
-      return gson.fromJson(reader, FfbUmsatzResponse.class);
-    } catch (FailingHttpStatusCodeException fsce) {
-      LOG.error(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
-      throw new FfbClientError(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
-    } catch (IOException ioe) {
-      LOG.error(ERROR_RESPONSE_STREAM, ioe);
-      throw new FfbClientError(ERROR_RESPONSE_STREAM, ioe);
-    }
-  }
-
-  public boolean logout() throws FfbClientError {
-    Preconditions.checkState(login.isPresent(), NOT_USED_LOGIN_METHOD_BEFORE);
-    Preconditions.checkState(login.get().isLoggedIn(), USER_COULD_NOT_LOG_IN_CHECK_CREDENTIALS);
-
-    this.login = Optional.absent();
-
-    try {
-      final Page umsatzPage = webClient.getPage(urlLogout);
-
-      return umsatzPage.getWebResponse().getStatusCode() == 200;
-    } catch (FailingHttpStatusCodeException fsce) {
-      LOG.error(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
-      throw new FfbClientError(ERROR_WITH_LOGIN_HTTP_STATUSCODE, fsce);
-    } catch (IOException ioe) {
-      LOG.error(ERROR_RESPONSE_STREAM, ioe);
-      throw new FfbClientError(ERROR_RESPONSE_STREAM, ioe);
-    }
+    return dispositionenResponse;
   }
 
   /**
-   * Die bei der {@link #logon}-Methode erhaltenen Informationen. Entspricht {@link Optional#absent()}, falls das Login nicht erfolgreich
-   * war, oder es nicht durchgeführt wurde.
-   *
-   * @return Ein LoginResponse im Optional, falls zuvor {@link #logon()} erfolgreich durchgeführt wurde.
+   * @param auftragsTyp
+   *     der gewünschte Auftragstyp.
+   * @param from
+   *     beginn-Zeitraum.
+   * @param until
+   *     Ende-Zeitraum
+   * @return ein Umsatz-Response.
+   * @throws IllegalArgumentException
+   *     falls der Zeitraum FROM zu lange her ist.
    */
-  public Optional<LoginResponse> loginInformation() {
+  public FfbUmsatzResponse getUmsaetze(
+      final FfbAuftragsTyp auftragsTyp, final LocalDate from, final LocalDate until) {
+    checkLoggedIn();
+
+    requireNonNull(auftragsTyp, "auftragsTyp");
+    requireNonNull(auftragsTyp, "from");
+    requireNonNull(auftragsTyp, "until");
+
+    /* Make sure, the from date is not older than the other one */
+    if (LocalDate.now().minusMonths(5).minusDays(15).isAfter(from)) {
+      throw new IllegalArgumentException("Period may not exceed 5 Months, 15 Days ago from now.");
+    }
+
+    final String datumRangeString = FfbDepotUtils.convertDateRangeToGermanDateRangeString(from, until);
+    final Response response = webClient.target(getUriUmsaetze())
+        .queryParam("auftragstyp", auftragsTyp.toString())
+        .queryParam("datumsauswahl", datumRangeString)
+        .request(MediaType.APPLICATION_JSON_TYPE)
+        .get();
+
+    final FfbUmsatzResponse umsatzResponse = response.readEntity(FfbUmsatzResponse.class);
+
+    LOG.debug("Response Umsätze für Datumsbereich [{}] => [{}].", datumRangeString, umsatzResponse);
+
+    return umsatzResponse;
+  }
+
+  public boolean logout() throws FfbClientError {
+    checkLoggedIn();
+
+    login = LoginResponse.builder()
+        .isLoggedIn(false)
+        .agbAgreed(false)
+        .build();
+
+    final Response response = webClient.target(getUriLogout())
+        .request(MediaType.APPLICATION_JSON_TYPE)
+        .get();
+
+    return Status.OK.getStatusCode() == response.getStatus();
+  }
+
+  /**
+   * Die bei der {@link #logon}-Methode erhaltenen Informationen.
+   *
+   * @return Ein LoginResponse.
+   */
+  public LoginResponse loginInformation() {
     return login;
+  }
+
+
+  public Map<String, NewCookie> getCookies() {
+    return cookies;
+  }
+
+  private void checkLoggedIn() {
+    if (cookies.isEmpty() || !isLoggedIn()) {
+      throw new IllegalStateException("Not logged in");
+    }
+  }
+
+
+  public boolean isLoggedIn() {
+    return login.isLoggedIn() && !cookies.isEmpty();
+  }
+
+  public URI getMyFfbUri() {
+    return UriBuilder.fromUri(basedomain)
+        .path(PATH_DEPOT)
+        .build();
+  }
+
+  public URI getUriLogin() {
+    return UriBuilder.fromUri(basedomain)
+        .path(PATH_LOGIN)
+        .build();
+  }
+
+  public URI getUriPerformance() {
+    return UriBuilder.fromUri(basedomain)
+        .path(PATH_PERFORMANCE)
+        .build();
+  }
+
+  public URI getUriDispositionen() {
+    return UriBuilder.fromUri(basedomain)
+        .path(PATH_DISPOSITIONEN)
+        .build();
+  }
+
+  public URI getUriUmsaetze() {
+    return UriBuilder.fromUri(basedomain)
+        .path(PATH_UMSAETZE)
+        .build();
+  }
+
+  public URI getUriLogout() {
+    return UriBuilder.fromUri(basedomain)
+        .path(PATH_LOGOUT)
+        .build();
   }
 
   /**
@@ -395,14 +418,14 @@ public class FfbMobileClient {
   @Override
   public String toString() {
     /* Return interesting fields, but do not return the pin. */
-    return MoreObjects.toStringHelper(this)
-        .add("webClient", webClient)
-        .add("pin", "*****")
-        .add("user", user)
-        /* login is optional, the orNull() is like getOrNull() in jdk8. */
-        .add("login", loginInformation().orNull())
-        .add("urlMyffb", urlMyffb.toString())
-        .add("gsonBuilder", gsonBuilder)
+
+    return new StringJoiner(", ", getClass().getSimpleName() + "[", "]")
+        .add("webClient=" + webClient)
+        .add("basedomain=" + basedomain)
+        .add("pin=" + "*****")
+        .add("user=" + user)
+        .add("login=" + loginInformation())
+        .add("cookies=" + cookies)
         .toString();
   }
 
