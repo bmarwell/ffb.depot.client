@@ -27,7 +27,6 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import de.bmarwell.ffb.depot.client.err.FfbClientError;
 import de.bmarwell.ffb.depot.client.json.FfbDepotInfo;
 import de.bmarwell.ffb.depot.client.json.FfbFondsbestand;
@@ -36,8 +35,9 @@ import de.bmarwell.ffb.depot.client.json.MyFfbResponse;
 import de.bmarwell.ffb.depot.client.value.FfbDepotNummer;
 import de.bmarwell.ffb.depot.client.value.FfbLoginKennung;
 import de.bmarwell.ffb.depot.client.value.FfbPin;
+
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import java.math.BigDecimal;
-import java.net.MalformedURLException;
 import java.net.URI;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
@@ -49,18 +49,17 @@ import org.slf4j.LoggerFactory;
 
 public class TestMobileGetDepotwert {
 
-  @Rule
-  public WireMockRule wiremock = new WireMockRule(wireMockConfig().dynamicPort());
-
   public static final FfbLoginKennung LOGIN = FfbLoginKennung.of("22222301");
   public static final FfbPin PIN = FfbPin.of("91901");
   public static final FfbDepotNummer DEPOTNUMMER = FfbDepotNummer.of("222223");
   private static final Logger LOG = LoggerFactory.getLogger(TestMobileGetDepotwert.class);
+  @Rule
+  public WireMockRule wiremock = new WireMockRule(wireMockConfig().dynamicPort());
   private FfbMobileClient client;
   private FfbMobileClient clientWithoutCredentials;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     final FfbClientConfiguration config = () -> URI.create("http://localhost:" + wiremock.port());
 
     this.client = new FfbMobileClient(LOGIN, PIN, config);
@@ -68,31 +67,31 @@ public class TestMobileGetDepotwert {
   }
 
   @Test
-  public void testGetDepotwertWithoutCredentials() throws FfbClientError, MalformedURLException {
+  public void testGetDepotwertWithoutCredentials() throws FfbClientError {
     clientWithoutCredentials.logon();
     assertFalse(clientWithoutCredentials.isLoggedIn());
-    LoginResponse loginResponse = clientWithoutCredentials.loginInformation();
+    final LoginResponse loginResponse = clientWithoutCredentials.loginInformation();
     LOG.debug("Login: [{}].", loginResponse);
 
     assertFalse(loginResponse.isLoggedIn());
   }
 
   @Test
-  public void testLoginLogout() throws MalformedURLException, FfbClientError {
+  public void testLoginLogout() throws FfbClientError {
     client.logon();
 
-    LoginResponse loginResponse = client.loginInformation();
+    final LoginResponse loginResponse = client.loginInformation();
     LOG.debug("Login: [{}].", loginResponse);
 
     assertTrue("Should be logged in.", loginResponse.isLoggedIn());
 
-    boolean logout = client.logout();
+    final boolean logout = client.logout();
     Assert.assertThat("logout should yield success.", logout, CoreMatchers.is(true));
     assertFalse("loginInformation should be gone now.", client.isLoggedIn());
   }
 
   @Test(expected = IllegalStateException.class)
-  public void testFfbIllegalState() throws MalformedURLException, FfbClientError {
+  public void testFfbIllegalState() throws FfbClientError {
     client.getPerformance();
   }
 
@@ -102,30 +101,29 @@ public class TestMobileGetDepotwert {
    * <p>Login taken from: <a href= "http://www.wertpapier-forum.de/topic/31477-demo-logins-depots-einfach-mal-testen/page__view__findpost__p__567459">
    * Wertpapier-Forum</a>.<br> Login: 22222301<br> PIN: 91901</p>
    *
-   * @throws MalformedURLException Fehler beim Erstellen der URL.
    * @throws FfbClientError Errror with fetching data.
    */
   @Test
-  public void testGetDepotwertWithCredentials() throws MalformedURLException, FfbClientError {
+  public void testGetDepotwertWithCredentials() throws FfbClientError {
     client.logon();
     assertTrue(client.isLoggedIn());
 
-    LoginResponse loginResponse = client.loginInformation();
+    final LoginResponse loginResponse = client.loginInformation();
     LOG.debug("Login: [{}].", loginResponse);
 
     assertTrue(loginResponse.isLoggedIn());
     assertEquals("Customer", loginResponse.getUsertype());
     assertEquals("E1000590054", loginResponse.getLastname());
 
-    MyFfbResponse accountData = client.fetchAccountData();
+    final MyFfbResponse accountData = client.fetchAccountData();
     assertTrue(accountData != null);
     LOG.debug("Account data: [{}].", accountData);
 
-    for (FfbDepotInfo depot : accountData.getDepots()) {
+    for (final FfbDepotInfo depot : accountData.getDepots()) {
       LOG.debug("Depotinfo: [{}].", depot);
     }
 
-    BigDecimal depotBestand = FfbDepotUtils.getGesamtBestand(accountData, DEPOTNUMMER);
+    final BigDecimal depotBestand = FfbDepotUtils.getGesamtBestand(accountData, DEPOTNUMMER);
     LOG.debug("Depotbestand: [{}].", depotBestand);
 
     assertTrue(depotBestand.compareTo(BigDecimal.ZERO) > 0);
@@ -137,13 +135,13 @@ public class TestMobileGetDepotwert {
     // Teste Depotbestände
     assertFalse(accountData.getDepots().isEmpty());
     boolean hasDepotBestand = false;
-    for (FfbDepotInfo depot : accountData.getDepots()) {
+    for (final FfbDepotInfo depot : accountData.getDepots()) {
       if (depot.getFondsbestaende().isEmpty()) {
         continue;
       }
 
       hasDepotBestand = true;
-      for (FfbFondsbestand bestand : depot.getFondsbestaende()) {
+      for (final FfbFondsbestand bestand : depot.getFondsbestaende()) {
         assertNotNull(bestand);
 
         assertNotEquals(BigDecimal.ZERO, bestand.getBestandStueckzahl());
@@ -160,8 +158,8 @@ public class TestMobileGetDepotwert {
   }
 
   @Test
-  public void testToString() throws MalformedURLException {
-    String mobileToString = client.toString();
+  public void testToString() {
+    final String mobileToString = client.toString();
 
     assertNotNull("ToString may not be missing.", mobileToString);
 

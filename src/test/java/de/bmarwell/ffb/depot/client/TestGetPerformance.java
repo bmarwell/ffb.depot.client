@@ -25,12 +25,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import de.bmarwell.ffb.depot.client.err.FfbClientError;
 import de.bmarwell.ffb.depot.client.json.FfbPerformanceResponse;
-
 import de.bmarwell.ffb.depot.client.value.FfbLoginKennung;
 import de.bmarwell.ffb.depot.client.value.FfbPin;
+
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDate;
@@ -39,8 +39,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.MalformedURLException;
 
 public class TestGetPerformance {
 
@@ -55,20 +53,20 @@ public class TestGetPerformance {
   private FfbMobileClient client;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     final FfbClientConfiguration config = () -> URI.create("http://localhost:" + wiremock.port());
 
     this.client = new FfbMobileClient(LOGIN, PIN, config);
   }
 
   @Test
-  public void testGetPerformance() throws FfbClientError, MalformedURLException {
+  public void testGetPerformance() throws FfbClientError {
     client.logon();
     assertTrue(client.isLoggedIn());
 
     LOG.debug("Performance: [{}].", client.loginInformation().toString());
 
-    FfbPerformanceResponse performance = client.getPerformance();
+    final FfbPerformanceResponse performance = client.getPerformance();
     LOG.debug("Performance: [{}].", performance.toString());
 
     /* Die Felder mit Umwandlungen testen */
@@ -80,8 +78,8 @@ public class TestGetPerformance {
   }
 
   @Test(expected = IllegalStateException.class)
-  public void testGetPerformance_noLogin() throws MalformedURLException, FfbClientError {
-    FfbPerformanceResponse performance = client.getPerformance();
+  public void testGetPerformance_noLogin() throws FfbClientError {
+    final FfbPerformanceResponse performance = client.getPerformance();
     LOG.debug("Performance: [{}].", performance.toString());
   }
 

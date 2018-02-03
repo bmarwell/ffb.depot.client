@@ -3,7 +3,6 @@ package de.bmarwell.ffb.depot.client.util;
 import static java.util.Objects.requireNonNull;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
@@ -27,22 +26,24 @@ public class GermanDateToLocalDateDeserializer extends StdDeserializer<LocalDate
     super(TypeFactory.defaultInstance().constructType(LocalDate.class));
   }
 
-  protected GermanDateToLocalDateDeserializer(Class<?> vc) {
+  protected GermanDateToLocalDateDeserializer(final Class<?> vc) {
     super(vc);
   }
 
-  protected GermanDateToLocalDateDeserializer(JavaType valueType) {
+  protected GermanDateToLocalDateDeserializer(final JavaType valueType) {
     super(valueType);
   }
 
 
   @Override
-  public LocalDate deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
-      throws IOException, JsonProcessingException {
+  public LocalDate deserialize(final JsonParser jsonParser, final DeserializationContext deserializationContext)
+      throws IOException {
     final String germanDate = jsonParser.getText();
+    requireNonNull(germanDate, "Parameter germanDate in convertGermanDateToLocalDate.");
 
-    requireNonNull(germanDate, () -> "Parameter germanDate in convertGermanDateToLocalDate.");
-    requireNonNull(germanDate.matches("[0-9]{2}\\.[0-9]{2}\\.[0-9]{4}"), () -> "Format of GermanDate != dd.mm.yyyy");
+    if (!germanDate.matches("[0-9]{2}\\.[0-9]{2}\\.[0-9]{4}")) {
+      throw new IllegalArgumentException("Format of GermanDate != dd.mm.yyyy");
+    }
 
     return LocalDate.parse(germanDate, GERMAN_DATE_FORMAT);
   }

@@ -8,7 +8,6 @@ import de.bmarwell.ffb.depot.client.value.FfbLoginKennung;
 import de.bmarwell.ffb.depot.client.value.FfbPin;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -33,14 +32,14 @@ public class TestCookies {
   private FfbMobileClient client;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     final FfbClientConfiguration config = () -> URI.create("http://localhost:" + wiremock.port());
 
     this.client = new FfbMobileClient(LOGIN, PIN, config);
   }
 
   @Test
-  public void testFfbMobileClientFfbLoginKennungFfbPin() throws MalformedURLException, FfbClientError {
+  public void testFfbMobileClientFfbLoginKennungFfbPin() throws FfbClientError {
     boolean sessionIdFound = false;
     client.logon();
     final Map<String, NewCookie> cookies = client.getCookies();

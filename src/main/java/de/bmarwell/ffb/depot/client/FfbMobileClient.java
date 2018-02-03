@@ -28,28 +28,17 @@ import de.bmarwell.ffb.depot.client.json.FfbPerformanceResponse;
 import de.bmarwell.ffb.depot.client.json.FfbUmsatzResponse;
 import de.bmarwell.ffb.depot.client.json.LoginResponse;
 import de.bmarwell.ffb.depot.client.json.MyFfbResponse;
-import de.bmarwell.ffb.depot.client.util.JacksonMessageBodyReader;
+import de.bmarwell.ffb.depot.client.util.WebClientHelper;
 import de.bmarwell.ffb.depot.client.value.FfbAuftragsTyp;
 import de.bmarwell.ffb.depot.client.value.FfbLoginKennung;
 import de.bmarwell.ffb.depot.client.value.FfbPin;
 
-import java.net.URI;
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.StringJoiner;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation.Builder;
-import javax.ws.rs.core.Form;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +47,6 @@ import org.slf4j.LoggerFactory;
  * information.
  */
 public class FfbMobileClient {
-
 
   /**
    * Tried to execute action without prior login.
@@ -71,58 +59,19 @@ public class FfbMobileClient {
   private static final Logger LOG = LoggerFactory.getLogger(FfbMobileClient.class);
 
   /**
-   * Path to login (DOMAIN + PATH).
+   * Helper to build requests.
    */
-  private static final String PATH_LOGIN = "/de/mobile/MyFFB/account/userLogin.page";
-  /**
-   * Path to depot overview (DOMAIN + PATH).
-   */
-  private static final String PATH_DEPOT = "/de/mobile/MyFFB/account/MyFFB.page";
-  /**
-   * Path to depot performance (DOMAIN + PATH).
-   */
-  private static final String PATH_PERFORMANCE = "/de/mobile/account/performance.page";
-  /**
-   * Path to dispositions (DOMAIN + PATH).
-   */
-  private static final String PATH_DISPOSITIONEN = "/de/mobile/account/dispositionen.page";
+  private final WebClientHelper webclienthelper;
 
-  /**
-   * Path to Umsaetze (transactions).
-   */
-  private static final String PATH_UMSAETZE = "/de/mobile/account/umsaetze.page";
-
-  /**
-   * Path to Logout.
-   */
-  private static final String PATH_LOGOUT = "/de/mobile/account/logout.page";
-
-  /**
-   * The web client used by this class to perform http requests.
-   */
-  private final Client webClient = ClientBuilder.newClient()
-      .register(JacksonMessageBodyReader.class);
-  /**
-   * Base URL including protocol and domain for access.
-   */
-  private final URI basedomain;
   /**
    * Saved PIN for use in {@link #logon()}-method.
    */
   private FfbPin pin = FfbPin.of("");
+
   /**
    * User for use in {@link #logon()}-method.
    */
   private FfbLoginKennung user = FfbLoginKennung.of("");
-  /**
-   * Holding information about successful login.
-   */
-  private LoginResponse login = LoginResponse.builder()
-      .agbAgreed(false)
-      .isLoggedIn(false)
-      .build();
-
-  private Map<String, NewCookie> cookies = Collections.unmodifiableMap(new HashMap<>());
 
   /**
    * Konstruktor for tests and internal uses only. PLease use {@link #FfbMobileClient(FfbLoginKennung, FfbPin)} instead.
@@ -130,7 +79,7 @@ public class FfbMobileClient {
    * <p>Wird der Client wie hier ohne User und Pin erstellt, kann gar nichts klappen.</p>
    */
   public FfbMobileClient(final FfbClientConfiguration config) {
-    basedomain = config.getBaseUrl();
+    this.webclienthelper = new WebClientHelper(config.getBaseUrl(), config.getUserAgent());
   }
 
   /**
@@ -150,13 +99,14 @@ public class FfbMobileClient {
    *     Der Login. Meistens die Depotnummer. Bei mehreren Depots mit selbem Login einfach ebenfalls das Login.
    * @param pin
    *     das Passwort fürs Login.
+   * @param config
+   *     the configuration to use
    */
   public FfbMobileClient(final FfbLoginKennung user, final FfbPin pin, final FfbClientConfiguration config) {
-    basedomain = config.getBaseUrl();
+    this(config);
     this.user = user;
     this.pin = pin;
   }
-
 
   /**
    * Diese Methode ermittelt die aktuellen Depotbestände und weitere Informationen aus der Gesamtheit aller Depots.
@@ -167,23 +117,8 @@ public class FfbMobileClient {
    * @throws FfbClientError Error while getting account data.
    */
   public MyFfbResponse fetchAccountData() throws FfbClientError {
-    requireNonNull(login, NOT_USED_LOGIN_METHOD_BEFORE);
-
-    if (!isLoggedIn()) {
-      throw new IllegalStateException("Not logged in!");
-    }
-
-    LOG.info("Calling URI: [{}].", getMyFfbUri().toASCIIString());
-    Builder target = webClient
-        .target(getMyFfbUri())
-        .request(MediaType.APPLICATION_JSON_TYPE);
-
-    for (final Entry<String, NewCookie> cookie : cookies.entrySet()) {
-      target = target.cookie(cookie.getKey(), cookie.getValue().toCookie().getValue());
-    }
-
-    final Response response = target
-        .get();
+    final Invocation target = webclienthelper.accountData();
+    final Response response = target.invoke();
 
     final MyFfbResponse bestandsResponse = response.readEntity(MyFfbResponse.class);
 
@@ -198,33 +133,7 @@ public class FfbMobileClient {
    * @throws FfbClientError Error logging in. Wrong login data?
    */
   public void logon() throws FfbClientError {
-    final Form form = new Form();
-    form.param("login", user.getLoginKennung());
-    form.param("password", pin.getPinAsString());
-
-    LOG.info("Calling URI: [{}].", getUriLogin().toASCIIString());
-    final Response loginResponse = webClient
-        .target(getUriLogin())
-        .request(MediaType.APPLICATION_JSON_TYPE)
-        .header("Accept", "application/json;charset=utf-8")
-        .header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8" )
-        .header("Accept-Charset", "utf-8;q=0.7,*;q=0.3" )
-        .header("X-Requested-With", "hibiscus.ffb.scraper")
-        .header("User-Agent", "hibiscus.ffb.scraper" )
-        .post(Entity.form(form));
-
-    final LoginResponse ffbLogin = loginResponse.readEntity(LoginResponse.class);
-    login = ffbLogin;
-
-    if (!ffbLogin.isLoggedIn() || !ffbLogin.getErrormessage().orElse("").isEmpty()) {
-      LOG.error("Konnte Client nicht einloggen! => [{}]", ffbLogin);
-      cookies = Collections.unmodifiableMap(new HashMap<>());
-
-      return;
-    }
-
-    cookies = loginResponse.getCookies();
-    LOG.debug("Cookie names: [{}].", cookies.keySet());
+    webclienthelper.login(user, pin);
   }
 
   /**
@@ -235,20 +144,9 @@ public class FfbMobileClient {
    * @throws IllegalStateException if not logged in.
    */
   public FfbPerformanceResponse getPerformance() throws FfbClientError {
-    checkLoggedIn();
+    webclienthelper.checkLoggedIn();
 
-    Builder request = webClient
-        .target(getUriPerformance())
-        .request(MediaType.APPLICATION_JSON_TYPE);
-
-    for (final Map.Entry<String, NewCookie> cookie : cookies.entrySet()) {
-      LOG.debug("Adding cookie: [{}] => [{}].", cookie.getKey(), cookie.getValue().toCookie());
-      request = request.cookie(cookie.getValue().toCookie());
-    }
-
-    final Response response = request
-        .get();
-
+    final Response response = webclienthelper.performance().invoke();
     final FfbPerformanceResponse performanceResponse = response.readEntity(FfbPerformanceResponse.class);
 
     LOG.debug("Performance: [{}].", performanceResponse);
@@ -264,18 +162,9 @@ public class FfbMobileClient {
    * @throws IllegalStateException if not logged in.
    */
   public FfbDispositionenResponse getDispositionen() throws FfbClientError {
-    checkLoggedIn();
+    webclienthelper.checkLoggedIn();
 
-    Builder builder = webClient.target(getUriDispositionen())
-        .request(MediaType.APPLICATION_JSON_TYPE);
-
-    for (final NewCookie cookie : cookies.values()) {
-      builder = builder.cookie(cookie);
-    }
-
-    final Response response = builder
-        .get();
-
+    final Response response = webclienthelper.dispositionen().invoke();
     final FfbDispositionenResponse dispositionenResponse = response.readEntity(FfbDispositionenResponse.class);
 
     LOG.debug("Dispositionen: [{}].", dispositionenResponse);
@@ -296,7 +185,7 @@ public class FfbMobileClient {
    */
   public FfbUmsatzResponse getUmsaetze(
       final FfbAuftragsTyp auftragsTyp, final LocalDate from, final LocalDate until) {
-    checkLoggedIn();
+    webclienthelper.checkLoggedIn();
 
     requireNonNull(auftragsTyp, "auftragsTyp");
     requireNonNull(auftragsTyp, "from");
@@ -307,94 +196,31 @@ public class FfbMobileClient {
       throw new IllegalArgumentException("Period may not exceed 5 Months, 15 Days ago from now.");
     }
 
-    final String datumRangeString = FfbDepotUtils.convertDateRangeToGermanDateRangeString(from, until);
-    final Response response = webClient.target(getUriUmsaetze())
-        .queryParam("auftragstyp", auftragsTyp.toString())
-        .queryParam("datumsauswahl", datumRangeString)
-        .request(MediaType.APPLICATION_JSON_TYPE)
-        .get();
-
+    final Response response = webclienthelper.umsaetze(auftragsTyp, from, until).invoke();
     final FfbUmsatzResponse umsatzResponse = response.readEntity(FfbUmsatzResponse.class);
 
-    LOG.debug("Response Umsätze für Datumsbereich [{}] => [{}].", datumRangeString, umsatzResponse);
+    LOG.debug("Response Umsätze für Datumsbereich [{}]-[{}] => [{}].", from, until, umsatzResponse);
 
     return umsatzResponse;
   }
 
   public boolean logout() throws FfbClientError {
-    checkLoggedIn();
+    webclienthelper.checkLoggedIn();
 
-    login = LoginResponse.builder()
-        .isLoggedIn(false)
-        .agbAgreed(false)
-        .build();
-
-    final Response response = webClient.target(getUriLogout())
-        .request(MediaType.APPLICATION_JSON_TYPE)
-        .get();
-
-    return Status.OK.getStatusCode() == response.getStatus();
+    return webclienthelper.logout();
   }
-
-  /**
-   * Die bei der {@link #logon}-Methode erhaltenen Informationen.
-   *
-   * @return Ein LoginResponse.
-   */
-  public LoginResponse loginInformation() {
-    return login;
-  }
-
-
-  public Map<String, NewCookie> getCookies() {
-    return cookies;
-  }
-
-  private void checkLoggedIn() {
-    if (cookies.isEmpty() || !isLoggedIn()) {
-      throw new IllegalStateException("Not logged in");
-    }
-  }
-
 
   public boolean isLoggedIn() {
-    return login.isLoggedIn() && !cookies.isEmpty();
+    return webclienthelper.isLoggedIn();
   }
 
-  public URI getMyFfbUri() {
-    return UriBuilder.fromUri(basedomain)
-        .path(PATH_DEPOT)
-        .build();
+  public Map<String, NewCookie> getCookies() {
+    return webclienthelper.getCookies();
   }
 
-  public URI getUriLogin() {
-    return UriBuilder.fromUri(basedomain)
-        .path(PATH_LOGIN)
-        .build();
-  }
 
-  public URI getUriPerformance() {
-    return UriBuilder.fromUri(basedomain)
-        .path(PATH_PERFORMANCE)
-        .build();
-  }
-
-  public URI getUriDispositionen() {
-    return UriBuilder.fromUri(basedomain)
-        .path(PATH_DISPOSITIONEN)
-        .build();
-  }
-
-  public URI getUriUmsaetze() {
-    return UriBuilder.fromUri(basedomain)
-        .path(PATH_UMSAETZE)
-        .build();
-  }
-
-  public URI getUriLogout() {
-    return UriBuilder.fromUri(basedomain)
-        .path(PATH_LOGOUT)
-        .build();
+  public LoginResponse loginInformation() {
+    return webclienthelper.loginInformation();
   }
 
   /**
@@ -406,12 +232,9 @@ public class FfbMobileClient {
     /* Return interesting fields, but do not return the pin. */
 
     return new StringJoiner(", ", getClass().getSimpleName() + "[", "]")
-        .add("webClient=" + webClient)
-        .add("basedomain=" + basedomain)
+        .add("webclienthelper=" + webclienthelper)
         .add("pin=" + "*****")
         .add("user=" + user)
-        .add("login=" + loginInformation())
-        .add("cookies=" + cookies)
         .toString();
   }
 

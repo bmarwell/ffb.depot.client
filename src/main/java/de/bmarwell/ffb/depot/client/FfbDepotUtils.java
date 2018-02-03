@@ -65,8 +65,8 @@ public final class FfbDepotUtils {
    * @return der Gesamtbestand in Depotwährung.
    */
   public static BigDecimal getGesamtBestand(final MyFfbResponse myFfbResponse, final FfbDepotNummer depotnummer) {
-    requireNonNull(depotnummer, () -> "depotnummer in getGesamtBestand");
-    final List<FfbDepotInfo> depots = requireNonNull(myFfbResponse, () -> "Keine Daten übergeben!")
+    requireNonNull(depotnummer, "depotnummer in getGesamtBestand");
+    final List<FfbDepotInfo> depots = requireNonNull(myFfbResponse, "Keine Daten übergeben!")
         .getDepots();
 
     final BigDecimal sum = depots.stream()
@@ -81,16 +81,16 @@ public final class FfbDepotUtils {
 
 
   public static String convertDateRangeToGermanDateRangeString(final LocalDate from, final LocalDate until) {
-    requireNonNull(from, () -> "from is null");
-    requireNonNull(until, () -> "from is null");
-    requireNonNull(from.isBefore(until),() ->  "from must be before until!");
+    requireNonNull(from, "from is null");
+    requireNonNull(until, "from is null");
 
-    final StringBuilder germanDateRange = new StringBuilder();
-    germanDateRange.append(from.format(GERMAN_DATE_FORMAT));
-    germanDateRange.append("+-+");
-    germanDateRange.append(until.format(GERMAN_DATE_FORMAT));
+    if (!from.isBefore(until)) {
+      throw new IllegalStateException("from must be before until!");
+    }
 
-    return germanDateRange.toString();
+    return String.format("%s+-+%s",
+        from.format(GERMAN_DATE_FORMAT),
+        until.format(GERMAN_DATE_FORMAT));
   }
 
 }

@@ -11,14 +11,14 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 public enum ObjectMapperProvider {
   INSTANCE;
 
-  private ObjectMapper objectMapper = new ObjectMapper()
+  private final ObjectMapper objectMapper = new ObjectMapper()
       .findAndRegisterModules()
       .registerModule(new Jdk8Module())
       .registerModule(new JavaTimeModule())
       .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
       .configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
 
-  private ObjectMapperProvider() {
+  ObjectMapperProvider() {
     // empty
   }
 

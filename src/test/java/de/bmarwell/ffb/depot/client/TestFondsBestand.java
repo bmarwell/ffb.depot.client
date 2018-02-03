@@ -65,14 +65,14 @@ public class TestFondsBestand {
   private FfbMobileClient client;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     final FfbClientConfiguration config = () -> URI.create("http://localhost:" + wiremock.port());
 
     client = new FfbMobileClient(LOGIN, PIN, config);
   }
 
   @Test
-  public void testFondsBestand() throws Exception {
+  public void testFondsBestand() {
     client.logon();
     final MyFfbResponse accountData = client.fetchAccountData();
     LOG.debug("AccountData: [{}].", accountData);

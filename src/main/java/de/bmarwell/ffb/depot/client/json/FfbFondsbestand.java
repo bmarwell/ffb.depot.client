@@ -20,10 +20,11 @@
 
 package de.bmarwell.ffb.depot.client.json;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.bmarwell.ffb.depot.client.util.GermanDateToLocalDateDeserializer;
 import de.bmarwell.ffb.depot.client.util.GermanNumberToBigDecimalDeserializer;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -86,8 +87,8 @@ public interface FfbFondsbestand extends Comparable<FfbFondsbestand> {
    * ).
    */
   @Override
-  default int compareTo(FfbFondsbestand other) {
-    Comparator comparator = Comparator
+  default int compareTo(final FfbFondsbestand other) {
+    final Comparator<FfbFondsbestand> comparator = Comparator
         .comparing(FfbFondsbestand::getIsin)
         .thenComparing(FfbFondsbestand::getWkn)
         .thenComparing(FfbFondsbestand::getFondsname)

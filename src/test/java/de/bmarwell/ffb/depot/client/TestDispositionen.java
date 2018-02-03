@@ -39,7 +39,6 @@ import de.bmarwell.ffb.depot.client.value.FfbPin;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import java.math.BigDecimal;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
@@ -70,14 +69,14 @@ public class TestDispositionen {
   private FfbMobileClient client;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     final FfbClientConfiguration config = () -> URI.create("http://localhost:" + this.wiremock.port());
 
     this.client = new FfbMobileClient(LOGIN, PIN, config);
   }
 
   @Test
-  public void testGetDispositionen() throws FfbClientError, MalformedURLException {
+  public void testGetDispositionen() throws FfbClientError {
     client.logon();
     assertTrue(client.isLoggedIn());
 
@@ -88,7 +87,7 @@ public class TestDispositionen {
 
   @Test
   public void testDispositionObjects() {
-    final ImmutableFfbDisposition dispo1 = FfbDisposition.builder()
+    final FfbDisposition dispo1 = FfbDisposition.builder()
         .depot("depot")
         .fondsname("fondsname")
         .isin("isin")
@@ -102,16 +101,17 @@ public class TestDispositionen {
         .verrechnungskonto("referenzkonto")
         .teilauftragtyp("teilauftragstyp")
         .build();
+    final FfbDisposition dispo2 = ImmutableFfbDisposition.copyOf(dispo1).withRabatt(new BigDecimal("50.0"));
     final FfbDispositionenResponse dispos = ImmutableFfbDispositionenResponse.builder()
         .isLogin(true)
         .dispositionenBetrag(BigDecimal.ZERO)
         .dispositionenAnzahl(100)
-        .dispositionen(asList(dispo1))
+        .dispositionen(asList(dispo1, dispo2))
         .build();
 
     final List<FfbDisposition> dispositionen = dispos.getDispositionen();
     assertFalse(dispositionen.isEmpty());
-    assertEquals("Es sollte ein Element vorhanden sein.", 1, dispositionen.size());
+    assertEquals("Es solltem zwei Elemente vorhanden sein.", 2, dispositionen.size());
     final FfbDisposition firstDisposition = dispositionen.get(0);
     assertEquals("Das vorhandene Element sollte dem erstellten entsprechen.", dispo1, firstDisposition);
     assertThat(firstDisposition.toString().toLowerCase(Locale.getDefault()), CoreMatchers.containsString("fondsname"));

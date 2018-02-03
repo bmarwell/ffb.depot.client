@@ -165,7 +165,7 @@ public interface FfbDisposition extends Comparable<FfbDisposition> {
    */
   @Override
   default int compareTo(final FfbDisposition other) {
-    final Comparator comparator = Comparator
+    final Comparator<FfbDisposition> comparator = Comparator
         .comparing(FfbDisposition::getDepot)
         .thenComparing(FfbDisposition::getIsin)
         .thenComparing(FfbDisposition::getAuftragtyp)

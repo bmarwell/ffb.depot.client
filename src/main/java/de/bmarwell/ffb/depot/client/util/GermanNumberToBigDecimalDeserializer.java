@@ -3,7 +3,6 @@ package de.bmarwell.ffb.depot.client.util;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
@@ -33,7 +32,7 @@ public class GermanNumberToBigDecimalDeserializer extends StdDeserializer<BigDec
 
   @Override
   public BigDecimal deserialize(final JsonParser jsonParser, final DeserializationContext deserializationContext)
-      throws IOException, JsonProcessingException {
+      throws IOException {
     final String germanNumStrin = jsonParser.getText();
 
     if (null == germanNumStrin || germanNumStrin.isEmpty()) {
