@@ -1,8 +1,16 @@
 {
   "id" : "eb3af4ee-891d-390d-aaad-0ae4b5994caa",
   "request" : {
-    "url" : "/de/mobile/account/umsaetze.page?auftragstyp=ALLE&datumsauswahl=15.10.2016%2B-%2B30.01.2018",
-    "method" : "GET"
+    "urlPath": "/de/mobile/account/umsaetze.page",
+    "method": "GET",
+    "queryParameters": {
+      "datumsauswahl": {
+        "equalTo": "15\\.10\\.2016\\+-\\+30\\.01\\.2018"
+      },
+      "auftragstyp": {
+        "equalTo": "ALLE"
+      }
+    }
   },
   "response" : {
     "status" : 200,

@@ -22,32 +22,34 @@ package de.bmarwell.ffb.depot.client;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import de.bmarwell.ffb.depot.client.err.FfbClientError;
 import de.bmarwell.ffb.depot.client.json.FfbDisposition;
 import de.bmarwell.ffb.depot.client.json.FfbDispositionenResponse;
 import de.bmarwell.ffb.depot.client.json.ImmutableFfbDisposition;
 import de.bmarwell.ffb.depot.client.json.ImmutableFfbDispositionenResponse;
-
 import de.bmarwell.ffb.depot.client.value.FfbDepotNummer;
 import de.bmarwell.ffb.depot.client.value.FfbLoginKennung;
 import de.bmarwell.ffb.depot.client.value.FfbPin;
+
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Locale;
 import org.hamcrest.CoreMatchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.MalformedURLException;
-import java.util.List;
 
 public class TestDispositionen {
 
@@ -69,7 +71,7 @@ public class TestDispositionen {
 
   @Before
   public void setUp() throws Exception {
-    final FfbClientConfiguration config = () -> URI.create("http://localhost:" + wiremock.port());
+    final FfbClientConfiguration config = () -> URI.create("http://localhost:" + this.wiremock.port());
 
     this.client = new FfbMobileClient(LOGIN, PIN, config);
   }
@@ -77,10 +79,10 @@ public class TestDispositionen {
   @Test
   public void testGetDispositionen() throws FfbClientError, MalformedURLException {
     client.logon();
-    Assert.assertTrue(client.isLoggedIn());
+    assertTrue(client.isLoggedIn());
 
-    FfbDispositionenResponse umsaetze = client.getDispositionen();
-    Assert.assertNotNull(umsaetze);
+    final FfbDispositionenResponse umsaetze = client.getDispositionen();
+    assertNotNull(umsaetze);
     LOG.debug("Dispositionen: [{}].", umsaetze);
   }
 
@@ -95,23 +97,23 @@ public class TestDispositionen {
         .betrag(BigDecimal.valueOf(10.50d))
         .stuecke(BigDecimal.valueOf(1d))
         .auftragtyp("auftragstyp")
-        .rabattAsString(BigDecimal.valueOf(100L))
+        .rabatt(BigDecimal.valueOf(100L))
         .eingabedatum(LocalDate.now())
         .verrechnungskonto("referenzkonto")
         .teilauftragtyp("teilauftragstyp")
         .build();
-    FfbDispositionenResponse dispos = ImmutableFfbDispositionenResponse.builder()
+    final FfbDispositionenResponse dispos = ImmutableFfbDispositionenResponse.builder()
         .isLogin(true)
         .dispositionenBetrag(BigDecimal.ZERO)
         .dispositionenAnzahl(100)
         .dispositionen(asList(dispo1))
         .build();
 
-    List<FfbDisposition> dispositionen = dispos.getDispositionen();
-    Assert.assertFalse(dispositionen.isEmpty());
-    Assert.assertEquals("Es sollte ein Element vorhanden sein.", 1, dispositionen.size());
-    FfbDisposition firstDisposition = dispositionen.get(0);
-    Assert.assertEquals("Das vorhandene Element sollte dem erstellten entsprechen.", dispo1, firstDisposition);
+    final List<FfbDisposition> dispositionen = dispos.getDispositionen();
+    assertFalse(dispositionen.isEmpty());
+    assertEquals("Es sollte ein Element vorhanden sein.", 1, dispositionen.size());
+    final FfbDisposition firstDisposition = dispositionen.get(0);
+    assertEquals("Das vorhandene Element sollte dem erstellten entsprechen.", dispo1, firstDisposition);
     assertThat(firstDisposition.toString().toLowerCase(Locale.getDefault()), CoreMatchers.containsString("fondsname"));
   }
 

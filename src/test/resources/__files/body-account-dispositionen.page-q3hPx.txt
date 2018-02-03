@@ -1,0 +1,55 @@
+
+   {
+   "login" : "true",
+   "dispositionenAnzahl" : 3,
+   "dispositionenBetrag" : "",
+   "dispositionen":[ 
+      
+    {
+      "depot"             : "Standard",
+      "fondsname"         : "LYXOR ETF MSCI EMERGING MARKETS ",
+      "isin"              : "FR0010429068",
+      "wkn"               : "LYX0BX",
+      "kagName"           : "Lyxor International Asset Management",
+      "auftragtyp"        : "Splittkauf Betrag",
+      "teilauftragtyp"    : "",
+      "eingabedatum"      : "30.01.2018",
+      "verrechnungskonto" : "Referenzkonto",
+      "betrag"            : "44,00",
+      "stuecke"           : "2,103"
+      
+      
+    },
+    {
+      "depot"             : "Standard",
+      "fondsname"         : "ComStage ETF MSCI World TRN UCITS ETF ",
+      "isin"              : "LU0392494562",
+      "wkn"               : "ETF110",
+      "kagName"           : "Commerz Funds Solution",
+      "auftragtyp"        : "Splittkauf Betrag",
+      "teilauftragtyp"    : "",
+      "eingabedatum"      : "30.01.2018",
+      "verrechnungskonto" : "Referenzkonto",
+      "betrag"            : "110,01",
+      "stuecke"           : "1,396"
+      
+      
+    },
+    {
+      "depot"             : "Standard",
+      "fondsname"         : "AMUNDI ETF MSCI NORDIC UCITS ETF",
+      "isin"              : "FR0010655738",
+      "wkn"               : "A0REJU",
+      "kagName"           : "Amundi Asset Management",
+      "auftragtyp"        : "Splittkauf Betrag",
+      "teilauftragtyp"    : "",
+      "eingabedatum"      : "30.01.2018",
+      "verrechnungskonto" : "Referenzkonto",
+      "betrag"            : "10,00",
+      "stuecke"           : "0,011"
+      
+      
+    }
+  ],
+  "errormessage" 	: ""
+  }

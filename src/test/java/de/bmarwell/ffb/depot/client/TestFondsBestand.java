@@ -99,7 +99,8 @@ public class TestFondsBestand {
         .findAny().orElseThrow(IllegalStateException::new);
 
     assertThat(fondsbestand.getIsin(), is(equalTo(wellKnownIsin)));
-    assertTrue(fondsbestand.getPreisDatum().isAfter(LocalDate.now().minusDays(5)));
+    assertTrue("Der Preis vom Fondsbestand darf nicht älter als 10 Tage sein.",
+        fondsbestand.getPreisDatum().isAfter(LocalDate.now().minusDays(10)));
     final String fondsbestandString = fondsbestand.toString().toLowerCase(Locale.getDefault());
     assertThat(fondsbestandString, containsString("wkn"));
   }

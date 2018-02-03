@@ -21,12 +21,15 @@
 package de.bmarwell.ffb.depot.client.json;
 
 import de.bmarwell.ffb.depot.client.json.ImmutableFfbDisposition.Builder;
+import de.bmarwell.ffb.depot.client.util.GermanDateToLocalDateDeserializer;
+import de.bmarwell.ffb.depot.client.util.GermanNumberToBigDecimalDeserializer;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Comparator;
+import java.util.Optional;
 import org.immutables.value.Value;
 
 /**
@@ -45,6 +48,7 @@ public interface FfbDisposition extends Comparable<FfbDisposition> {
    *
    * @return the name of the depot this transaction belongs to.
    */
+  @JsonProperty("depot")
   String getDepot();
 
   /**
@@ -52,6 +56,7 @@ public interface FfbDisposition extends Comparable<FfbDisposition> {
    *
    * @return the name of the fund this transaction belongs to.
    */
+  @JsonProperty("fondsname")
   String getFondsname();
 
   /**
@@ -59,6 +64,7 @@ public interface FfbDisposition extends Comparable<FfbDisposition> {
    *
    * @return the ISIN as string.
    */
+  @JsonProperty("isin")
   String getIsin();
 
   /**
@@ -68,6 +74,7 @@ public interface FfbDisposition extends Comparable<FfbDisposition> {
    *
    * @return the WKN as String.
    */
+  @JsonProperty("wkn")
   String getWkn();
 
   /**
@@ -75,6 +82,7 @@ public interface FfbDisposition extends Comparable<FfbDisposition> {
    *
    * @return the name of the investment trust.
    */
+  @JsonProperty("kagName")
   String getKagName();
 
   /**
@@ -87,6 +95,7 @@ public interface FfbDisposition extends Comparable<FfbDisposition> {
    *
    * @return the type ot the order as String.
    */
+  @JsonProperty("auftragtyp")
   String getAuftragtyp();
 
   /**
@@ -96,6 +105,7 @@ public interface FfbDisposition extends Comparable<FfbDisposition> {
    *
    * @return the sub category of the order.
    */
+  @JsonProperty("teilauftragtyp")
   String getTeilauftragtyp();
 
   /**
@@ -104,6 +114,7 @@ public interface FfbDisposition extends Comparable<FfbDisposition> {
    * @return the date of entry as String
    */
   @JsonProperty("eingabedatum")
+  @JsonDeserialize(using = GermanDateToLocalDateDeserializer.class)
   LocalDate getEingabedatum();
 
   /**
@@ -117,6 +128,7 @@ public interface FfbDisposition extends Comparable<FfbDisposition> {
    *
    * @return the type of the account where the amount will be withdrawn from, if applicable.
    */
+  @JsonProperty("verrechnungskonto")
   String getVerrechnungskonto();
 
   /**
@@ -125,6 +137,7 @@ public interface FfbDisposition extends Comparable<FfbDisposition> {
    * @return the betrag as string.
    */
   @JsonProperty("betrag")
+  @JsonDeserialize(using = GermanNumberToBigDecimalDeserializer.class)
   BigDecimal getBetrag();
 
   /**
@@ -133,6 +146,7 @@ public interface FfbDisposition extends Comparable<FfbDisposition> {
    * @return the number of units traded.
    */
   @JsonProperty("stuecke")
+  @JsonDeserialize(using = GermanNumberToBigDecimalDeserializer.class)
   BigDecimal getStuecke();
 
   /**
@@ -141,7 +155,8 @@ public interface FfbDisposition extends Comparable<FfbDisposition> {
    * @return the rabatt as string.
    */
   @JsonProperty("rabatt")
-  BigDecimal getRabattAsString();
+  @JsonDeserialize(using = GermanNumberToBigDecimalDeserializer.class)
+  Optional<BigDecimal> getRabatt();
 
   /**
    * Compares transactions, sorted by depot, isin, auftragstyp, date, etc.

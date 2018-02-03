@@ -11,9 +11,7 @@
         <option value="rearrange" />
         <option value="fieldCanBeFinal" />
         <option value="localCanBeFinal" />
-        <option value="unqualifiedFieldAccess" />
         <option value="missingOverrideAnnotation" />
-        <option value="unnecessaryThis" />
         <option value="suppressAnnotation" />
         <option value="unnecessarySemicolon" />
       </set>
