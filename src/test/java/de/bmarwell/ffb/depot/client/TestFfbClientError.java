@@ -3,20 +3,15 @@ package de.bmarwell.ffb.depot.client;
 import de.bmarwell.ffb.depot.client.err.FfbClientError;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 public class TestFfbClientError {
-
-  @Before
-  public void setUp() throws Exception {
-  }
 
   @Test
   public void testClientError() {
     try {
       throw new FfbClientError();
-    } catch (FfbClientError e) {
+    } catch (final FfbClientError e) {
       Assert.assertNotNull("Exception should not be null.", e);
     }
   }
@@ -25,7 +20,7 @@ public class TestFfbClientError {
   public void testClientErrorMessage() {
     try {
       throw new FfbClientError("message");
-    } catch (FfbClientError e) {
+    } catch (final FfbClientError e) {
       Assert.assertNotNull("Thrown exception should not be null", e);
       Assert.assertNotNull("Message should not be null.", e.getMessage());
       Assert.assertNull("Cause was not set.", e.getCause());
@@ -36,7 +31,7 @@ public class TestFfbClientError {
   public void testClientErrorThrowable() {
     try {
       throw new FfbClientError(new RuntimeException());
-    } catch (FfbClientError e) {
+    } catch (final FfbClientError e) {
       Assert.assertNotNull("Thrown exception should not be null", e);
       /* the constructor should set the message to the cause's class name. */
       Assert.assertNotNull("Message should not be null.", e.getMessage());

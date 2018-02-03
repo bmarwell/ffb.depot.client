@@ -25,30 +25,18 @@ import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-import de.bmarwell.ffb.depot.client.FfbDepotUtils;
 import de.bmarwell.ffb.depot.client.json.FfbDepotInfo;
-import de.bmarwell.ffb.depot.client.json.FfbFondsbestand;
 import de.bmarwell.ffb.depot.client.json.ImmutableFfbDepotInfo;
 import de.bmarwell.ffb.depot.client.json.ImmutableMyFfbResponse;
 import de.bmarwell.ffb.depot.client.json.MyFfbResponse;
-import de.bmarwell.ffb.depot.client.util.GermanDateToLocalDateDeserializer;
 import de.bmarwell.ffb.depot.client.value.FfbDepotNummer;
-
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 public class TestDepotUtils {
-
-  @Before
-  public void setUp() throws Exception {
-  }
 
   @Test(expected = NullPointerException.class)
   public void testNullValues() {
@@ -57,21 +45,21 @@ public class TestDepotUtils {
 
   @Test
   public void testEmptyResponse() {
-    MyFfbResponse ffbResponse = MyFfbResponse.builder()
+    final MyFfbResponse ffbResponse = MyFfbResponse.builder()
         .depots(emptyList())
         .gesamtwert(BigDecimal.ZERO)
         .isLoggedIn(true)
         .letztesUpdate(LocalDate.now())
         .isModelportfolio(false)
         .build();
-    BigDecimal gesamtBestand = FfbDepotUtils.getGesamtBestand(ffbResponse, FfbDepotNummer.empty());
+    final BigDecimal gesamtBestand = FfbDepotUtils.getGesamtBestand(ffbResponse, FfbDepotNummer.empty());
 
     assertEquals(BigDecimal.ZERO, gesamtBestand);
   }
 
   @Test
   public void testTwoDepotsInResponse() {
-    FfbDepotNummer depotNummer = FfbDepotNummer.of("1");
+    final FfbDepotNummer depotNummer = FfbDepotNummer.of("1");
 
     final FfbDepotInfo depot1 = FfbDepotInfo.builder()
         .depotname("Testdepot")
@@ -84,12 +72,12 @@ public class TestDepotUtils {
         .gesamtDepotBestand(BigDecimal.valueOf(1000.00))
         .build();
 
-    FfbDepotNummer depotNummer2 = FfbDepotNummer.of("2");
-    FfbDepotInfo depot3 = ImmutableFfbDepotInfo.copyOf(depot2).withDepotNummer(depotNummer2);
+    final FfbDepotNummer depotNummer2 = FfbDepotNummer.of("2");
+    final FfbDepotInfo depot3 = ImmutableFfbDepotInfo.copyOf(depot2).withDepotNummer(depotNummer2);
 
     final List<FfbDepotInfo> depotListe = asList(depot1, depot2, depot3);
 
-    MyFfbResponse ffbResponse = ImmutableMyFfbResponse.builder()
+    final MyFfbResponse ffbResponse = ImmutableMyFfbResponse.builder()
         .isLoggedIn(true)
         .depots(depotListe)
         .gesamtwert(BigDecimal.ZERO)
@@ -103,7 +91,7 @@ public class TestDepotUtils {
     assertEquals(depotNummer, depot2.getDepotNummer());
     assertNotEquals(depotNummer, depot3.getDepotNummer());
 
-    BigDecimal gesamtBestand = FfbDepotUtils.getGesamtBestand(ffbResponse, depotNummer);
+    final BigDecimal gesamtBestand = FfbDepotUtils.getGesamtBestand(ffbResponse, depotNummer);
 
     /* Depot 3 should not count into it. */
     assertEquals(BigDecimal.valueOf(2000.00), gesamtBestand);

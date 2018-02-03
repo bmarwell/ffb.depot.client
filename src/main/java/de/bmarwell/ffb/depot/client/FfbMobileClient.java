@@ -59,25 +59,11 @@ import org.slf4j.LoggerFactory;
  */
 public class FfbMobileClient {
 
-  /**
-   * Wrong credentials?
-   */
-  private static final String USER_COULD_NOT_LOG_IN_CHECK_CREDENTIALS = "User could not log in. Check credentials.";
 
   /**
    * Tried to execute action without prior login.
    */
   private static final String NOT_USED_LOGIN_METHOD_BEFORE = "Not used login method before.";
-
-  /**
-   * Error to be logged when reading the response stream.
-   */
-  private static final String ERROR_RESPONSE_STREAM = "Error logging in while reading the response stream. Please submit a bug.";
-
-  /**
-   * Error message on invalid status code.
-   */
-  private static final String ERROR_WITH_LOGIN_HTTP_STATUSCODE = "Error with login (http statuscode). Please submit a bug.";
 
   /**
    * Logger.
