@@ -22,6 +22,8 @@ package de.bmarwell.ffb.depot.client;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static java.util.Arrays.asList;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -115,6 +117,8 @@ public class TestDispositionen {
     final FfbDisposition firstDisposition = dispositionen.get(0);
     assertEquals("Das vorhandene Element sollte dem erstellten entsprechen.", dispo1, firstDisposition);
     assertThat(firstDisposition.toString().toLowerCase(Locale.getDefault()), CoreMatchers.containsString("fondsname"));
+
+    assertThat("sollten nicht gleich sein", dispo1.compareTo(dispo2), is(not(0)));
   }
 
 }

@@ -21,6 +21,8 @@
 package de.bmarwell.ffb.depot.client;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -39,7 +41,6 @@ import de.bmarwell.ffb.depot.client.value.FfbPin;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import java.math.BigDecimal;
 import java.net.URI;
-import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -86,7 +87,7 @@ public class TestMobileGetDepotwert {
     assertTrue("Should be logged in.", loginResponse.isLoggedIn());
 
     final boolean logout = client.logout();
-    Assert.assertThat("logout should yield success.", logout, CoreMatchers.is(true));
+    Assert.assertThat("logout should yield success.", logout, is(true));
     assertFalse("loginInformation should be gone now.", client.isLoggedIn());
   }
 
@@ -121,6 +122,7 @@ public class TestMobileGetDepotwert {
 
     for (final FfbDepotInfo depot : accountData.getDepots()) {
       LOG.debug("Depotinfo: [{}].", depot);
+      assertThat(depot.compareTo(depot), is(0));
     }
 
     final BigDecimal depotBestand = FfbDepotUtils.getGesamtBestand(accountData, DEPOTNUMMER);

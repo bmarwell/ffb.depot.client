@@ -20,6 +20,8 @@
 
 package de.bmarwell.ffb.depot.client.json;
 
+import static de.bmarwell.ffb.depot.client.util.OptionalComparators.absentLastComparator;
+
 import de.bmarwell.ffb.depot.client.json.ImmutableFfbDisposition.Builder;
 import de.bmarwell.ffb.depot.client.util.GermanDateToLocalDateDeserializer;
 import de.bmarwell.ffb.depot.client.util.GermanNumberToBigDecimalDeserializer;
@@ -171,10 +173,10 @@ public interface FfbDisposition extends Comparable<FfbDisposition> {
         .thenComparing(FfbDisposition::getAuftragtyp)
         .thenComparing(FfbDisposition::getEingabedatum)
         .thenComparing(FfbDisposition::getBetrag)
-        .thenComparing(FfbDisposition::getStuecke);
+        .thenComparing(FfbDisposition::getStuecke)
+        .thenComparing(FfbDisposition::getRabatt, absentLastComparator());
 
     return comparator.compare(this, other);
   }
-
 
 }
