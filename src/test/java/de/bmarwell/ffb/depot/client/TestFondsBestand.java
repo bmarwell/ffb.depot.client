@@ -97,6 +97,7 @@ public class TestFondsBestand {
     final FfbFondsbestand fondsbestand = fondsbestaende.stream()
         .filter(bestand -> wellKnownIsin.equals(bestand.getIsin()))
         .findAny().orElseThrow(IllegalStateException::new);
+    assertThat(fondsbestand.compareTo(fondsbestand), is(0));
 
     assertThat(fondsbestand.getIsin(), is(equalTo(wellKnownIsin)));
     assertTrue("Der Preis vom Fondsbestand darf nicht älter als 10 Tage sein.",

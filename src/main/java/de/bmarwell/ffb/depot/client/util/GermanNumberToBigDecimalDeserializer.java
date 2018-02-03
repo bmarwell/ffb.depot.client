@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import org.slf4j.Logger;
 
 public class GermanNumberToBigDecimalDeserializer extends StdDeserializer<BigDecimal> {
@@ -45,6 +46,6 @@ public class GermanNumberToBigDecimalDeserializer extends StdDeserializer<BigDec
     /*
      * It is recommended to use the string constructor anyway.
      */
-    return new BigDecimal(usString);
+    return new BigDecimal(usString).setScale(4, RoundingMode.HALF_UP);
   }
 }
