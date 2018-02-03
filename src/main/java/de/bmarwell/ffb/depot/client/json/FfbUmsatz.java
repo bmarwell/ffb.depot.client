@@ -1,9 +1,11 @@
 package de.bmarwell.ffb.depot.client.json;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.immutables.value.Value;
 
 @Value.Immutable
+@JsonDeserialize(as = ImmutableFfbUmsatz.class)
 public interface FfbUmsatz {
   @JsonProperty("depotnummer")
   String getDepotnummer();

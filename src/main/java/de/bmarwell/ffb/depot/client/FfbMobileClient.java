@@ -49,11 +49,6 @@ import org.slf4j.LoggerFactory;
 public class FfbMobileClient {
 
   /**
-   * Tried to execute action without prior login.
-   */
-  private static final String NOT_USED_LOGIN_METHOD_BEFORE = "Not used login method before.";
-
-  /**
    * Logger.
    */
   private static final Logger LOG = LoggerFactory.getLogger(FfbMobileClient.class);

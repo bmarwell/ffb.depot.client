@@ -1,11 +1,225 @@
 
 {
-	"login" : "false",
-	"error"	: "Sie sind derzeit nicht als Benutzer eingeloggt. Bitte melden Sie sich an fidelity.de an, um fortzufahren.",
-	"anzahlUmsaetze"	: "",
+        "login" : "true",
+        "error" : "",
+        "anzahlUmsaetze"        : "10",
   "urlFactsheetOverlay" : "/de/fonds/quick-factsheet-overlay.page?",
-  "hash" : "",
-  "auftragstyp" : [ ],
-	"umsaetze"	: [ ]
+  "hash" : "22222301",
+  "auftragstyp" : [ 
+        {
+                "value" : "ALLE",
+                "name" : "Alle"
+
+        },
+        {
+                "value" : "ENTGELTVERKAUF",
+                "name" : "Entgeltverkauf"
+
+        },
+        {
+                "value" : "ERTRAG",
+                "name" : "Ertrag"
+
+        },
+        {
+                "value" : "KAUF",
+                "name" : "Kauf"
+
+        },
+        {
+                "value" : "TAUSCH",
+                "name" : "Tausch"
+
+        },
+        {
+                "value" : "UEBERTRAG",
+                "name" : "Übertrag"
+
+        },
+        {
+                "value" : "VERKAUF",
+                "name" : "Verkauf"
+
+        }],
+        "umsaetze"      : [ 
+        {
+                "depotnummer" : "22222301",
+    "isin"      : "LU0123456789",
+                "wkn"           : "DBX0CQ",
+                "fondsname"     : "Datenbank y-tours USD ETF",
+                "fondsgesellschaft"             : "Datenbank y-tours",
+                "transaktionArt"                : "Tausch Betrag (Kauf)",
+                "buchungDatum"  : "01.02.2012",
+                "abrechnungDatum"       : "31.01.2012",
+                "abrechnungAnteile"             : "0,292",
+                "abrechnungpreis"               : "21,2976",
+                "fondswaehrung" : "GRD",
+                "ausgabeaufschlagInProzent"             : "0,20",
+    "rabattProzent"     : "100,00",
+                "abrechnungBetragInFondswaehrung"               : "14,01",
+                "abrechnungBetragInEuro"                : "11,24"
+
+        },
+        {
+                "depotnummer" : "22222301",
+    "isin"      : "DE0001231234",
+                "wkn"           : "123123",
+                "fondsname"     : "Ein VL Fonds",
+                "fondsgesellschaft"             : "Deh Weh Ess GmbH",
+                "transaktionArt"                : "Tausch Betrag (Verkauf)",
+                "buchungDatum"  : "31.01.2012",
+                "abrechnungDatum"       : "30.01.2012",
+                "abrechnungAnteile"             : "0,333",
+                "abrechnungpreis"               : "15,0500",
+                "fondswaehrung" : "CHF",
+                "ausgabeaufschlagInProzent"             : "",
+    "rabattProzent"     : "",
+                "abrechnungBetragInFondswaehrung"               : "11,24",
+                "abrechnungBetragInEuro"                : "11,24"
+
+        },
+        {
+                "depotnummer" : "22222301",
+    "isin"      : "LU0123456789",
+                "wkn"           : "DBX0CQ",
+                "fondsname"     : "Datenbank y-tours USD ETF",
+                "fondsgesellschaft"             : "Datenbank y-tours",
+                "transaktionArt"                : "Tausch Betrag (Kauf)",
+                "buchungDatum"  : "09.01.2012",
+                "abrechnungDatum"       : "08.01.2012",
+                "abrechnungAnteile"             : "0,278",
+                "abrechnungpreis"               : "21,4504",
+                "fondswaehrung" : "GRD",
+                "ausgabeaufschlagInProzent"             : "0,20",
+    "rabattProzent"     : "100,00",
+                "abrechnungBetragInFondswaehrung"               : "59,51",
+                "abrechnungBetragInEuro"                : "11,24"
+
+        },
+        {
+                "depotnummer" : "22222301",
+    "isin"      : "DE0001231234",
+                "wkn"           : "123123",
+                "fondsname"     : "Ein VL Fonds",
+                "fondsgesellschaft"             : "Deh Weh Ess GmbH",
+                "transaktionArt"                : "Tausch Betrag (Verkauf)",
+                "buchungDatum"  : "08.01.2012",
+                "abrechnungDatum"       : "05.01.2012",
+                "abrechnungAnteile"             : "0,337",
+                "abrechnungpreis"               : "15,3600",
+                "fondswaehrung" : "CHF",
+                "ausgabeaufschlagInProzent"             : "",
+    "rabattProzent"     : "",
+                "abrechnungBetragInFondswaehrung"               : "11,24",
+                "abrechnungBetragInEuro"                : "11,24"
+
+        },
+        {
+                "depotnummer" : "22222301",
+    "isin"      : "DE0001231234",
+                "wkn"           : "123123",
+                "fondsname"     : "Ein VL Fonds",
+                "fondsgesellschaft"             : "Deh Weh Ess GmbH",
+                "transaktionArt"                : "Verkauf Betrag",
+                "buchungDatum"  : "30.11.2011",
+                "abrechnungDatum"       : "29.11.2011",
+                "abrechnungAnteile"             : "0,671",
+                "abrechnungpreis"               : "15,0100",
+                "fondswaehrung" : "CHF",
+                "ausgabeaufschlagInProzent"             : "",
+    "rabattProzent"     : "",
+                "abrechnungBetragInFondswaehrung"               : "100,00",
+                "abrechnungBetragInEuro"                : "100,00"
+
+        },
+        {
+                "depotnummer" : "22222301",
+    "isin"      : "FR0010444666",
+                "wkn"           : "LYX0AY",
+                "fondsname"     : "Luxus ETF EM  ",
+                "fondsgesellschaft"             : "Luxus Global Mgmt",
+                "transaktionArt"                : "Erträgnis ohne Wiederanlage",
+                "buchungDatum"  : "29.11.2011",
+                "abrechnungDatum"       : "29.11.2011",
+                "abrechnungAnteile"             : "",
+                "abrechnungpreis"               : "",
+                "fondswaehrung" : "CHF",
+                "ausgabeaufschlagInProzent"             : "",
+    "rabattProzent"     : "",
+                "abrechnungBetragInFondswaehrung"               : "0,00",
+                "abrechnungBetragInEuro"                : "0,00"
+
+        },
+        {
+                "depotnummer" : "22222301",
+    "isin"      : "XX000A0C0701",
+                "wkn"           : "B0C070",
+                "fondsname"     : "lowShares EUR Capped  ",
+                "fondsgesellschaft"             : "lowShares",
+                "transaktionArt"                : "Erträgnis",
+                "buchungDatum"  : "20.11.2011",
+                "abrechnungDatum"       : "17.11.2011",
+                "abrechnungAnteile"             : "0,020",
+                "abrechnungpreis"               : "12,0600",
+                "fondswaehrung" : "CHF",
+                "ausgabeaufschlagInProzent"             : "0,20",
+    "rabattProzent"     : "100,00",
+                "abrechnungBetragInFondswaehrung"               : "2,44",
+                "abrechnungBetragInEuro"                : "2,44"
+
+        },
+        {
+                "depotnummer" : "22222301",
+    "isin"      : "XX000A0C0701",
+                "wkn"           : "B0C070",
+                "fondsname"     : "lowShares EUR Capped  ",
+                "fondsgesellschaft"             : "lowShares",
+                "transaktionArt"                : "Kauf Betrag",
+                "buchungDatum"  : "02.11.2011",
+                "abrechnungDatum"       : "01.11.2011",
+                "abrechnungAnteile"             : "0,697",
+                "abrechnungpreis"               : "12,4000",
+                "fondswaehrung" : "CHF",
+                "ausgabeaufschlagInProzent"             : "0,20",
+    "rabattProzent"     : "100,00",
+                "abrechnungBetragInFondswaehrung"               : "85,00",
+                "abrechnungBetragInEuro"                : "85,00"
+
+        },
+        {
+                "depotnummer" : "22222301",
+    "isin"      : "LU0399876543",
+                "wkn"           : "ETF112",
+                "fondsname"     : "Kommerz ETF Entw. Welt  ",
+                "fondsgesellschaft"             : "Kommerz",
+                "transaktionArt"                : "Erträgnis ohne Wiederanlage",
+                "buchungDatum"  : "30.10.2011",
+                "abrechnungDatum"       : "30.10.2011",
+                "abrechnungAnteile"             : "",
+                "abrechnungpreis"               : "",
+                "fondswaehrung" : "GRD",
+                "ausgabeaufschlagInProzent"             : "",
+    "rabattProzent"     : "",
+                "abrechnungBetragInFondswaehrung"               : "0,00",
+                "abrechnungBetragInEuro"                : "0,00"
+
+        },
+        {
+                "depotnummer" : "22222301",
+    "isin"      : "FR0010655556",
+                "wkn"           : "B0REKU",
+                "fondsname"     : "DieWelt ETF Skandic",
+                "fondsgesellschaft"             : "DieWelt Mgmt",
+                "transaktionArt"                : "Kauf aus Splittsparplan",
+                "buchungDatum"  : "05.09.2011",
+                "abrechnungDatum"       : "01.09.2011",
+                "abrechnungAnteile"             : "0,072",
+                "abrechnungpreis"               : "36,4630",
+                "fondswaehrung" : "CHF",
+                "ausgabeaufschlagInProzent"             : "0,20",
+    "rabattProzent"     : "100,00",
+                "abrechnungBetragInFondswaehrung"               : "26,00",
+                "abrechnungBetragInEuro"                : "26,00"
+
+        }]
 }
-	

@@ -26,6 +26,7 @@ public class TestUmsaetze {
    * Logger.
    */
   private static final Logger LOG = LoggerFactory.getLogger(TestUmsaetze.class);
+
   @Rule
   public WireMockRule wiremock = new WireMockRule(wireMockConfig().dynamicPort());
 
@@ -43,7 +44,7 @@ public class TestUmsaetze {
     client.logon();
     Assert.assertTrue(client.isLoggedIn());
 
-    final FfbUmsatzResponse umsaetze = client.getUmsaetze(FfbAuftragsTyp.ALLE, LocalDate.now().minusMonths(5).minusDays(14),
+    final FfbUmsatzResponse umsaetze = client.getUmsaetze(FfbAuftragsTyp.ALLE, LocalDate.now().minusMonths(5).minusDays(0),
         LocalDate.now());
     LOG.debug("Umsätze erhalten: [{}].", umsaetze);
 

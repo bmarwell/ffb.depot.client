@@ -110,7 +110,7 @@ public final class WebClientHelper {
         .request(MediaType.APPLICATION_JSON_TYPE)
         .header("Accept", "application/json;charset=utf-8")
         .header("Accept-Charset", "utf-8;q=0.7,*;q=0.3")
-        .header("X-Requested-With", "hibiscus.ffb.scraper")
+        .header("X-Requested-With", this.useragent)
         .header("User-Agent", this.useragent);
 
     for (final Map.Entry<String, NewCookie> cookie : cookies.entrySet()) {
@@ -249,8 +249,8 @@ public final class WebClientHelper {
     final String datumRangeString = FfbDepotUtils.convertDateRangeToGermanDateRangeString(from, until);
 
     final ConcurrentHashMap<String, String> queryParams = new ConcurrentHashMap<>();
-    queryParams.put("auftragstyp", auftragsTyp.toString());
     queryParams.put("datumsauswahl", datumRangeString);
+    queryParams.put("auftragstyp", auftragsTyp.toString());
 
     return getClientBuilder(
         getUriUmsaetze(),

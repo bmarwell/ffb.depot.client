@@ -88,7 +88,7 @@ public final class FfbDepotUtils {
       throw new IllegalStateException("from must be before until!");
     }
 
-    return String.format("%s+-+%s",
+    return String.format("%s - %s",
         from.format(GERMAN_DATE_FORMAT),
         until.format(GERMAN_DATE_FORMAT));
   }
