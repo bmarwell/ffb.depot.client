@@ -23,7 +23,7 @@ public class GermanDateToLocalDateDeserializer extends StdDeserializer<LocalDate
   public static final DateTimeFormatter GERMAN_DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
   public GermanDateToLocalDateDeserializer() {
-    super(TypeFactory.defaultInstance().constructType(LocalDate.class));
+    this(TypeFactory.defaultInstance().constructType(LocalDate.class));
   }
 
   protected GermanDateToLocalDateDeserializer(final Class<?> vc) {

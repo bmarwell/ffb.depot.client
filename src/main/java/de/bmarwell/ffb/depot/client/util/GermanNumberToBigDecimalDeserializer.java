@@ -20,7 +20,7 @@ public class GermanNumberToBigDecimalDeserializer extends StdDeserializer<BigDec
   private static final Logger LOG = getLogger(GermanNumberToBigDecimalDeserializer.class);
 
   public GermanNumberToBigDecimalDeserializer() {
-    super(TypeFactory.defaultInstance().constructType(BigDecimal.class));
+    this(TypeFactory.defaultInstance().constructType(BigDecimal.class));
   }
 
   protected GermanNumberToBigDecimalDeserializer(final Class<?> vc) {
