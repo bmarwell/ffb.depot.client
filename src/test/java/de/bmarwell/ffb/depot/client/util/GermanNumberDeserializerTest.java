@@ -14,8 +14,12 @@ import org.junit.Test;
 
 public class GermanNumberDeserializerTest {
 
-  public static final ObjectMapper OM = ObjectMapperProvider.getInstance();
-  GermanNumberToBigDecimalDeserializer deserializer = new GermanNumberToBigDecimalDeserializer();
+  private static final ObjectMapper OM = ObjectMapperProvider.getInstance();
+
+  /**
+   * Class under test.
+   */
+  private final GermanNumberToBigDecimalDeserializer deserializer = new GermanNumberToBigDecimalDeserializer();
 
   @Test
   public void legalNumber() throws IOException {
@@ -36,6 +40,6 @@ public class GermanNumberDeserializerTest {
     final DeserializationContext context = OM.getDeserializationContext();
     dateString.nextToken();
 
-    final BigDecimal dec = deserializer.deserialize(dateString, context);
+    deserializer.deserialize(dateString, context);
   }
 }

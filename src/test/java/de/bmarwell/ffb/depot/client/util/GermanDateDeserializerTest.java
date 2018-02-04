@@ -13,8 +13,12 @@ import org.junit.Test;
 
 public class GermanDateDeserializerTest {
 
-  public static final ObjectMapper OM = ObjectMapperProvider.getInstance();
-  GermanDateToLocalDateDeserializer deserializer = new GermanDateToLocalDateDeserializer();
+  private static final ObjectMapper OM = ObjectMapperProvider.getInstance();
+
+  /**
+   * Class under test.
+   */
+  private final GermanDateToLocalDateDeserializer deserializer = new GermanDateToLocalDateDeserializer();
 
   @Test
   public void legalDate() throws IOException {

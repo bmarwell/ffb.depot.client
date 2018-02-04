@@ -30,15 +30,15 @@ public class TestFfbClientError {
   @Test
   public void testClientErrorThrowable() {
     try {
-      throw new FfbClientError(new RuntimeException());
+      throw new FfbClientError(new FfbClientError());
     } catch (final FfbClientError e) {
       Assert.assertNotNull("Thrown exception should not be null", e);
       /* the constructor should set the message to the cause's class name. */
       Assert.assertNotNull("Message should not be null.", e.getMessage());
-      Assert.assertEquals("Message should be cause's class name.", RuntimeException.class.getName(), e.getMessage());
+      Assert.assertEquals("Message should be cause's class name.", FfbClientError.class.getName(), e.getMessage());
 
       Assert.assertNotNull("Cause was set, so it's not null.", e.getCause());
-      Assert.assertEquals("Should have the cause.", RuntimeException.class, e.getCause().getClass());
+      Assert.assertEquals("Should have the cause.", FfbClientError.class, e.getCause().getClass());
     }
   }
 

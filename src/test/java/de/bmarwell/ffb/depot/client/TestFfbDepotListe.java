@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import de.bmarwell.ffb.depot.client.json.FfbDepotInfo;
 import de.bmarwell.ffb.depot.client.value.FfbDepotNummer;
+
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
@@ -22,25 +23,25 @@ public class TestFfbDepotListe {
    */
   @Test
   public void testCopy() {
-    FfbDepotInfo depot1 = FfbDepotInfo.builder()
+    final FfbDepotInfo depot1 = FfbDepotInfo.builder()
         .depotNummer(FfbDepotNummer.of("1"))
         .depotname("name1")
         .gesamtDepotBestand(BigDecimal.valueOf(2.00d))
         .addAllFondsbestaende(Collections.emptyList())
         .build();
 
-    FfbDepotInfo depot2 = FfbDepotInfo.builder()
+    final FfbDepotInfo depot2 = FfbDepotInfo.builder()
         .depotNummer(FfbDepotNummer.of("2"))
         .depotname("name2")
         .gesamtDepotBestand(BigDecimal.valueOf(1.00d))
         .addAllFondsbestaende(Collections.emptyList())
         .build();
 
-    List<FfbDepotInfo> liste = unmodifiableList(asList(depot1, depot2));
+    final List<FfbDepotInfo> liste = unmodifiableList(asList(depot1, depot2));
 
     final List<FfbDepotInfo> copy = unmodifiableList(liste);
 
-    assertTrue("Should not be the same object, only contents.", liste != copy);
+    assertTrue("Should not be the same object, only contents.", liste.equals(copy));
     assertEquals("Copy should have same interior.", liste, copy);
   }
 

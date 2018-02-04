@@ -35,7 +35,6 @@ import de.bmarwell.ffb.depot.client.json.FfbDisposition;
 import de.bmarwell.ffb.depot.client.json.FfbDispositionenResponse;
 import de.bmarwell.ffb.depot.client.json.ImmutableFfbDisposition;
 import de.bmarwell.ffb.depot.client.json.ImmutableFfbDispositionenResponse;
-import de.bmarwell.ffb.depot.client.value.FfbDepotNummer;
 import de.bmarwell.ffb.depot.client.value.FfbLoginKennung;
 import de.bmarwell.ffb.depot.client.value.FfbPin;
 
@@ -62,8 +61,6 @@ public class TestDispositionen {
 
   private static final FfbLoginKennung LOGIN = FfbLoginKennung.of("22222301");
   private static final FfbPin PIN = FfbPin.of("91901");
-
-  private static final FfbDepotNummer DEPOT = FfbDepotNummer.of("222223");
 
   @Rule
   public WireMockRule wiremock = new WireMockRule(wireMockConfig().dynamicPort());
