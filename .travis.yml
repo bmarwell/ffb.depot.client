@@ -13,3 +13,5 @@ cache:
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
+  - bash <(curl "https://oss.sonatype.org/service/local/repositories/releases/content/com/codacy/codacy-coverage-reporter/2.0.2/codacy-coverage-reporter-2.0.2-assembly.jar" -o ~/codacy.coverage-reporter-2.0.2-assembly.jar)
+  - bash <(java -cp ~/codacy.coverage-reporter-2.0.2-assembly.jar com.codacy.CodacyCoverageReporter -l Java -r target/site/jacoco/jacoco.xml --projectToken "${CODACY_PROJECT_TOKEN}")
