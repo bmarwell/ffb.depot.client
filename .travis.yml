@@ -11,6 +11,9 @@ cache:
   directories:
     - '$HOME/.m2'
 
+script:
+  - ./mvnw clean verify -Pdocs
+
 after_success:
   - bash <(curl -s https://codecov.io/bash)
   - bash <(curl "https://oss.sonatype.org/service/local/repositories/releases/content/com/codacy/codacy-coverage-reporter/2.0.2/codacy-coverage-reporter-2.0.2-assembly.jar" -o ~/codacy.coverage-reporter-2.0.2-assembly.jar)

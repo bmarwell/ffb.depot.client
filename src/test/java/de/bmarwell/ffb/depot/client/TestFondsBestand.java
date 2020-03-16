@@ -25,7 +25,6 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 import de.bmarwell.ffb.depot.client.json.FfbDepotInfo;
 import de.bmarwell.ffb.depot.client.json.FfbFondsbestand;
@@ -36,7 +35,6 @@ import de.bmarwell.ffb.depot.client.value.FfbPin;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import java.net.URI;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -62,15 +60,15 @@ public class TestFondsBestand {
 
   @Before
   public void setUp() {
-    final FfbClientConfiguration config = () -> URI.create("http://localhost:" + wiremock.port());
+    final FfbClientConfiguration config = () -> URI.create("http://localhost:" + this.wiremock.port());
 
-    client = new FfbMobileClient(LOGIN, PIN, config);
+    this.client = new FfbMobileClient(LOGIN, PIN, config);
   }
 
   @Test
   public void testFondsBestand() {
-    client.logon();
-    final MyFfbResponse accountData = client.fetchAccountData();
+    this.client.logon();
+    final MyFfbResponse accountData = this.client.fetchAccountData();
     LOG.debug("AccountData: [{}].", accountData);
 
     final FfbDepotInfo depotinfo = accountData.getDepots().stream()
@@ -96,8 +94,6 @@ public class TestFondsBestand {
     assertThat(fondsbestand.compareTo(fondsbestand), is(0));
 
     assertThat(fondsbestand.getIsin(), is(equalTo(wellKnownIsin)));
-    assertTrue("Der Preis vom Fondsbestand darf nicht älter als 10 Tage sein.",
-        fondsbestand.getPreisDatum().isAfter(LocalDate.now().minusDays(10)));
     final String fondsbestandString = fondsbestand.toString().toLowerCase(Locale.getDefault());
     assertThat(fondsbestandString, containsString("wkn"));
   }

@@ -116,7 +116,8 @@ public final class WebClientHelper {
       final URI uriToCall,
       final Map<String, String> additionalQueryParams,
       final Map<String, String> additionalHeaders) {
-    WebTarget target = webClient.target(uriToCall);
+    LOG.trace("Calling URI: [{}].", uriToCall);
+    WebTarget target = this.webClient.target(uriToCall);
 
     for (final Entry<String, String> queryParam : additionalQueryParams.entrySet()) {
       target = target.queryParam(queryParam.getKey(), queryParam.getValue());
@@ -129,7 +130,7 @@ public final class WebClientHelper {
         .header("X-Requested-With", this.useragent)
         .header("User-Agent", this.useragent);
 
-    for (final Map.Entry<String, NewCookie> cookie : cookies.entrySet()) {
+    for (final Map.Entry<String, NewCookie> cookie : this.cookies.entrySet()) {
       LOG.debug("Adding cookie: [{}] => [{}].", cookie.getKey(), cookie.getValue().toCookie());
       clientBuilder = clientBuilder.cookie(cookie.getValue().toCookie());
     }
@@ -143,7 +144,7 @@ public final class WebClientHelper {
 
 
   public Map<String, NewCookie> getCookies() {
-    return cookies;
+    return this.cookies;
   }
 
   public LoginResponse loginInformation() {
@@ -151,47 +152,47 @@ public final class WebClientHelper {
   }
 
   public void checkLoggedIn() {
-    if (cookies.isEmpty() || !isLoggedIn()) {
+    if (this.cookies.isEmpty() || !isLoggedIn()) {
       throw new IllegalStateException("Not logged in");
     }
   }
 
   public boolean isLoggedIn() {
-    return login.isLoggedIn() && !cookies.isEmpty();
+    return this.login.isLoggedIn() && !this.cookies.isEmpty();
   }
 
   public URI getMyFfbUri() {
-    return UriBuilder.fromUri(basedomain)
+    return UriBuilder.fromUri(this.basedomain)
         .path(PATH_DEPOT)
         .build();
   }
 
   public URI getUriLogin() {
-    return UriBuilder.fromUri(basedomain)
+    return UriBuilder.fromUri(this.basedomain)
         .path(PATH_LOGIN)
         .build();
   }
 
   public URI getUriPerformance() {
-    return UriBuilder.fromUri(basedomain)
+    return UriBuilder.fromUri(this.basedomain)
         .path(PATH_PERFORMANCE)
         .build();
   }
 
   public URI getUriDispositionen() {
-    return UriBuilder.fromUri(basedomain)
+    return UriBuilder.fromUri(this.basedomain)
         .path(PATH_DISPOSITIONEN)
         .build();
   }
 
   public URI getUriUmsaetze() {
-    return UriBuilder.fromUri(basedomain)
+    return UriBuilder.fromUri(this.basedomain)
         .path(PATH_UMSAETZE)
         .build();
   }
 
   public URI getUriLogout() {
-    return UriBuilder.fromUri(basedomain)
+    return UriBuilder.fromUri(this.basedomain)
         .path(PATH_LOGOUT)
         .build();
   }
@@ -201,7 +202,6 @@ public final class WebClientHelper {
       throw new IllegalStateException("Please log out first!");
     }
 
-    LOG.info("Calling URI: [{}].", getUriLogin().toASCIIString());
     final Builder clientBuilder = getClientBuilderLogin();
 
     final Form form = new Form();
@@ -213,7 +213,7 @@ public final class WebClientHelper {
     if (loginResponse.getStatus() != Status.OK.getStatusCode()) {
       final String ffbLogin = loginResponse.readEntity(String.class);
       LOG.error("Konnte Client nicht einloggen! => SC = [{}]", ffbLogin);
-      cookies = Collections.unmodifiableMap(new HashMap<>());
+      this.cookies = Collections.unmodifiableMap(new HashMap<>());
 
       return;
     }
@@ -222,14 +222,14 @@ public final class WebClientHelper {
 
     if (!ffbLogin.isLoggedIn() || !ffbLogin.getErrormessage().orElse("").isEmpty()) {
       LOG.error("Konnte Client nicht einloggen! => [{}]", ffbLogin);
-      cookies = Collections.unmodifiableMap(new HashMap<>());
+      this.cookies = Collections.unmodifiableMap(new HashMap<>());
 
       return;
     }
 
-    login = ffbLogin;
-    cookies = loginResponse.getCookies();
-    LOG.debug("Cookie names: [{}].", cookies.keySet());
+    this.login = ffbLogin;
+    this.cookies = loginResponse.getCookies();
+    LOG.debug("Cookie names: [{}].", this.cookies.keySet());
   }
 
   public Invocation accountData() {
@@ -276,11 +276,11 @@ public final class WebClientHelper {
   }
 
   public boolean logout() {
-    login = LoginResponse.builder()
+    this.login = LoginResponse.builder()
         .isLoggedIn(false)
         .agbAgreed(false)
         .build();
-    cookies = Collections.emptyMap();
+    this.cookies = Collections.emptyMap();
 
     final Response response = getClientBuilder(getUriLogout()).get();
 
@@ -292,10 +292,10 @@ public final class WebClientHelper {
     /* Return interesting fields, but do not return the pin. */
 
     return new StringJoiner(", ", getClass().getSimpleName() + "[", "]")
-        .add("webClient=" + webClient)
-        .add("basedomain=" + basedomain)
-        .add("login=" + login)
-        .add("cookies=" + cookies)
+        .add("webClient=" + this.webClient)
+        .add("basedomain=" + this.basedomain)
+        .add("login=" + this.login)
+        .add("cookies=" + this.cookies)
         .toString();
   }
 

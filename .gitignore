@@ -18,6 +18,10 @@ hs_err_pid*
 .factorypath
 
 # IDEA
+.idea
+.idea/
+.idea/*
+.idea/*.xml
 /ffb.depot.client.iml
 
 # User-specific stuff:
