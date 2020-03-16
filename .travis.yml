@@ -1,18 +1,41 @@
 language: java
 
-sudo: false
-
-jdk:
-  - oraclejdk8
-  - openjdk8
-  - oraclejdk9
+env:
+  global:
+    - JABBA_HOME=$HOME/.jabba
 
 cache:
   directories:
-    - '$HOME/.m2'
+    - "$HOME/.m2"
+    - "$HOME/.jabba"
+
+before_cache:
+  - rm -rf "$HOME/.m2/repository/de/bmarwell/ffb"
+
+matrix:
+  include:
+    - os: linux
+      sudo: false
+      env:
+        - TRAVIS_JDK=adopt@1.11.0-6
+    - os: linux
+      sudo: false
+      env:
+        - TRAVIS_JDK=adopt-openj9@1.11.0-6
+    - os: linux
+      sudo: false
+      env:
+        - TRAVIS_JDK=openjdk@1.14.0
+
+before_install:
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then curl -sL https://raw.githubusercontent.com/shyiko/jabba/0.11.0/install.sh | bash && . $JABBA_HOME/jabba.sh; fi
+
+install:
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then $JABBA_HOME/bin/jabba install $TRAVIS_JDK; jabba use $TRAVIS_JDK; fi
+  - java -version
 
 script:
-  - ./mvnw clean verify -Pdocs
+  - ./mvnw --batch-mode clean verify -Pdocs
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
